@@ -33,7 +33,7 @@ DiaChi nvarchar (200)
 
 -- table PhuongThucThanhToan
 CREATE TABLE PhuongThucThanhToan (
-    MaPTTT INT PRIMARY KEY IDENTITY(1,1),
+    MaPTTT INT PRIMARY KEY,
     TenPTTT NVARCHAR(50) NOT NULL
 );
 
