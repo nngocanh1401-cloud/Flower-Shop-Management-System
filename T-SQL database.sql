@@ -1,16 +1,18 @@
 
-use FShop;
+use DoAn;
 go
 
 -- TABLE TRANGTHAI 
 create table TrangThai (
-MaTrangThai int identity (1,1) primary key,
+MaTrangThai int primary key,
 TenTrangThai nvarchar (100) not null,
 MoTa nvarchar (255),
 LoaiTrangThai varchar(20) not null,
 constraint CHK_LoaiTrangThai
 check (LoaiTrangThai in ('DonHang','PhieuNhapHang','PhieuTraHang'))
 );
+drop table TrangThai
+
 -- table NhaCungCap
 create table NhaCungCap (
 MaNCC nvarchar (10) primary key,
@@ -133,3 +135,6 @@ CREATE TABLE ChiTietTraHang (
     DonGia DECIMAL(18,2) NOT NULL,
     PRIMARY KEY (MaPhieuTra, MaSP)
 );
+
+
+-- them seek data
