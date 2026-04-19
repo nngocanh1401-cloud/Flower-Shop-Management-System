@@ -30,8 +30,12 @@ INSERT INTO KhachHang VALUES
 ('KH004', N'Bùi Trường Linh',  '0934567890', N'78 Điện Biên Phủ, Bình Thạnh');
 
 -- PhuongThucThanhToan
-INSERT INTO PhuongThucThanhToan (TenPTTT) VALUES
-(N'Tiền mặt'), (N'Chuyển khoản ngân hàng'), (N'Ví MoMo'), (N'ZaloPay');
+INSERT INTO PhuongThucThanhToan VALUES
+(1, N'Tiền mặt'),
+(2, N'Chuyển khoản ngân hàng'),
+(3, N'Ví MoMo'),
+(4, N'ZaloPay');
+
 
 -- DanhMuc (có danh mục cha-con)
 INSERT INTO DanhMuc VALUES
