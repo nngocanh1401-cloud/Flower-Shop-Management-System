@@ -1,4 +1,4 @@
-use DoAn 
+use FShop 
 go
 -- TrangThai (dùng chung cho cả 3 loại phiếu)
 INSERT INTO TrangThai VALUES
