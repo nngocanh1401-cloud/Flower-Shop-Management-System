@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FSHOP.BLL/FSHOP.BLL.csproj" />
+  <Project Path="FSHOP.Common/FSHOP.Common.csproj" />
+  <Project Path="FSHOP.DAL/FSHOP.DAL.csproj" />
+  <Project Path="FSHOP.WEB/FSHOP.API.csproj" />
+</Solution>

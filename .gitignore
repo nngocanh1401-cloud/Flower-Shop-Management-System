@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Bo qua file cau hinh chua chuoi ket noi local
+**/appsettings.Development.json
