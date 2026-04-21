@@ -11,7 +11,6 @@ LoaiTrangThai varchar(20) not null,
 constraint CHK_LoaiTrangThai
 check (LoaiTrangThai in ('DonHang','PhieuNhapHang','PhieuTraHang'))
 );
-drop table TrangThai
 
 -- table NhaCungCap
 create table NhaCungCap (
