@@ -1,5 +1,5 @@
 
-use DoAn;
+use FShop;
 go
 
 -- TABLE TRANGTHAI 
@@ -11,6 +11,7 @@ LoaiTrangThai varchar(20) not null,
 constraint CHK_LoaiTrangThai
 check (LoaiTrangThai in ('DonHang','PhieuNhapHang','PhieuTraHang'))
 );
+
 
 -- table NhaCungCap
 create table NhaCungCap (
@@ -32,7 +33,7 @@ DiaChi nvarchar (200)
 
 -- table PhuongThucThanhToan
 CREATE TABLE PhuongThucThanhToan (
-    MaPTTT INT PRIMARY KEY IDENTITY(1,1),
+    MaPTTT INT PRIMARY KEY,
     TenPTTT NVARCHAR(50) NOT NULL
 );
 
