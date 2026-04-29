@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface IPhieuTraHangRepository : IGenericRepository<PhieuTraHang>
+    public interface IPhieuTraHangRepository : IGenericRepository<PhieuTraHang>
     {
         IEnumerable<PhieuTraHang> GetByPhieuNhap(string maPhieuNhap);
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface IKhachHangRepository : IGenericRepository<KhachHang>
+    public interface IKhachHangRepository : IGenericRepository<KhachHang>
     {
         KhachHang GetBySDT(string sdt);
     }

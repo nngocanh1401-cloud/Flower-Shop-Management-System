@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> where T : class
     {
         IEnumerable<T> GetAll();
         T GetById(object id);
