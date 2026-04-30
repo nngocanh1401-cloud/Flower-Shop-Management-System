@@ -70,45 +70,64 @@ BEGIN
     SET MaTrangThai = @MaTrangThai
     WHERE MaDH = @MaDH
 END
-------------------------
--- TEST THÊM ĐƠN HÀNG --
-------------------------
+------------------------------
+-- TEST CẬP NHẬT TRẠNG THÁI --
+------------------------------
 --CapNhatTrangThai
 EXEC CapNhatTrangThai 'DH001',3
 SELECT * FROM TrangThai
 
 -------------------------------------------------------
-
 -- ==============
--- = XoaDonHang =
+-- = HuyDonHang =
 -- ==============
 GO
-CREATE PROCEDURE XoaDonHang
+ALTER PROCEDURE HuyDonHang
     @MaDH NVARCHAR(10)
 AS
 BEGIN
     BEGIN TRANSACTION
-
     BEGIN TRY
-        DELETE FROM ChiTietDonHang WHERE MaDH = @MaDH
-        DELETE FROM DonHang WHERE MaDH = @MaDH
+
+         -- Check tồn tại
+        IF NOT EXISTS (SELECT 1 FROM DonHang WHERE MaDH = @MaDH)
+        BEGIN
+            THROW 50001, N'Đơn hàng không tồn tại', 1;
+        END
+
+        -- Check đã huỷ chưa
+        IF (SELECT MaTrangThai FROM DonHang WHERE MaDH = @MaDH) = 4
+        BEGIN
+            THROW 50002, N'Đơn hàng đã huỷ trước đó', 1;
+        END
+
+        -- Hoàn kho
+        UPDATE sp
+        SET sp.SoLuongTon = sp.SoLuongTon + ct.SoLuong
+        FROM SanPham sp
+        JOIN ChiTietDonHang ct ON sp.MaSP = ct.MaSP
+        WHERE ct.MaDH = @MaDH
+
+		--update trạng thái
+		UPDATE DonHang
+		SET MaTrangThai = 4
+		WHERE MaDH = @MaDH;
 
         COMMIT
     END TRY
-
     BEGIN CATCH
-        ROLLBACK
-        PRINT ERROR_MESSAGE()
+        ROLLBACK;
+       THROW;
     END CATCH
 END
 ------------------------
--- TEST XOÁ ĐƠN HÀNG --
+-- TEST HỦY ĐƠN HÀNG --
 ------------------------
-EXEC XoaDonHang 'DH040'
+EXEC HuyDonHang 'DH009'
 --check
 SELECT * FROM DonHang
 SELECT * FROM ChiTietDonHang
-SELECT * FROM PhieuNhapHang
+SELECT * FROM SanPham
 -----------------------------------------------------
 
 -- =================
@@ -215,7 +234,7 @@ AFTER INSERT
 AS
 BEGIN
     UPDATE sp
-    SET SoLuongTon = SoLuongTon + i.SoLuong
+    SET SoLuongTon = SoLuongTon - i.SoLuong
     FROM SanPham sp
     JOIN inserted i ON sp.MaSP = i.MaSP
 END
