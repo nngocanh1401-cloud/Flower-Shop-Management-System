@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface IVoucherRepository : IGenericRepository<Voucher>
+    public interface IVoucherRepository : IGenericRepository<Voucher>
     {
         // Kiểm tra xem mã voucher còn hạn và còn số lượng không
         bool IsValid(string maVoucher);

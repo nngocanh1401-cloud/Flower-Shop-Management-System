@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface IDanhMucRepository : IGenericRepository<DanhMuc>
+    public interface IDanhMucRepository : IGenericRepository<DanhMuc>
     {
         IEnumerable<DanhMuc> GetDanhMucCon(string maDMCha);
     }

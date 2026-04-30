@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface IPhieuNhapHangRepository : IGenericRepository<PhieuNhapHang>
+    public interface IPhieuNhapHangRepository : IGenericRepository<PhieuNhapHang>
     {
         IEnumerable<PhieuNhapHang> GetByDateRange(DateTime tuNgay, DateTime denNgay);
         IEnumerable<PhieuNhapHang> GetByNhaCungCap(string maNCC);

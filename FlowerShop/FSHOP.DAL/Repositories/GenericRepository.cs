@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Repositories
 {
-    internal interface GenericRepository
+    public interface GenericRepository
     {
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FSHOP.DAL.Interfaces
 {
-    internal interface INhaCungCapRepository : IGenericRepository<NhaCungCap>
+    public interface INhaCungCapRepository : IGenericRepository<NhaCungCap>
     {
         IEnumerable<NhaCungCap> SearchByName(string tenNCC);
         NhaCungCap GetByMaSoThue(string maSoThue);
