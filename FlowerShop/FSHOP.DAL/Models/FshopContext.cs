@@ -40,6 +40,7 @@ public partial class FshopContext : DbContext
     public virtual DbSet<TrangThai> TrangThais { get; set; }
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
+    public virtual DbSet<VwBaoCaoSanPham> VwBaoCaoSanPhams { get; set; }
 
     public virtual DbSet<VwChiTietDonHang> VwChiTietDonHangs { get; set; }
 
@@ -53,6 +54,12 @@ public partial class FshopContext : DbContext
     //{
     //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-50HKF50\\SQLEXPRESS01;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
     //}
+
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-GQUJ66B\\SQLEXPRESS;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
+    //}
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -412,6 +419,8 @@ public partial class FshopContext : DbContext
         });
 
         OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<VwBaoCaoSanPham>().HasNoKey().ToView("BaoCaoSanPham");
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FSHOP.DAL.Repositories
 {
@@ -19,9 +20,7 @@ namespace FSHOP.DAL.Repositories
 
         public IEnumerable<SanPham> TimKiem(string keyword)
         {
-            return _dbSet
-                .Where(sp => sp.TenSp.Contains(keyword))
-                .ToList();
+            return _dbSet.Where(sp => sp.TenSp.Contains(keyword)).ToList();
         }
     }
 }
