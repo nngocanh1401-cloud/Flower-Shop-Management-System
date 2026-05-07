@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FSHOP.Common.DTO.Kho
 {
-    internal class NhaCungCapDTO
+    public class NhaCungCapDTO
     {
         public string MaNCC { get; set; }
         public string TenNCC { get; set; }

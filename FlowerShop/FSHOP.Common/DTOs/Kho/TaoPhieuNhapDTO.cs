@@ -5,7 +5,7 @@ using System.Text;
 namespace FSHOP.Common.DTO.Kho
 {
     //Nhận dữ liệu từ form tạo phiếu
-    internal class TaoPhieuNhapDTO
+    public class TaoPhieuNhapDTO
     {
         // Phần ghi vào bảng PhieuNhapHang
         public string MaNCC { get; set; }

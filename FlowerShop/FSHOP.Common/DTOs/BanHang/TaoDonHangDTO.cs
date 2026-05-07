@@ -5,7 +5,7 @@ using System.Text;
 namespace FSHOP.Common.DTO.BanHang
 {
     //Dùng khi khách bấm nút "Thanh Toán" gửi cục dữ liệu xuống
-    internal class TaoDonHangDTO
+    public class TaoDonHangDTO
     {
         // Phần ghi vào bảng DonHang
         public string MaKH { get; set; }

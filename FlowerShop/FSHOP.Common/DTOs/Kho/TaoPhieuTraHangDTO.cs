@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FSHOP.Common.DTO.Kho
 {
-    internal class TaoPhieuTraHangDTO
+    public class TaoPhieuTraHangDTO
     {
         // Phần ghi vào bảng PhieuTraHang
         public string MaPhieuNhap { get; set; }

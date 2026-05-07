@@ -41,15 +41,24 @@ public partial class FshopContext : DbContext
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-50HKF50\\SQLEXPRESS01;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
+    public virtual DbSet<VwChiTietDonHang> VwChiTietDonHangs { get; set; }
+
+    public virtual DbSet<VwDoanhThuTheoThang> VwDoanhThuTheoThangs { get; set; }
+
+    public virtual DbSet<VwTonKhoSanPham> VwTonKhoSanPhams { get; set; }
+
+    public virtual DbSet<VwTopSanPhamBanChay> VwTopSanPhamBanChays { get; set; }
+
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-50HKF50\\SQLEXPRESS01;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
+    //}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ChiTietDonHang>(entity =>
         {
-            entity.HasKey(e => new { e.MaDh, e.MaSp }).HasName("PK__ChiTietD__F557D6E04242E95A");
+            entity.HasKey(e => new { e.MaDh, e.MaSp }).HasName("PK__ChiTietD__F557D6E058DD3C98");
 
             entity.ToTable("ChiTietDonHang");
 
@@ -74,7 +83,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<ChiTietNhapHang>(entity =>
         {
-            entity.HasKey(e => new { e.MaPhieuNhap, e.MaSp }).HasName("PK__ChiTietN__C602BFBAE5687038");
+            entity.HasKey(e => new { e.MaPhieuNhap, e.MaSp }).HasName("PK__ChiTietN__C602BFBAD58B821A");
 
             entity.ToTable("ChiTietNhapHang");
 
@@ -97,7 +106,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<ChiTietTraHang>(entity =>
         {
-            entity.HasKey(e => new { e.MaPhieuTra, e.MaSp }).HasName("PK__ChiTietT__CFFA5AC76C6FE742");
+            entity.HasKey(e => new { e.MaPhieuTra, e.MaSp }).HasName("PK__ChiTietT__CFFA5AC76E3D2459");
 
             entity.ToTable("ChiTietTraHang");
 
@@ -120,7 +129,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<DanhMuc>(entity =>
         {
-            entity.HasKey(e => e.MaDm).HasName("PK__DanhMuc__2725866E366B4AD0");
+            entity.HasKey(e => e.MaDm).HasName("PK__DanhMuc__2725866E0318305A");
 
             entity.ToTable("DanhMuc");
 
@@ -142,7 +151,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<DonHang>(entity =>
         {
-            entity.HasKey(e => e.MaDh).HasName("PK__DonHang__2725866145B1203C");
+            entity.HasKey(e => e.MaDh).HasName("PK__DonHang__272586614B67028F");
 
             entity.ToTable("DonHang");
 
@@ -181,7 +190,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<KhachHang>(entity =>
         {
-            entity.HasKey(e => e.MaKh).HasName("PK__KhachHan__2725CF1EF3F4D8E0");
+            entity.HasKey(e => e.MaKh).HasName("PK__KhachHan__2725CF1E5BBE6503");
 
             entity.ToTable("KhachHang");
 
@@ -199,7 +208,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<NhaCungCap>(entity =>
         {
-            entity.HasKey(e => e.MaNcc).HasName("PK__NhaCungC__3A185DEB8D76858F");
+            entity.HasKey(e => e.MaNcc).HasName("PK__NhaCungC__3A185DEBCD8A6312");
 
             entity.ToTable("NhaCungCap");
 
@@ -219,7 +228,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<PhieuNhapHang>(entity =>
         {
-            entity.HasKey(e => e.MaPhieuNhap).HasName("PK__PhieuNha__1470EF3B0652A29C");
+            entity.HasKey(e => e.MaPhieuNhap).HasName("PK__PhieuNha__1470EF3BFCD067EA");
 
             entity.ToTable("PhieuNhapHang");
 
@@ -245,7 +254,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<PhieuTraHang>(entity =>
         {
-            entity.HasKey(e => e.MaPhieuTra).HasName("PK__PhieuTra__1D880A46AF745644");
+            entity.HasKey(e => e.MaPhieuTra).HasName("PK__PhieuTra__1D880A46476823FD");
 
             entity.ToTable("PhieuTraHang");
 
@@ -267,7 +276,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<PhuongThucThanhToan>(entity =>
         {
-            entity.HasKey(e => e.MaPttt).HasName("PK__PhuongTh__B30A2802E412F486");
+            entity.HasKey(e => e.MaPttt).HasName("PK__PhuongTh__B30A2802A2F2570A");
 
             entity.ToTable("PhuongThucThanhToan");
 
@@ -281,7 +290,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<SanPham>(entity =>
         {
-            entity.HasKey(e => e.MaSp).HasName("PK__SanPham__2725081C9A894217");
+            entity.HasKey(e => e.MaSp).HasName("PK__SanPham__2725081CCD599FE4");
 
             entity.ToTable("SanPham");
 
@@ -303,7 +312,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<TrangThai>(entity =>
         {
-            entity.HasKey(e => e.MaTrangThai).HasName("PK__TrangTha__AADE4138104ECA61");
+            entity.HasKey(e => e.MaTrangThai).HasName("PK__TrangTha__AADE4138070CE2D4");
 
             entity.ToTable("TrangThai");
 
@@ -317,7 +326,7 @@ public partial class FshopContext : DbContext
 
         modelBuilder.Entity<Voucher>(entity =>
         {
-            entity.HasKey(e => e.MaVoucher).HasName("PK__Voucher__0AAC5B11F1D9D997");
+            entity.HasKey(e => e.MaVoucher).HasName("PK__Voucher__0AAC5B11851A9AF1");
 
             entity.ToTable("Voucher");
 
@@ -331,6 +340,75 @@ public partial class FshopContext : DbContext
             entity.Property(e => e.NgayKt).HasColumnName("NgayKT");
             entity.Property(e => e.SoLuongDaDung).HasDefaultValue(0);
             entity.Property(e => e.TenVoucher).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<VwChiTietDonHang>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_ChiTietDonHang");
+
+            entity.Property(e => e.DonGia).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MaDh)
+                .HasMaxLength(10)
+                .HasColumnName("MaDH");
+            entity.Property(e => e.NgayDat).HasColumnType("datetime");
+            entity.Property(e => e.PhuongThucThanhToan).HasMaxLength(50);
+            entity.Property(e => e.Sdt)
+                .HasMaxLength(10)
+                .HasColumnName("SDT");
+            entity.Property(e => e.TenKh)
+                .HasMaxLength(100)
+                .HasColumnName("TenKH");
+            entity.Property(e => e.TenSp)
+                .HasMaxLength(100)
+                .HasColumnName("TenSP");
+            entity.Property(e => e.TenTrangThai).HasMaxLength(100);
+            entity.Property(e => e.TenVoucher).HasMaxLength(100);
+            entity.Property(e => e.ThanhTien).HasColumnType("decimal(29, 2)");
+            entity.Property(e => e.TongTien).HasColumnType("decimal(18, 2)");
+        });
+
+        modelBuilder.Entity<VwDoanhThuTheoThang>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_DoanhThuTheoThang");
+
+            entity.Property(e => e.TongDoanhThu).HasColumnType("decimal(38, 2)");
+        });
+
+        modelBuilder.Entity<VwTonKhoSanPham>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_TonKhoSanPham");
+
+            entity.Property(e => e.DanhMuc).HasMaxLength(100);
+            entity.Property(e => e.DonGia).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MaSp)
+                .HasMaxLength(10)
+                .HasColumnName("MaSP");
+            entity.Property(e => e.TenSp)
+                .HasMaxLength(100)
+                .HasColumnName("TenSP");
+            entity.Property(e => e.TrangThaiTon).HasMaxLength(8);
+        });
+
+        modelBuilder.Entity<VwTopSanPhamBanChay>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_TopSanPhamBanChay");
+
+            entity.Property(e => e.DanhMuc).HasMaxLength(100);
+            entity.Property(e => e.MaSp)
+                .HasMaxLength(10)
+                .HasColumnName("MaSP");
+            entity.Property(e => e.TenSp)
+                .HasMaxLength(100)
+                .HasColumnName("TenSP");
+            entity.Property(e => e.TongDoanhThu).HasColumnType("decimal(38, 2)");
         });
 
         OnModelCreatingPartial(modelBuilder);

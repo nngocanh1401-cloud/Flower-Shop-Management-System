@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FSHOP.Common.DTO.BanHang
+namespace FSHOP.Common.DTO.Kho
 {
-    internal class ChiTietDonHangDTO
+    public class ChiTietPhieuTraDTO
     {
         public string MaSP { get; set; }
         public int SoLuong { get; set; }

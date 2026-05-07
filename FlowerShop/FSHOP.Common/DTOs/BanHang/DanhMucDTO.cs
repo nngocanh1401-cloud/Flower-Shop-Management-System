@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FSHOP.Common.DTO.BanHang
 {
-    internal class DanhMucDTO
+    public class DanhMucDTO
     {
         public string MaDM { get; set; }
         public string TenDM { get; set; }

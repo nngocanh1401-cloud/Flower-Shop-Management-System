@@ -5,7 +5,7 @@ using System.Text;
 namespace FSHOP.Common.DTO.BanHang
 {
     //Dùng để hiển thị lên lưới sản phẩm
-    internal class SanPhamDTO
+    public class SanPhamDTO
     {
         public string MaSP { get; set; }
         public string TenSP { get; set; }

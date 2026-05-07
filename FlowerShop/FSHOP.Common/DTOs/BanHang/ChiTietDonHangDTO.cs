@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FSHOP.Common.DTO.Kho
+namespace FSHOP.Common.DTO.BanHang
 {
-    internal class ChiTietPhieuNhapDTO
+    public class ChiTietDonHangDTO
     {
         public string MaSP { get; set; }
         public int SoLuong { get; set; }
         public decimal DonGia { get; set; }
-        public DateTime? HanSuDung { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 namespace FSHOP.Common.DTO.Kho
 {
     //Dùng để xem danh sách phiếu nhập
-    internal class PhieuNhapHangDTO
+    public class PhieuNhapHangDTO
     {
         public string MaPhieuNhap { get; set; }
         public string TenNhaCungCap { get; set; }
