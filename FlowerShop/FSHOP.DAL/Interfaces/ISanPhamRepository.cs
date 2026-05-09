@@ -7,7 +7,8 @@ namespace FSHOP.DAL.Interfaces
 {
     public interface ISanPhamRepository : IGenericRepository<SanPham>
     {
-        IEnumerable<SanPham> GetByDanhMuc(string maDM);
+        IEnumerable<SanPham> GetByid(string id);
         IEnumerable<SanPham> TimKiem(string keyword);
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace FSHOP.DAL.Models;
 
@@ -13,7 +14,9 @@ public partial class ChiTietDonHang
 
     public decimal DonGia { get; set; }
 
-    public virtual DonHang MaDhNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual DonHang MaDhNavigation { get; set; }
 
-    public virtual SanPham MaSpNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual SanPham MaSpNavigation { get; set; }
 }

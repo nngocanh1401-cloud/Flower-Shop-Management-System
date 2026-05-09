@@ -16,7 +16,8 @@ namespace FSHOP.BLL
 
         public DonHangService(
             ISanPhamRepository sanPhamRepo,
-            IDonHangRepository donHangRepo)
+            IDonHangRepository donHangRepo
+            )
         {
             _sanPhamRepo = sanPhamRepo;
             _donHangRepo = donHangRepo;
@@ -49,6 +50,19 @@ namespace FSHOP.BLL
             _donHangRepo.Add(dh);
 
             return "Đặt hàng thành công";
+        }
+        public string CapNhatTrangThai(int maDH, string trangThai)
+        {
+            var dh = _donHangRepo.GetById(maDH);
+
+            if (dh == null)
+                return "Không tìm thấy đơn hàng";
+
+            dh.MaTrangThaiNavigation.TenTrangThai = trangThai;
+
+            _donHangRepo.Update(dh);
+
+            return "Cập nhật trạng thái thành công";
         }
     }
 }

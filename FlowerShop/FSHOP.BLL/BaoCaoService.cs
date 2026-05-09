@@ -18,7 +18,7 @@ namespace FSHOP.BLL
             _baoCaoRepo = baoCaoRepo;
         }
 
-        public List<BaoCaoSanPham> LayBaoCaoSanPham()
+        public List<VwBaoCaoSanPham> LayBaoCaoSanPham()
         {
             return _baoCaoRepo.GetBaoCao();
         }

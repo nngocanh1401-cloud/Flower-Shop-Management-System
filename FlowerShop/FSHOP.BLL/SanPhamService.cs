@@ -40,22 +40,23 @@ namespace FSHOP.BLL
 
         public List<SanPham> TimKiemSanPham(string keyword)
         {
-            // 🔥 1. GỌI DAL
+            // 1. GỌI DAL
             var list = _sanPhamrepo.GetAll();
 
-            // 🔥 2. XỬ LÝ LINQ (BLL)
-            return list
-                .Where(x => x.TenSp != null &&
-                            x.TenSp.ToLower().Contains(keyword.ToLower()))
-                .ToList();
+            // 2. XỬ LÝ LINQ (BLL)
+            return list.Where(x => x.TenSp != null &&
+            x.TenSp.ToLower().Contains(keyword.ToLower())).ToList();
         }
         public List<SanPham> LocGia(decimal min, decimal max)
         {
             var list = _sanPhamrepo.GetAll();
 
-            return list
-                .Where(x => x.DonGia >= min && x.DonGia <= max)
-                .ToList();
+            return list.Where(x => x.DonGia >= min && x.DonGia <= max).ToList();
         }
+        public SanPham GetById(string id)
+        {
+            return _sanPhamrepo.GetById(id);
+        }
+
     }
 }

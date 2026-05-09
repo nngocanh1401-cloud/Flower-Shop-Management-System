@@ -9,9 +9,9 @@ using FSHOP.DAL.Repositories;
 
 namespace FSHOP.DAL.Interfaces
 {
-    public interface IBaoCaoRepository : IGenericRepository<BaoCaoSanPham>
+    public interface IBaoCaoRepository : IGenericRepository<VwBaoCaoSanPham>
     {
-        List<BaoCaoSanPham> GetBaoCao();
+        List<VwBaoCaoSanPham> GetBaoCao();
     }
 }
 

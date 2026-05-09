@@ -9,7 +9,24 @@ namespace FSHOP.API.Controllers
     public class SanPhamController : ControllerBase
     {
         private readonly SanPhamService _service;
+        //GetALL
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var result = _service.GetAllSanPham();
+            return Ok(result);
+        }
+        //GetByID
+        [HttpGet("{id}")]
+        public IActionResult GetById(string id)
+        {
+            var result = _service.GetById(id);
 
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
         public SanPhamController(SanPhamService service)
         {
             _service = service;

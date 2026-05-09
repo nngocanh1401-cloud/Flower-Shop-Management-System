@@ -11,6 +11,5 @@ namespace FSHOP.DAL.Models
         public int MaSp { get; set; }
         public string TenSp { get; set; } = string.Empty;
         public int SoLuongTon { get; set; }
-        public decimal DonGia { get; set; }
     }
 }

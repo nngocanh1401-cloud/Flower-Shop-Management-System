@@ -9,15 +9,15 @@ using FSHOP.DAL.Repositories;
 
 namespace FSHOP.DAL.Repositories
 {
-    public class BaoCaoRepository : GenericRepository<BaoCaoSanPham>, IBaoCaoRepository
+    public class BaoCaoRepository : GenericRepository<VwBaoCaoSanPham>, IBaoCaoRepository
     {
         public BaoCaoRepository(FshopContext context) : base(context)
         {
         }
 
-        public List<BaoCaoSanPham> GetBaoCao()
+        public List<VwBaoCaoSanPham> GetBaoCao()
         {
-            return _context.BaoCaoSanPhams.ToList();
+            return _context.VwBaoCaoSanPhams.ToList();
         }
     }
 }

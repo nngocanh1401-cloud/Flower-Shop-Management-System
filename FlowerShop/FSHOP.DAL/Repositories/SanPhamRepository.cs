@@ -18,6 +18,11 @@ namespace FSHOP.DAL.Repositories
             return _dbSet.Where(sp => sp.MaDm == maDM).ToList();
         }
 
+        public IEnumerable<SanPham> GetByid(string id)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<SanPham> TimKiem(string keyword)
         {
             return _dbSet.Where(sp => sp.TenSp.Contains(keyword)).ToList();
