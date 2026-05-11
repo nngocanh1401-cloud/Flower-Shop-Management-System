@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSHOP.DAL.Models;
 
@@ -22,13 +23,12 @@ public partial class DonHang
 
     public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
 
-    public virtual KhachHang MaKhNavigation { get; set; } = null!;
+    [ForeignKey("MaKh")]
+    public virtual KhachHang MaKhNavigation { get; set; }
 
-    [JsonIgnore]
-    public virtual PhuongThucThanhToan MaPtttNavigation { get; set; } = null!;
+    [ForeignKey("MaTrangThai")]
+    public virtual TrangThai MaTrangThaiNavigation { get; set; }
 
-    [JsonIgnore]
-    public virtual KhachHang MaKHNavigation { get; set; }
 
     //    Hướng A: Nếu bạn muốn lưu mã trạng thái(ví dụ: "01", "02")
     //Thông thường trong bảng DonHang sẽ có một cột khóa ngoại là MaTrangThai.Bạn hãy kiểm tra xem trong file DonHang.cs có thuộc tính nào tên là MaTrangThai không.Nếu có, hãy sửa code ở DonHangService.cs thành:
@@ -45,7 +45,7 @@ public partial class DonHang
     [JsonIgnore]
     public virtual Voucher? MaVoucherNavigation { get; set; }
 
-    [JsonIgnore]
-    public virtual TrangThai MaTrangThaiNavigation { get; set; }
+    [ForeignKey("MaPttt")]
+    public virtual PhuongThucThanhToan MaPtttNavigation { get; set; }
 }
 

@@ -6,8 +6,7 @@ namespace FSHOP.Common.DTO.BanHang
 {
     public class ChiTietDonHangDTO
     {
-        public string MaSP { get; set; }
+        public string MaSp { get; set; }
         public int SoLuong { get; set; }
-        public decimal DonGia { get; set; }
     }
 }

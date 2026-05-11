@@ -8,9 +8,10 @@ namespace FSHOP.Common.DTO.BanHang
     public class TaoDonHangDTO
     {
         // Phần ghi vào bảng DonHang
+        public string MaDH { get; set; }
         public string MaKH { get; set; }
         public int MaPTTT { get; set; }
-        public string MaVoucher { get; set; }
+        public string? MaVoucher { get; set; }
 
         // Phần ghi vào bảng ChiTietDonHang
         public List<ChiTietDonHangDTO> DanhSachChiTiet { get; set; }

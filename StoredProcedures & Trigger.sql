@@ -21,17 +21,31 @@ BEGIN
 
 		-- Check tồn kho
         IF (SELECT SoLuongTon FROM SanPham WHERE MaSP = @MaSP) < @SoLuong
-        BEGIN
-            RAISERROR(N'Không đủ hàng trong kho',16,1)
-        END
+		BEGIN
+			RAISERROR(N'Không đủ hàng trong kho',16,1)
+			ROLLBACK TRANSACTION
+			RETURN
+		END
 
 		-- Thêm đơn hàng
-        INSERT INTO DonHang(MaDH, MaKH, MaPTTT, MaVoucher, MaTrangThai, NgayDat, TongTien)
-        VALUES (@MaDH, @MaKH, @MaPTTT, @MaVoucher, @MaTrangThai, GETDATE(), 0)
+        IF NOT EXISTS (SELECT 1 FROM DonHang WHERE MaDH = @MaDH)
+		BEGIN
+			INSERT INTO DonHang(MaDH, MaKH, MaPTTT, MaVoucher, MaTrangThai, NgayDat, TongTien)
+			VALUES (@MaDH, @MaKH, @MaPTTT, @MaVoucher, @MaTrangThai, GETDATE(), 0)
+		END
 
 		-- ChiTietDonHang
-		INSERT INTO ChiTietDonHang(MaDH, MaSP, SoLuong, DonGia)
-		VALUES (@MaDH, @MaSP, @SoLuong, @DonGia)
+		IF EXISTS (
+			SELECT 1
+			FROM ChiTietDonHang
+			WHERE MaDH = @MaDH
+			AND MaSP = @MaSP
+		)
+		BEGIN
+			RAISERROR(N'Sản phẩm đã tồn tại trong đơn hàng',16,1)
+			ROLLBACK TRANSACTION
+			RETURN
+		END
 
 		-- Cập nhật tổng tiền
         UPDATE DonHang
@@ -61,7 +75,7 @@ SELECT * FROM SanPham
 -- = CapNhatTrangThai =
 -- ====================
 GO
-CREATE PROCEDURE CapNhatTrangThai
+ALTER PROCEDURE CapNhatTrangThai
     @MaDH NVARCHAR(10),
     @MaTrangThai INT
 AS
@@ -366,5 +380,56 @@ BEGIN
     JOIN inserted i ON sp.MaSP = i.MaSP
 END
 
+SELECT name FROM sys.triggers
+SELECT * FROM TrangThai
+SELECT * FROM DonHang
+SELECT * FROM SanPham
+SELECT name, parent_class_desc FROM sys.triggers
+EXEC sp_configure 'nested triggers'
+SELECT 
+    t.name AS TriggerName,
+    OBJECT_NAME(t.parent_id) AS TableName
+FROM sys.triggers t
 
+-- 1. Xem toàn bộ trigger trên DB
+SELECT 
+    t.name AS TriggerName,
+    OBJECT_NAME(t.parent_id) AS TableName
+FROM sys.triggers t
+ORDER BY TableName
+GO
 
+-- 2. Xem trigger của bảng SanPham
+SELECT name
+FROM sys.triggers
+WHERE parent_id = OBJECT_ID('SanPham')
+GO
+
+-- 3. Xem code trigger CapNhatTonKho
+sp_helptext 'CapNhatTonKho'
+GO
+
+-- 4. Xem code trigger HoanTonKho
+sp_helptext 'HoanTonKho'
+GO
+
+-- 5. Xem code trigger CapNhatTonKhoNhap
+sp_helptext 'CapNhatTonKhoNhap'
+GO
+
+-- 6. Xem recursive trigger có bật không
+SELECT name, is_recursive_triggers_on
+FROM sys.databases
+WHERE name = 'FShop'
+GO
+
+-- 7. Xem nested trigger
+EXEC sp_configure 'nested triggers'
+GO
+SELECT *
+FROM ChiTietDonHang
+WHERE MaDH = 'DH010'
+AND MaSP = 'SP008'
+DELETE FROM ChiTietDonHang
+WHERE MaDH = 'DH010'
+AND MaSP = 'SP008'

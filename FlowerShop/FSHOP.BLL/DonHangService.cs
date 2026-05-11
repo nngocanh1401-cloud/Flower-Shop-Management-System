@@ -11,56 +11,45 @@ namespace FSHOP.BLL
 {
     public class DonHangService
     {
-        private readonly ISanPhamRepository _sanPhamRepo;
         private readonly IDonHangRepository _donHangRepo;
 
-        public DonHangService(
-            ISanPhamRepository sanPhamRepo,
-            IDonHangRepository donHangRepo
-            )
+        public DonHangService(IDonHangRepository donHangRepo)
         {
-            _sanPhamRepo = sanPhamRepo;
             _donHangRepo = donHangRepo;
-
         }
+
+        /// <summary>Gộp dòng trùng MaSP; tạo đơn bằng EF (tránh EXEC ThemDonHang + trigger lồng 32 tầng).</summary>
         public string TaoDonHang(DonHang dh)
         {
-            // 1. KIỂM TRA TỒN KHO TRƯỚC CHO TẤT CẢ SẢN PHẨM
-            foreach (var ct in dh.ChiTietDonHangs)
-            {
-                var sp = _sanPhamRepo.GetById(ct.MaSp);
-                if (sp == null)
-                    return $"Sản phẩm mã {ct.MaSp} không tồn tại";
+            if (dh.ChiTietDonHangs == null || !dh.ChiTietDonHangs.Any())
+                return "Danh sách sản phẩm không được rỗng";
 
-                if (sp.SoLuongTon < ct.SoLuong)
-                    return $"Sản phẩm {sp.TenSp} không đủ tồn kho";
-            }
+            var merged = dh.ChiTietDonHangs
+                .GroupBy(c => c.MaSp)
+                .Select(g => new ChiTietDonHang
+                {
+                    MaDh = dh.MaDh,
+                    MaSp = g.Key,
+                    SoLuong = g.Sum(x => x.SoLuong),
+                    DonGia = 0
+                })
+                .ToList();
+            dh.ChiTietDonHangs = merged;
 
-            // 2. NẾU TẤT CẢ ĐỀU ĐỦ HÀNG -> TIẾN HÀNH TRỪ KHO VÀ LƯU
-            foreach (var ct in dh.ChiTietDonHangs)
-            {
-                var sp = _sanPhamRepo.GetById(ct.MaSp);
-
-                // Cập nhật số lượng tồn
-                sp.SoLuongTon -= ct.SoLuong;
-                _sanPhamRepo.Update(sp);
-            }
-
-            // 3. LƯU ĐƠN HÀNG CHÍNH (HEADER)
-            _donHangRepo.Add(dh);
-
-            return "Đặt hàng thành công";
+            return _donHangRepo.TaoDonHangBangEf(dh);
         }
-        public string CapNhatTrangThai(int maDH, string trangThai)
+        public string CapNhatTrangThai(string maDH, int maTrangThai)
         {
             var dh = _donHangRepo.GetById(maDH);
 
             if (dh == null)
                 return "Không tìm thấy đơn hàng";
 
-            dh.MaTrangThaiNavigation.TenTrangThai = trangThai;
+            dh.MaTrangThai = maTrangThai;
 
             _donHangRepo.Update(dh);
+
+            _donHangRepo.Save();
 
             return "Cập nhật trạng thái thành công";
         }

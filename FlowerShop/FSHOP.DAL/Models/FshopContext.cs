@@ -70,7 +70,7 @@ public partial class FshopContext : DbContext
             entity.ToTable("ChiTietDonHang");
 
             entity.Property(e => e.MaDh)
-                .HasMaxLength(10)
+                .HasMaxLength(1000)
                 .HasColumnName("MaDH");
             entity.Property(e => e.MaSp)
                 .HasMaxLength(10)

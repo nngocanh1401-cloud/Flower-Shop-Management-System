@@ -47,9 +47,9 @@ INSERT INTO DanhMuc VALUES
 
 -- Voucher
 INSERT INTO Voucher VALUES
-('VC001', N'Giảm 10% đơn từ 500k', '2025-01-01','2025-12-31', 10,    'PERCENT', 500000,  100, 0), -- giam phan tram/so tien
-('VC002', N'Giảm 50k đơn từ 300k', '2025-01-01','2025-12-31', 50000, 'FIXED',   300000,  50,  0); -- giam tien/so tien
-
+('VC003', N'Giảm 10% đơn từ 500k', '2024-01-01','2030-12-31', 10,    'PERCENT', 500000,  100, 0), -- giam phan tram/so tien
+('VC004', N'Giảm 50k đơn từ 300k', '2024-01-01','2030-12-31', 50000, 'FIXED',   300000,  50,  0); -- giam tien/so tien
+Select * from Voucher
 
 -- SanPham
 INSERT INTO SanPham VALUES

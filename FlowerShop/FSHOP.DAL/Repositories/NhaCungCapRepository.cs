@@ -156,5 +156,8 @@ namespace FSHOP.DAL.Repositories
 
             return null;
         }
+        public void Save()
+        {
+        }
     }
 }

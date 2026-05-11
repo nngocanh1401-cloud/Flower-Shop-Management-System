@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FSHOP.DAL.Repositories
 {
@@ -22,13 +23,28 @@ namespace FSHOP.DAL.Repositories
         public IEnumerable<T> GetAll() => _dbSet.ToList();
         public T GetById(object id) => _dbSet.Find(id);
 
-        public void Add(T entity) { _dbSet.Add(entity); _context.SaveChanges(); }
-        public void Update(T entity) { _dbSet.Attach(entity); 
-            _context.Entry(entity).State = EntityState.Modified; _context.SaveChanges(); }
+        public void Add(T entity)
+        {
+            _dbSet.Add(entity);
+        }
+        public void Update(T entity)
+        {
+            _dbSet.Attach(entity);
+
+            _context.Entry(entity).State = EntityState.Modified;
+        }
         public void Delete(object id)
         {
             var entity = _dbSet.Find(id);
-            if (entity != null) { _dbSet.Remove(entity); _context.SaveChanges(); }
+
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+            }
+        }
+        public void Save()
+        {
+            _context.SaveChanges();
         }
     }
 }

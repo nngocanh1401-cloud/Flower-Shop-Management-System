@@ -11,5 +11,6 @@ namespace FSHOP.DAL.Interfaces
         void Add(T entity);
         void Update(T entity);
         void Delete(object id);
+        void Save();
     }
 }
