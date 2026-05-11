@@ -24,7 +24,7 @@ namespace FSHOP.API.Controllers
         [HttpGet("doanhthu")]
         public IActionResult DoanhThu()
         {
-            var data = _service.LayBaoCaoSanPham();
+            var data = _service.LayDoanhThu();
 
             return Ok(data);
         }
@@ -33,8 +33,15 @@ namespace FSHOP.API.Controllers
         [HttpGet("tonkho")]
         public IActionResult TonKho()
         {
-            var data = _service.LayBaoCaoSanPham();
+            var data = _service.LayBaoCaoTonKho();
 
+            return Ok(data);
+        }
+        // GET api/baocao/top10
+        [HttpGet("top10")]
+        public IActionResult GetTop10()
+        {
+            var data = _service.LayTop10();
             return Ok(data);
         }
     }

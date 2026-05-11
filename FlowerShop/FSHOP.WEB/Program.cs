@@ -18,6 +18,7 @@ builder.Services.AddDbContext<FshopContext>(options =>
     options.UseSqlServer(connStr));
 
 builder.Services.AddScoped<ISanPhamRepository, SanPhamRepository>();
+builder.Services.AddScoped<IDanhMucRepository, DanhMucRepository>();
 
 // ADO.NET — truyền connection string
 builder.Services.AddScoped<INhaCungCapRepository>(

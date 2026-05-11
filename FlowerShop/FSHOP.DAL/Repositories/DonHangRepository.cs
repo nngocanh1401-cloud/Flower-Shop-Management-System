@@ -14,18 +14,77 @@ namespace FSHOP.DAL.Repositories
     {
         public DonHangRepository(FshopContext context) : base(context) { }
 
-        public IEnumerable<DonHang> GetByKhachHang(string maKH)
+        private IQueryable<DonHang> BuildDonHangQuery()
         {
             return _dbSet
-                .Where(dh => dh.MaKh == maKH)
+                .Include(dh => dh.ChiTietDonHangs)
+                    .ThenInclude(ct => ct.MaSpNavigation)
+                .Include(dh => dh.MaKhNavigation)
+                .Include(dh => dh.MaPtttNavigation)
                 .Include(dh => dh.MaTrangThaiNavigation)
+                .Include(dh => dh.MaVoucherNavigation);
+        }
+
+        public IEnumerable<DonHang> GetDanhSach()
+        {
+            return BuildDonHangQuery()
+                .OrderByDescending(dh => dh.NgayDat)
+                .ToList();
+        }
+
+        public DonHang GetChiTiet(string maDH)
+        {
+            return BuildDonHangQuery()
+                .FirstOrDefault(dh => dh.MaDh == maDH);
+        }
+
+        public IEnumerable<DonHang> GetByKhachHang(string maKH)
+        {
+            return BuildDonHangQuery()
+                .Where(dh => dh.MaKh == maKH)
                 .ToList();
         }
 
         public IEnumerable<DonHang> GetByTrangThai(int maTrangThai)
         {
-            return _dbSet
+            return BuildDonHangQuery()
                 .Where(dh => dh.MaTrangThai == maTrangThai)
+                .ToList();
+        }
+
+        public IEnumerable<DonHang> LocDonHang(string? maKH, int? maTrangThai, int? maPttt, string? maVoucher, DateTime? tuNgay, DateTime? denNgay, string? keyword)
+        {
+            var query = BuildDonHangQuery().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(maKH))
+                query = query.Where(dh => dh.MaKh == maKH);
+
+            if (maTrangThai.HasValue)
+                query = query.Where(dh => dh.MaTrangThai == maTrangThai.Value);
+
+            if (maPttt.HasValue)
+                query = query.Where(dh => dh.MaPttt == maPttt.Value);
+
+            if (!string.IsNullOrWhiteSpace(maVoucher))
+                query = query.Where(dh => dh.MaVoucher == maVoucher);
+
+            if (tuNgay.HasValue)
+            {
+                var from = tuNgay.Value.Date;
+                query = query.Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value.Date >= from);
+            }
+
+            if (denNgay.HasValue)
+            {
+                var to = denNgay.Value.Date;
+                query = query.Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value.Date <= to);
+            }
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+                query = query.Where(dh => dh.MaDh.Contains(keyword));
+
+            return query
+                .OrderByDescending(dh => dh.NgayDat)
                 .ToList();
         }
 
@@ -113,9 +172,167 @@ namespace FSHOP.DAL.Repositories
             }
         }
 
+        public string CapNhatDonHangBangEf(string maDH, DonHang dh)
+        {
+            var donHangHienTai = _context.DonHangs
+                .Include(x => x.ChiTietDonHangs)
+                .FirstOrDefault(x => x.MaDh == maDH);
+
+            if (donHangHienTai == null)
+                return "Không tìm thấy đơn hàng";
+
+            if (dh.ChiTietDonHangs == null || !dh.ChiTietDonHangs.Any())
+                return "Danh sách sản phẩm không được rỗng";
+
+            if (!_context.KhachHangs.Any(k => k.MaKh == dh.MaKh))
+                return $"Khách hàng '{dh.MaKh}' không có trong hệ thống.";
+
+            if (!_context.PhuongThucThanhToans.Any(p => p.MaPttt == dh.MaPttt))
+                return $"Phương thức thanh toán (MaPTTT={dh.MaPttt}) không hợp lệ.";
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                foreach (var chiTietCu in donHangHienTai.ChiTietDonHangs)
+                {
+                    var sanPhamCu = _context.SanPhams.FirstOrDefault(sp => sp.MaSp == chiTietCu.MaSp);
+                    if (sanPhamCu != null)
+                        sanPhamCu.SoLuongTon += chiTietCu.SoLuong;
+                }
+
+                _context.ChiTietDonHangs.RemoveRange(donHangHienTai.ChiTietDonHangs);
+                _context.SaveChanges();
+
+                var merged = dh.ChiTietDonHangs
+                    .GroupBy(c => c.MaSp)
+                    .Select(g => new ChiTietDonHang
+                    {
+                        MaDh = donHangHienTai.MaDh,
+                        MaSp = g.Key,
+                        SoLuong = g.Sum(x => x.SoLuong),
+                        DonGia = 0
+                    })
+                    .ToList();
+
+                decimal tienHang = 0;
+                foreach (var ct in merged)
+                {
+                    var sp = _context.SanPhams.FirstOrDefault(x => x.MaSp == ct.MaSp);
+                    if (sp == null)
+                    {
+                        transaction.Rollback();
+                        return $"Không tìm thấy sản phẩm {ct.MaSp}";
+                    }
+
+                    if (sp.SoLuongTon < ct.SoLuong)
+                    {
+                        transaction.Rollback();
+                        return $"Sản phẩm \"{sp.TenSp}\" không đủ tồn kho (còn {sp.SoLuongTon})";
+                    }
+
+                    ct.DonGia = sp.DonGia;
+                    tienHang += ct.SoLuong * ct.DonGia;
+                    sp.SoLuongTon -= ct.SoLuong;
+                }
+
+                var maVoucherMoi = string.IsNullOrWhiteSpace(dh.MaVoucher) ? null : dh.MaVoucher;
+                decimal giamGia = 0;
+                if (!string.IsNullOrWhiteSpace(maVoucherMoi))
+                {
+                    var voucher = _context.Vouchers.Find(maVoucherMoi);
+                    var today = DateOnly.FromDateTime(DateTime.Today);
+
+                    if (voucher == null)
+                    {
+                        transaction.Rollback();
+                        return "Mã voucher không tồn tại";
+                    }
+
+                    if (today < voucher.NgayBd || today > voucher.NgayKt)
+                    {
+                        transaction.Rollback();
+                        return $"Voucher hết hạn hoặc chưa có hiệu lực (áp dụng từ {voucher.NgayBd:dd/MM/yyyy} đến {voucher.NgayKt:dd/MM/yyyy}).";
+                    }
+
+                    var soLuongDaDung = voucher.SoLuongDaDung ?? 0;
+                    var soLuongConLai = voucher.SoLuong - soLuongDaDung;
+                    var dangDoiVoucher = !string.Equals(donHangHienTai.MaVoucher, maVoucherMoi, StringComparison.OrdinalIgnoreCase);
+
+                    if (dangDoiVoucher && soLuongConLai <= 0)
+                    {
+                        transaction.Rollback();
+                        return "Voucher đã hết lượt sử dụng";
+                    }
+
+                    decimal dieuKien = voucher.DieuKienApDung ?? 0;
+                    if (tienHang < dieuKien)
+                    {
+                        transaction.Rollback();
+                        return $"Đơn chưa đủ điều kiện áp dụng voucher (tối thiểu {dieuKien:N0} đ)";
+                    }
+
+                    if (string.Equals(voucher.LoaiGiam, "PERCENT", StringComparison.OrdinalIgnoreCase))
+                        giamGia = tienHang * voucher.GiaTriGiam / 100;
+                    else
+                        giamGia = voucher.GiaTriGiam;
+                }
+
+                if (!string.IsNullOrWhiteSpace(donHangHienTai.MaVoucher)
+                    && !string.Equals(donHangHienTai.MaVoucher, maVoucherMoi, StringComparison.OrdinalIgnoreCase))
+                {
+                    var voucherCu = _context.Vouchers.Find(donHangHienTai.MaVoucher);
+                    if (voucherCu != null && (voucherCu.SoLuongDaDung ?? 0) > 0)
+                        voucherCu.SoLuongDaDung = (voucherCu.SoLuongDaDung ?? 0) - 1;
+                }
+
+                if (!string.IsNullOrWhiteSpace(maVoucherMoi)
+                    && !string.Equals(donHangHienTai.MaVoucher, maVoucherMoi, StringComparison.OrdinalIgnoreCase))
+                {
+                    var voucherMoi = _context.Vouchers.Find(maVoucherMoi);
+                    if (voucherMoi != null)
+                        voucherMoi.SoLuongDaDung = (voucherMoi.SoLuongDaDung ?? 0) + 1;
+                }
+
+                donHangHienTai.MaKh = dh.MaKh;
+                donHangHienTai.MaPttt = dh.MaPttt;
+                donHangHienTai.MaVoucher = maVoucherMoi;
+                donHangHienTai.TongTien = tienHang - giamGia;
+                if (donHangHienTai.TongTien < 0)
+                    donHangHienTai.TongTien = 0;
+
+                _context.ChiTietDonHangs.AddRange(merged);
+                _context.SaveChanges();
+                transaction.Commit();
+
+                return "Cập nhật đơn hàng thành công";
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return $"Lỗi cập nhật đơn hàng: {FormatDbSaveError(ex)}";
+            }
+        }
+
         /// <summary>Lấy thông báo lỗi SQL (FK, trùng MaDH, …) từ InnerException.</summary>
         private static string FormatDbSaveError(Exception ex)
             => ex.GetBaseException().Message;
+
+        public string HuyDonHangBangEf(string maDH)
+        {
+            var dh = _context.DonHangs.FirstOrDefault(x => x.MaDh == maDH);
+            if (dh == null)
+                return "Không tìm thấy đơn hàng";
+
+            try
+            {
+                HuyDonHang(maDH);
+                return "Hủy đơn hàng thành công";
+            }
+            catch (Exception ex)
+            {
+                return $"Không thể hủy đơn hàng: {FormatDbSaveError(ex)}";
+            }
+        }
 
         public void HuyDonHang(string maDH)
         {

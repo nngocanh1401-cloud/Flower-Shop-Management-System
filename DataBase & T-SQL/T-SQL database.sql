@@ -113,7 +113,7 @@ CREATE TABLE ChiTietNhapHang (
     HanSuDung DATE,
     PRIMARY KEY (MaPhieuNhap, MaSP)
 );
---table PhieuTraHang
+/*--table PhieuTraHang
 CREATE TABLE PhieuTraHang (
     MaPhieuTra NVARCHAR(10) PRIMARY KEY,
     MaPhieuNhap NVARCHAR(10) NOT NULL
@@ -134,7 +134,7 @@ CREATE TABLE ChiTietTraHang (
     SoLuong INT NOT NULL,
     DonGia DECIMAL(18,2) NOT NULL,
     PRIMARY KEY (MaPhieuTra, MaSP)
-);
+);*/
 
 
 -- them seek data

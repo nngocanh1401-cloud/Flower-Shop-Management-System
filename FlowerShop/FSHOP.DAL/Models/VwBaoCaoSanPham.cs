@@ -8,8 +8,14 @@ namespace FSHOP.DAL.Models
 {
     public class VwBaoCaoSanPham
     {
-        public int MaSp { get; set; }
+        public string MaSp { get; set; } = string.Empty;
+
         public string TenSp { get; set; } = string.Empty;
+
         public int SoLuongTon { get; set; }
+
+        public decimal DonGia { get; set; }
+
+        public int TongDaBan { get; set; }
     }
 }

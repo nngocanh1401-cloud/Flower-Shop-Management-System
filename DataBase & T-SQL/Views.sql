@@ -1,3 +1,6 @@
+USE FShop
+GO
+
 -- View 1: Top 10 sản phẩm bán chạy
 CREATE VIEW vw_TopSanPhamBanChay AS
 SELECT TOP 10
@@ -15,7 +18,7 @@ GROUP BY sp.MaSP, sp.TenSP, dm.TenDM
 ORDER BY TongSoBan DESC;
 GO
 
-select * from  vw_TopSanPhamBanChay
+select * from  vw_DoanhThuTheoThang
 
 -- View 2: Doanh thu theo tháng
 CREATE VIEW vw_DoanhThuTheoThang AS
@@ -72,4 +75,30 @@ JOIN SanPham sp                 ON ct.MaSP     = sp.MaSP;
 GO
 select * from  vw_ChiTietDonHang
 
+
+-- View 5: Báo cáo sản phẩm
+CREATE VIEW Vw_BaoCaoSanPham
+AS
+SELECT
+    sp.MaSP,
+    sp.TenSP,
+    sp.SoLuongTon,
+    sp.DonGia,
+    ISNULL(SUM(ct.SoLuong),0) AS TongDaBan
+FROM dbo.SanPham sp
+LEFT JOIN ChiTietDonHang ct
+    ON sp.MaSP = ct.MaSP
+GROUP BY
+    sp.MaSP,
+    sp.TenSP,
+    sp.SoLuongTon,
+    sp.DonGia
+GO
+
 -- ADD HAM TRIGGER DR TINH KHI CO VOUCHER
+USE FShop
+GO
+
+SELECT * FROM ChiTietDonHang
+SELECT TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES

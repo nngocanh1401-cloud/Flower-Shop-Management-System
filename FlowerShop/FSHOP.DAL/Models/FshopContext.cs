@@ -10,8 +10,7 @@ public partial class FshopContext : DbContext
     {
     }
 
-    public FshopContext(DbContextOptions<FshopContext> options)
-        : base(options)
+    public FshopContext(DbContextOptions<FshopContext> options): base(options)
     {
     }
 
@@ -380,7 +379,7 @@ public partial class FshopContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToView("vw_DoanhThuTheoThang");
+                .ToView("vw_DoanhThuTheoThang","dbo");
 
             entity.Property(e => e.TongDoanhThu).HasColumnType("decimal(38, 2)");
         });
@@ -399,7 +398,7 @@ public partial class FshopContext : DbContext
             entity.Property(e => e.TenSp)
                 .HasMaxLength(100)
                 .HasColumnName("TenSP");
-            entity.Property(e => e.TrangThaiTon).HasMaxLength(8);
+            entity.Property(e => e.TrangThaiTon).HasMaxLength(20);
         });
 
         modelBuilder.Entity<VwTopSanPhamBanChay>(entity =>
@@ -420,8 +419,22 @@ public partial class FshopContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
 
-        modelBuilder.Entity<VwBaoCaoSanPham>().HasNoKey().ToView("BaoCaoSanPham");
+        modelBuilder.Entity<VwBaoCaoSanPham>(entity =>
+        {
+            entity.HasNoKey().ToView("vw_BaoCaoSanPham");
+
+            entity.Property(e => e.MaSp)
+                .HasColumnName("MaSP");
+
+            entity.Property(e => e.TenSp)
+                .HasColumnName("TenSP");
+
+            entity.Property(e => e.DonGia)
+                .HasColumnType("decimal(18,2)");
+        });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-}
+
+
+}   

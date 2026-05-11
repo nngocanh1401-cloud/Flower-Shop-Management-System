@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FSHOP.BLL;
+using FSHOP.Common.DTO.BanHang;
+using FSHOP.DAL.Models;
 
 namespace FSHOP.API.Controllers
 {
@@ -30,6 +32,63 @@ namespace FSHOP.API.Controllers
         public SanPhamController(SanPhamService service)
         {
             _service = service;
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] TaoSanPhamDTO dto)
+        {
+            var sanPham = new SanPham
+            {
+                MaSp = dto.MaSP,
+                TenSp = dto.TenSP,
+                DonGia = dto.DonGia,
+                SoLuongTon = dto.SoLuongTon,
+                MaDm = string.IsNullOrWhiteSpace(dto.MaDM) ? null : dto.MaDM
+            };
+
+            var result = _service.TaoSanPham(sanPham);
+
+            if (result == "Thêm sản phẩm thành công")
+                return Ok(new { message = result });
+
+            return BadRequest(new { message = result });
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(string id, [FromBody] CapNhatSanPhamDTO dto)
+        {
+            var sanPham = new SanPham
+            {
+                MaSp = id,
+                TenSp = dto.TenSP,
+                DonGia = dto.DonGia,
+                SoLuongTon = dto.SoLuongTon,
+                MaDm = string.IsNullOrWhiteSpace(dto.MaDM) ? null : dto.MaDM
+            };
+
+            var result = _service.CapNhatSanPham(id, sanPham);
+
+            if (result == "Cập nhật sản phẩm thành công")
+                return Ok(new { message = result });
+
+            if (result == "Không tìm thấy sản phẩm")
+                return NotFound(new { message = result });
+
+            return BadRequest(new { message = result });
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
+        {
+            var result = _service.XoaSanPham(id);
+
+            if (result == "Xóa sản phẩm thành công")
+                return Ok(new { message = result });
+
+            if (result == "Không tìm thấy sản phẩm")
+                return NotFound(new { message = result });
+
+            return BadRequest(new { message = result });
         }
 
         [HttpGet("tim-kiem")]

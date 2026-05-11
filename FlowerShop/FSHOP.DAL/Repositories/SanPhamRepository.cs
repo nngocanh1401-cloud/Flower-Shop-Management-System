@@ -18,14 +18,58 @@ namespace FSHOP.DAL.Repositories
             return _dbSet.Where(sp => sp.MaDm == maDM).ToList();
         }
 
-        public IEnumerable<SanPham> GetByid(string id)
+        public SanPham GetByid(string id)
         {
-            throw new NotImplementedException();
+            return _dbSet.FirstOrDefault(sp => sp.MaSp == id);
         }
 
         public IEnumerable<SanPham> TimKiem(string keyword)
         {
             return _dbSet.Where(sp => sp.TenSp.Contains(keyword)).ToList();
+        }
+
+        public string XoaSanPhamKemDuLieuLienQuan(string id)
+        {
+            var sanPham = _dbSet.FirstOrDefault(sp => sp.MaSp == id);
+
+            if (sanPham == null)
+                return "Không tìm thấy sản phẩm";
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var chiTietDonHangs = _context.ChiTietDonHangs
+                    .Where(x => x.MaSp == id)
+                    .ToList();
+
+                var chiTietNhapHangs = _context.ChiTietNhapHangs
+                    .Where(x => x.MaSp == id)
+                    .ToList();
+
+                var chiTietTraHangs = _context.ChiTietTraHangs
+                    .Where(x => x.MaSp == id)
+                    .ToList();
+
+                if (chiTietDonHangs.Any())
+                    _context.ChiTietDonHangs.RemoveRange(chiTietDonHangs);
+
+                if (chiTietNhapHangs.Any())
+                    _context.ChiTietNhapHangs.RemoveRange(chiTietNhapHangs);
+
+                if (chiTietTraHangs.Any())
+                    _context.ChiTietTraHangs.RemoveRange(chiTietTraHangs);
+
+                _dbSet.Remove(sanPham);
+                _context.SaveChanges();
+                transaction.Commit();
+
+                return "Xóa sản phẩm thành công";
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return $"Không thể xóa sản phẩm: {ex.GetBaseException().Message}";
+            }
         }
     }
 }

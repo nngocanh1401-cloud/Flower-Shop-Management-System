@@ -12,6 +12,12 @@ namespace FSHOP.DAL.Interfaces
     public interface IBaoCaoRepository : IGenericRepository<VwBaoCaoSanPham>
     {
         List<VwBaoCaoSanPham> GetBaoCao();
+
+        List<VwTopSanPhamBanChay> GetTopBanChay();
+
+        List<VwDoanhThuTheoThang> GetDoanhThu();
+
+        List<VwTonKhoSanPham> GetTonKho();
     }
 }
 
