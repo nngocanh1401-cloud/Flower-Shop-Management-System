@@ -84,3 +84,11 @@ SELECT
     dbo.fn_TinhGiamGia(MaVoucher, dbo.fn_TinhTongTienDon(MaDH)) AS TienGiam,
     dbo.fn_TinhTongTienDon(MaDH) - dbo.fn_TinhGiamGia(MaVoucher, dbo.fn_TinhTongTienDon(MaDH)) AS ThucTra
 FROM DonHang;
+
+USE FShop
+GO
+SELECT DB_NAME()
+
+SELECT * 
+FROM sys.objects
+WHERE name = 'fn_TinhGiamGia'

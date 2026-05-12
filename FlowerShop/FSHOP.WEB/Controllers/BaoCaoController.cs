@@ -21,10 +21,18 @@ namespace FSHOP.API.Controllers
             return Ok(data);
         }
         // GET api/baocao/doanhthu
+        //[HttpGet("doanhthu")]
+        //public IActionResult DoanhThu()
+        //{
+        //    var data = _service.LayDoanhThu();
+
+        //    return Ok(data);
+        //}
+
         [HttpGet("doanhthu")]
-        public IActionResult DoanhThu()
+        public IActionResult GetDoanhThu(int? nam, int? thang)
         {
-            var data = _service.LayDoanhThu();
+            var data = _service.LayDoanhThu(nam, thang);
 
             return Ok(data);
         }

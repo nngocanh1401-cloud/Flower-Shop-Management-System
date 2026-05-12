@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using FSHOP.BLL;
+﻿using FSHOP.BLL;
 using FSHOP.Common.DTO.BanHang;
 using FSHOP.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FSHOP.API.Controllers
 {
@@ -13,6 +14,7 @@ namespace FSHOP.API.Controllers
         private readonly SanPhamService _service;
         //GetALL
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var result = _service.GetAllSanPham();
@@ -20,6 +22,7 @@ namespace FSHOP.API.Controllers
         }
         //GetByID
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetById(string id)
         {
             var result = _service.GetById(id);
@@ -35,6 +38,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")] // Chỉ tài khoản có Role là Admin mới được thêm
         public IActionResult Create([FromBody] TaoSanPhamDTO dto)
         {
             var sanPham = new SanPham
@@ -55,6 +59,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")] // Chỉ Admin mới được sửa
         public IActionResult Update(string id, [FromBody] CapNhatSanPhamDTO dto)
         {
             var sanPham = new SanPham
@@ -78,6 +83,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")] // Chỉ Admin mới được sửa
         public IActionResult Delete(string id)
         {
             var result = _service.XoaSanPham(id);
@@ -92,6 +98,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpGet("tim-kiem")]
+        [AllowAnonymous]
         public IActionResult TimKiem(string keyword)
         {
             var result = _service.TimKiemSanPham(keyword);
@@ -101,6 +108,7 @@ namespace FSHOP.API.Controllers
         //https://localhost:xxxx/api/sanpham/tim-kiem?keyword=hoa
 
         [HttpGet("loc-gia")]
+        [AllowAnonymous]
         public IActionResult LocGia(decimal min, decimal max)
         {
             var result = _service.LocGia(min, max);

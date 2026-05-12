@@ -138,3 +138,29 @@ CREATE TABLE ChiTietTraHang (
 
 
 -- them seek data
+
+CREATE TABLE VaiTro (
+    MaVaiTro  INT          PRIMARY KEY,
+    TenVaiTro NVARCHAR(20) NOT NULL   -- 'Admin' hoặc 'KhachHang'
+);
+
+CREATE TABLE NguoiDung (
+    MaNguoiDung  NVARCHAR(10)  PRIMARY KEY,
+    TenDangNhap  NVARCHAR(50)  NOT NULL UNIQUE,
+    MatKhauHash  NVARCHAR(255) NOT NULL,   -- lưu hash, không lưu plain text
+    MaVaiTro     INT           NOT NULL FOREIGN KEY REFERENCES VaiTro(MaVaiTro),
+    MaKH         NVARCHAR(10)  NULL FOREIGN KEY REFERENCES KhachHang(MaKH),
+    NgayTao      DATETIME      DEFAULT GETDATE(),
+    IsActive     BIT           DEFAULT 1
+);
+GO
+SELECT * 
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_NAME = 'NguoiDung'
+USE FShop
+GO
+DELETE FROM NguoiDung
+WHERE TenDangNhap = 'Thuhuong123'
+select * from DonHang
+Select * from SanPham
+select * from TrangThai

@@ -15,7 +15,8 @@ namespace FSHOP.DAL.Interfaces
 
         List<VwTopSanPhamBanChay> GetTopBanChay();
 
-        List<VwDoanhThuTheoThang> GetDoanhThu();
+        //List<VwDoanhThuTheoThang> GetDoanhThu();
+        List<VwDoanhThuTheoThang> LayDoanhThu(int? nam, int? thang);
 
         List<VwTonKhoSanPham> GetTonKho();
     }

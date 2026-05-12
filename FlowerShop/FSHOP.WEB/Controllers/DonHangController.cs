@@ -2,6 +2,7 @@
 using FSHOP.Common.DTO.BanHang;
 using FSHOP.Common.DTOs;
 using FSHOP.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace FSHOP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DonHangController : ControllerBase
     {
         private readonly DonHangService _service;
@@ -19,6 +21,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")] // <--- CHỈ ADMIN mới được xem tất cả đơn hàng
         public IActionResult GetAll()
         {
             var result = _service.GetAllDonHang()
@@ -29,6 +32,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,KhachHang")] // Cả 2 đều vào được, nhưng Service phải lọc theo UserID
         public IActionResult GetById(string id)
         {
             var result = _service.GetById(id);
@@ -62,6 +66,7 @@ namespace FSHOP.API.Controllers
 
         // POST api/donhang
         [HttpPost]
+        [Authorize(Roles = "KhachHang")] // Chỉ Khachhang mới được đặt hàng
         public IActionResult Create([FromBody] TaoDonHangDTO dto)
         {
             var donHang = new DonHang
@@ -129,6 +134,7 @@ namespace FSHOP.API.Controllers
 
         // PUT api/donhang/1/trangthai
         [HttpPut("{id}/trangthai")]
+        [Authorize(Roles = "KhachHang")] // Chỉ Khachhang mới được đặt hàng
         public IActionResult UpdateTrangThai(string id, int matrangThai)
         {
             var result = _service.CapNhatTrangThai(id, matrangThai);
@@ -143,6 +149,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền xóa/hủy đơn hàng của hệ thống
         public IActionResult Delete(string id)
         {
             var result = _service.HuyDonHang(id);
@@ -157,6 +164,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpGet("filter")]
+        [Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền lọc đơn hàng của hệ thống
         public IActionResult Filter([FromQuery] LocDonHangDTO filter)
         {
             var result = _service.LocDonHang(

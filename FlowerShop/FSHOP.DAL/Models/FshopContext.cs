@@ -13,7 +13,7 @@ public partial class FshopContext : DbContext
     public FshopContext(DbContextOptions<FshopContext> options): base(options)
     {
     }
-
+    public virtual DbSet<NguoiDung> NguoiDungs { get; set; }
     public virtual DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
 
     public virtual DbSet<ChiTietNhapHang> ChiTietNhapHangs { get; set; }
@@ -432,9 +432,52 @@ public partial class FshopContext : DbContext
             entity.Property(e => e.DonGia)
                 .HasColumnType("decimal(18,2)");
         });
+
+        //  Cấu hình bảng VaiTro 
+        modelBuilder.Entity<VaiTro>(entity =>
+        {
+            entity.HasKey(e => e.MaVaiTro).HasName("PK__VaiTro__C24C7424"); // Tên PK tùy theo DB của bạn
+            entity.ToTable("VaiTro");
+
+            entity.Property(e => e.MaVaiTro).HasMaxLength(10);
+            entity.Property(e => e.TenVaiTro).HasMaxLength(50).IsRequired();
+        });
+
+        //  Cấu hình bảng NguoiDung 
+        modelBuilder.Entity<NguoiDung>(entity =>
+        {
+            entity.HasKey(e => e.MaNguoiDung).HasName("PK__NguoiDun__C5410BD9");
+            entity.ToTable("NguoiDung");
+
+            entity.Property(e => e.MaNguoiDung).HasMaxLength(20);
+            entity.Property(e => e.TenDangNhap).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.MatKhauHash).IsRequired();
+
+            entity.Property(e => e.MaKh)
+                .HasMaxLength(10)
+                .HasColumnName("MaKH");
+
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+
+            // Cấu hình quan hệ với bảng VaiTro
+            entity.HasOne(d => d.MaVaiTroNavigation)
+                .WithMany(p => p.NguoiDungs)
+                .HasForeignKey(d => d.MaVaiTro)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NguoiDung_VaiTro");
+
+            // Cấu hình quan hệ với bảng KhachHang (nếu có MaKH)
+            entity.HasOne(d => d.MaKhNavigation)
+                .WithMany(p => p.NguoiDungs)
+                .HasForeignKey(d => d.MaKh)
+                .HasConstraintName("FK_NguoiDung_KhachHang");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<VwBaoCaoSanPham>().HasNoKey().ToView("BaoCaoSanPham");
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
 
 }   

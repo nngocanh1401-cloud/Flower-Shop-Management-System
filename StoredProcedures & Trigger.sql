@@ -1,9 +1,5 @@
 ﻿USE FShop;
 GO
-
--------------------------------------------------------
---------------------------------------------------------
-
 -- ===============
 -- = ThemDonHang =
 -- ===============
@@ -25,31 +21,17 @@ BEGIN
 
 		-- Check tồn kho
         IF (SELECT SoLuongTon FROM SanPham WHERE MaSP = @MaSP) < @SoLuong
-		BEGIN
-			RAISERROR(N'Không đủ hàng trong kho',16,1)
-			ROLLBACK TRANSACTION
-			RETURN
-		END
+        BEGIN
+            RAISERROR(N'Không đủ hàng trong kho',16,1)
+        END
 
 		-- Thêm đơn hàng
-        IF NOT EXISTS (SELECT 1 FROM DonHang WHERE MaDH = @MaDH)
-		BEGIN
-			INSERT INTO DonHang(MaDH, MaKH, MaPTTT, MaVoucher, MaTrangThai, NgayDat, TongTien)
-			VALUES (@MaDH, @MaKH, @MaPTTT, @MaVoucher, @MaTrangThai, GETDATE(), 0)
-		END
+        INSERT INTO DonHang(MaDH, MaKH, MaPTTT, MaVoucher, MaTrangThai, NgayDat, TongTien)
+        VALUES (@MaDH, @MaKH, @MaPTTT, @MaVoucher, @MaTrangThai, GETDATE(), 0)
 
 		-- ChiTietDonHang
-		IF EXISTS (
-			SELECT 1
-			FROM ChiTietDonHang
-			WHERE MaDH = @MaDH
-			AND MaSP = @MaSP
-		)
-		BEGIN
-			RAISERROR(N'Sản phẩm đã tồn tại trong đơn hàng',16,1)
-			ROLLBACK TRANSACTION
-			RETURN
-		END
+		INSERT INTO ChiTietDonHang(MaDH, MaSP, SoLuong, DonGia)
+		VALUES (@MaDH, @MaSP, @SoLuong, @DonGia)
 
 		-- Cập nhật tổng tiền
         UPDATE DonHang
@@ -68,13 +50,18 @@ END
 -- TEST THÊM ĐƠN HÀNG --
 ------------------------
 EXEC ThemDonHang 'DH010', 'KH003', 1, NULL, 3, 'SP008', 5
+--check
+SELECT * FROM DonHang
+SELECT * FROM ChiTietDonHang
+SELECT * FROM SanPham
+
 ---------------------------------------------------
 
 -- ====================
 -- = CapNhatTrangThai =
 -- ====================
 GO
-ALTER PROCEDURE CapNhatTrangThai
+CREATE PROCEDURE CapNhatTrangThai
     @MaDH NVARCHAR(10),
     @MaTrangThai INT
 AS
@@ -86,9 +73,11 @@ END
 ------------------------------
 -- TEST CẬP NHẬT TRẠNG THÁI --
 ------------------------------
+--CapNhatTrangThai
 EXEC CapNhatTrangThai 'DH001',3
--------------------------------------------------------
+SELECT * FROM TrangThai
 
+-------------------------------------------------------
 -- ==============
 -- = HuyDonHang =
 -- ==============
@@ -135,6 +124,10 @@ END
 -- TEST HỦY ĐƠN HÀNG --
 ------------------------
 EXEC HuyDonHang 'DH009'
+--check
+SELECT * FROM DonHang
+SELECT * FROM ChiTietDonHang
+SELECT * FROM SanPham
 -----------------------------------------------------
 
 -- =================
@@ -193,6 +186,12 @@ END
 -- TEST THÊM PHIẾU NHẬP --
 --------------------------
 EXEC ThemPhieuNhap'PN009','NCC002', 6,'SP001', 10
+-- check
+SELECT * FROM PhieuNhapHang
+SELECT * FROM ChiTietNhapHang
+SELECT * FROM SanPham
+SELECT * FROM KhachHang
+
 -----------------------------------------------------------
 /*-- ================
 -- = ThemPhieuTra =
@@ -261,6 +260,11 @@ END
 -- TEST THÊM PHIẾU TRẢ --
 -------------------------
 EXEC ThemPhieuTraHang 'PT008', 'PN001', 8, N'Sai loại hoa', 'SP001', 100             
+
+SELECT * FROM SanPham
+SELECT * FROM ChiTietNhapHang
+SELECT * FROM ChiTietTraHang
+SELECT * FROM PhieuTraHang
 -----------------------------------------------------------
 -- ===================
 -- = HuyPhieuTraHang =
@@ -314,47 +318,44 @@ EXEC HuyPhieuTraHang 'PT006'
 SELECT * FROM SanPham
 SELECT * FROM PhieuTraHang
 SELECT * FROM ChiTietTraHang*/
-
-
 -----------------------------------------------------------
 
 -- =====================
 -- = CapNhatTonKhoNhap =
 -- =====================
-CREATE OR ALTER TRIGGER CapNhatTonKhoNhap
+GO
+ALTER TRIGGER CapNhatTonKhoNhap
 ON ChiTietNhapHang
 AFTER INSERT
 AS
 BEGIN
+    -- Tăng tồn kho theo số lượng nhập
     UPDATE sp
     SET sp.SoLuongTon = sp.SoLuongTon + i.SoLuong
     FROM SanPham sp
-    JOIN inserted i
-        ON sp.MaSP = i.MaSP
+    JOIN inserted i ON sp.MaSP = i.MaSP
 END
-GO
 
 -- =================
 -- = CapNhatTonKho =
 -- =================
-CREATE OR ALTER TRIGGER CapNhatTonKho
+GO
+ALTER TRIGGER CapNhatTonKho
 ON ChiTietDonHang
 AFTER INSERT
 AS
 BEGIN
     UPDATE sp
-    SET sp.SoLuongTon = sp.SoLuongTon - i.SoLuong
+    SET SoLuongTon = SoLuongTon - i.SoLuong
     FROM SanPham sp
-    JOIN inserted i
-        ON sp.MaSP = i.MaSP
+    JOIN inserted i ON sp.MaSP = i.MaSP
 END
-GO
 
--- ==============
+/*-- ==============
 -- = HoanTonKho =
 -- ==============
 GO
-/*ALTER TRIGGER HoanTonKho
+ALTER TRIGGER HoanTonKho
 ON ChiTietTraHang
 AFTER INSERT
 AS
@@ -363,82 +364,33 @@ BEGIN
     SET SoLuongTon = SoLuongTon - i.SoLuong
     FROM SanPham sp
     JOIN inserted i ON sp.MaSP = i.MaSP
-END*/50000
+END*/
 
-SELECT name
-FROM sys.databases
+-- -- Stored Procedure đăng ký tài khoản khách hàng
 
-SELECT * FROM SanPham
-
-CREATE OR ALTER PROCEDURE dbo.HuyDonHang
-    @MaDH NVARCHAR(10)
+CREATE PROCEDURE sp_DangKy
+    @MaNguoiDung NVARCHAR(10),
+    @TenDangNhap NVARCHAR(50),
+    @MatKhauHash NVARCHAR(255),
+    @TenKH       NVARCHAR(100),
+    @SDT         NVARCHAR(15),
+    @DiaChi      NVARCHAR(200)
 AS
 BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-
-    DECLARE @MaTrangThaiHienTai INT,
-            @MaTrangThaiHuy INT,
-            @MaTrangThaiHoanTat INT,
-            @MaVoucher NVARCHAR(10);
-
-    SELECT 
-        @MaTrangThaiHienTai = MaTrangThai,
-        @MaVoucher = MaVoucher
-    FROM DonHang
-    WHERE MaDH = @MaDH;
-
-    IF @MaTrangThaiHienTai IS NULL
-        THROW 50001, N'Không tìm thấy đơn hàng.', 1;
-
-    SELECT TOP 1 @MaTrangThaiHuy = MaTrangThai
-    FROM TrangThai
-    WHERE TenTrangThai COLLATE Latin1_General_CI_AI LIKE N'%huy%';
-
-    IF @MaTrangThaiHuy IS NULL
-        THROW 50002, N'Chưa cấu hình trạng thái Hủy trong bảng TrangThai.', 1;
-
-    SELECT TOP 1 @MaTrangThaiHoanTat = MaTrangThai
-    FROM TrangThai
-    WHERE TenTrangThai COLLATE Latin1_General_CI_AI LIKE N'%hoan tat%';
-
-    IF @MaTrangThaiHienTai = @MaTrangThaiHuy
-        RETURN;
-
-    IF @MaTrangThaiHoanTat IS NOT NULL AND @MaTrangThaiHienTai = @MaTrangThaiHoanTat
-        THROW 50003, N'Không thể hủy đơn hàng đã hoàn tất.', 1;
-
+    BEGIN TRANSACTION
     BEGIN TRY
-        BEGIN TRAN;
+        -- Tạo khách hàng trước
+        INSERT INTO KhachHang (MaKH, TenKH, SDT, DiaChi)
+        VALUES (@MaNguoiDung, @TenKH, @SDT, @DiaChi);
 
-        UPDATE sp
-        SET sp.SoLuongTon = sp.SoLuongTon + ct.SoLuong
-        FROM SanPham sp
-        INNER JOIN ChiTietDonHang ct ON ct.MaSP = sp.MaSP
-        WHERE ct.MaDH = @MaDH;
+        -- Tạo tài khoản liên kết
+        INSERT INTO NguoiDung (MaNguoiDung, TenDangNhap, MatKhauHash, MaVaiTro, MaKH)
+        VALUES (@MaNguoiDung, @TenDangNhap, @MatKhauHash, 2, @MaNguoiDung);
 
-        IF @MaVoucher IS NOT NULL
-        BEGIN
-            UPDATE Voucher
-            SET SoLuongDaDung =
-                CASE
-                    WHEN ISNULL(SoLuongDaDung, 0) > 0 THEN ISNULL(SoLuongDaDung, 0) - 1
-                    ELSE 0
-                END
-            WHERE MaVoucher = @MaVoucher;
-        END
-
-        UPDATE DonHang
-        SET MaTrangThai = @MaTrangThaiHuy
-        WHERE MaDH = @MaDH;
-
-        COMMIT TRAN;
+        COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRAN;
-
-        THROW;
+        ROLLBACK TRANSACTION; THROW;
     END CATCH
 END;
 GO

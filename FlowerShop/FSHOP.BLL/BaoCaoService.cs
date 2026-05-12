@@ -23,9 +23,13 @@ namespace FSHOP.BLL
             return _baoCaoRepo.GetBaoCao();
         }
         // Báo cáo doanh thu theo tháng
-        public List<VwDoanhThuTheoThang> LayDoanhThu()
+        //public List<VwDoanhThuTheoThang> LayDoanhThu()
+        //{
+        //    return _baoCaoRepo.GetDoanhThu();
+        //}
+        public List<VwDoanhThuTheoThang> LayDoanhThu(int? nam, int? thang)
         {
-            return _baoCaoRepo.GetDoanhThu();
+            return _baoCaoRepo.LayDoanhThu(nam, thang);
         }
 
         // Báo cáo tồn kho

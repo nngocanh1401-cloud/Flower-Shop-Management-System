@@ -29,19 +29,6 @@ public partial class DonHang
     [ForeignKey("MaTrangThai")]
     public virtual TrangThai MaTrangThaiNavigation { get; set; }
 
-
-    //    Hướng A: Nếu bạn muốn lưu mã trạng thái(ví dụ: "01", "02")
-    //Thông thường trong bảng DonHang sẽ có một cột khóa ngoại là MaTrangThai.Bạn hãy kiểm tra xem trong file DonHang.cs có thuộc tính nào tên là MaTrangThai không.Nếu có, hãy sửa code ở DonHangService.cs thành:
-
-    //C#
-    //dh.MaTrangThai = trangThai; // trangThai truyền vào phải là mã (ID)
-    //    Hướng B: Nếu bạn muốn gán trực tiếp vào đối tượng điều hướng
-    //    Nếu bạn muốn truy cập vào thuộc tính tên của trạng thái bên trong bảng liên kết, bạn phải gọi thông qua biến Navigation:
-
-    //C#
-    //// Lưu ý: Cách này thường dùng để hiển thị, không dùng để cập nhật trực tiếp tên trạng thái vào bảng DonHang
-    //dh.MaTrangThaiNavigation.TenTrangThai = trangThai;
-
     [JsonIgnore]
     public virtual Voucher? MaVoucherNavigation { get; set; }
 

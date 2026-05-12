@@ -23,12 +23,26 @@ namespace FSHOP.DAL.Repositories
             // Gọi dữ liệu từ View tương ứng trong Database
             return _context.VwTopSanPhamBanChays.ToList();
         }
-
-        public List<VwDoanhThuTheoThang> GetDoanhThu()
+        //public List<VwDoanhThuTheoThang> GetDoanhThu()
+        //{
+        //    return _context.VwDoanhThuTheoThangs.ToList();
+        //}
+        public List<VwDoanhThuTheoThang> LayDoanhThu(int? nam, int? thang)
         {
-            return _context.VwDoanhThuTheoThangs.ToList();
-        }
+            var query = _context.VwDoanhThuTheoThangs.AsQueryable();
 
+            if (nam.HasValue)
+            {
+                query = query.Where(x => x.Nam == nam.Value);
+            }
+
+            if (thang.HasValue)
+            {
+                query = query.Where(x => x.Thang == thang.Value);
+            }
+
+            return query.ToList();
+        }
         public List<VwTonKhoSanPham> GetTonKho()
         {
             return _context.VwTonKhoSanPhams.ToList();
