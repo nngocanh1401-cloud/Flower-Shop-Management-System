@@ -28,7 +28,6 @@ builder.Services.AddScoped<INhaCungCapRepository>(
     provider => new NhaCungCapRepository(connStr));
 
 builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
-
 builder.Services.AddScoped<IBaoCaoRepository, BaoCaoRepository>();
 
 builder.Services.AddScoped<BaoCaoService>();
@@ -36,8 +35,36 @@ builder.Services.AddScoped<SanPhamService>();
 builder.Services.AddScoped<DonHangService>();
 builder.Services.AddScoped<AuthService>();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+// --- Cấu hình JWT Authentication ---
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(opt =>
+{
+    opt.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+        ),
+
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
+    };
+});
+
+builder.Services.AddAuthorization();
+
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -50,13 +77,7 @@ builder.Services.AddSwaggerGen(c =>
         Title = "FlowerShop API",
         Version = "v1"
     });
-});
 
-//// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
-// --- Cấu hình Swagger để hỗ trợ dán mã Token JWT ---
-builder.Services.AddSwaggerGen(c =>
-{
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Nhập Token theo định dạng: Bearer {your_token}",
@@ -71,7 +92,11 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
             },
             new string[] { }
         }
@@ -101,10 +126,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // --- Middleware thứ tự quan trọng ---
-app.UseCors("AllowAngular");
-app.UseAuthentication(); // Phải đứng trước Authorization
-app.UseAuthorization();
 
+app.UseCors("AllowAngular"); // Nếu dùng CORS
+app.UseAuthentication(); // 1. Xác thực (Ai đang vào?)
+app.UseAuthorization();  // 2. Phân quyền (Họ được làm gì?)
 app.MapControllers();
 
 app.Run();

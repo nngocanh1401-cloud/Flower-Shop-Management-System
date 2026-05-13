@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FSHOP.BLL;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FSHOP.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class BaoCaoController: ControllerBase
     {
         private readonly BaoCaoService _service;

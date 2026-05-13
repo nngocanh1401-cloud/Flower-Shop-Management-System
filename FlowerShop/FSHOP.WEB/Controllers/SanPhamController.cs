@@ -83,7 +83,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")] // Chỉ Admin mới được sửa
+        [Authorize(Roles = "Admin")] // Chỉ Admin mới được xóa
         public IActionResult Delete(string id)
         {
             var result = _service.XoaSanPham(id);

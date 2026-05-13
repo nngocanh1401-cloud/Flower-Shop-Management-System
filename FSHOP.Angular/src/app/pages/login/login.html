@@ -1,0 +1,30 @@
+<p>login works!</p>
+<div class="login-container">
+  <div class="login-card">
+    <h2>Đăng nhập</h2>
+    <p class="subtitle">Chào mừng đến với AHH FLOWER SHOP</p>
+
+    <div *ngIf="loiDangNhap" class="alert-error" style="color: red; margin-bottom: 10px;">
+      {{ loiDangNhap }}
+    </div>
+
+    <div class="form-group">
+      <label>Tên đăng nhập</label>
+      <input type="text" [(ngModel)]="tenDangNhap" placeholder="Nhập tên đăng nhập" class="form-control"/>
+    </div>
+
+    <div class="form-group">
+      <label>Mật khẩu</label>
+      <input type="password" [(ngModel)]="matKhau" 
+             placeholder="Nhập mật khẩu" (keyup.enter)="dangNhap()" class="form-control"/>
+    </div>
+
+    <button (click)="dangNhap()" [disabled]="dangXuLy" class="btn-primary">
+      {{ dangXuLy ? 'Đang xử lý...' : 'Đăng nhập' }}
+    </button>
+
+    <p class="link-text">
+      Chưa có tài khoản? <a routerLink="/register">Đăng ký ngay</a>
+    </p>
+  </div>
+</div>
