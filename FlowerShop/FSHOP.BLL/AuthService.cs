@@ -45,7 +45,8 @@ namespace FSHOP.BLL
             // Tạo JWT token
             var token = TaoJwtToken(nguoiDung.MaNguoiDung,
                                      nguoiDung.TenDangNhap,
-                                     nguoiDung.MaVaiTroNavigation?.TenVaiTro ?? "User");
+                                     nguoiDung.MaVaiTroNavigation?.TenVaiTro ?? "User",
+                                     nguoiDung.MaKh);
 
             return new LoginResponseDTO
             {
@@ -64,7 +65,7 @@ namespace FSHOP.BLL
                 throw new Exception("Tên đăng nhập đã tồn tại");
 
             // Tạo mã người dùng mới dựa trên logic của bạn (ví dụ: ND + chuỗi thời gian)
-            var maMoi = "ND" + DateTime.Now.ToString("yyMMddHHss");
+            var maMoi = await TaoMaNguoiDungMoiAsync();
             var hashPW = BCrypt.Net.BCrypt.HashPassword(dto.MatKhau);
 
             // Gọi Stored Procedure sp_DangKy (Thành viên B làm trong Tuần 1)
@@ -73,6 +74,27 @@ namespace FSHOP.BLL
                 maMoi, dto.TenDangNhap, hashPW, dto.TenKH, dto.SDT, dto.DiaChi ?? "");
 
             return true;
+        }
+        // tao ma nguoi dung k trung
+        private async Task<string> TaoMaNguoiDungMoiAsync()
+        {
+            string maMoi;
+
+            do
+            {
+                // ND + MMddHHmm = 10 ký tự
+                maMoi = "KH" + DateTime.Now.ToString("MMddHHmm");
+
+                if (await _ctx.NguoiDungs.AnyAsync(x => x.MaNguoiDung == maMoi) ||
+                    await _ctx.KhachHangs.AnyAsync(x => x.MaKh == maMoi))
+                {
+                    await Task.Delay(1000);
+                }
+
+            } while (await _ctx.NguoiDungs.AnyAsync(x => x.MaNguoiDung == maMoi) ||
+                     await _ctx.KhachHangs.AnyAsync(x => x.MaKh == maMoi));
+
+            return maMoi;
         }
 
         //  Đổi mật khẩu 
@@ -84,38 +106,42 @@ namespace FSHOP.BLL
             if (!BCrypt.Net.BCrypt.Verify(matKhauCu, nd.MatKhauHash))
                 throw new Exception("Mật khẩu cũ không đúng");
 
+            if (BCrypt.Net.BCrypt.Verify(matKhauMoi, nd.MatKhauHash))
+                throw new Exception("Mật khẩu mới không được trùng với mật khẩu cũ");
+
             nd.MatKhauHash = BCrypt.Net.BCrypt.HashPassword(matKhauMoi);
             await _ctx.SaveChangesAsync();
             return true;
         }
 
         //  Tạo JWT Token 
-        private string TaoJwtToken(string maNguoiDung, string tenDangNhap, string vaiTro)
+        private string TaoJwtToken(string maNguoiDung, string tenDangNhap, string vaiTro, string? maKH)
         {
             var jwtKey = _cfg["Jwt:Key"];
-            if (string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT Key chưa được cấu hình.");
+            if (string.IsNullOrEmpty(jwtKey))
+                throw new Exception("JWT Key chưa được cấu hình.");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Lấy thời gian hết hạn từ cấu hình, mặc định 24h nếu lỗi
             if (!double.TryParse(_cfg["Jwt:ExpireHours"], out double expireHours))
                 expireHours = 24;
 
-            var expire = DateTime.Now.AddHours(expireHours);
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, maNguoiDung),
+        new Claim(ClaimTypes.Name, tenDangNhap),
+        new Claim(ClaimTypes.Role, vaiTro)
+    };
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, maNguoiDung),
-                new Claim(ClaimTypes.Name, tenDangNhap),
-                new Claim(ClaimTypes.Role, vaiTro)
-            };
+            if (!string.IsNullOrWhiteSpace(maKH))
+                claims.Add(new Claim("MaKH", maKH));
 
             var token = new JwtSecurityToken(
                 issuer: _cfg["Jwt:Issuer"],
                 audience: _cfg["Jwt:Audience"],
                 claims: claims,
-                expires: expire,
+                expires: DateTime.Now.AddHours(expireHours),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

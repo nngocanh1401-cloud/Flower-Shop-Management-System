@@ -5,6 +5,7 @@ using FSHOP.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FSHOP.API.Controllers
 {
@@ -69,11 +70,19 @@ namespace FSHOP.API.Controllers
         [Authorize(Roles = "KhachHang")] // Chỉ Khachhang mới được đặt hàng
         public IActionResult Create([FromBody] TaoDonHangDTO dto)
         {
+            var maKH = User.FindFirst("MaKH")?.Value;
+
+            if (string.IsNullOrWhiteSpace(maKH))
+                return Unauthorized(new { message = "Tài khoản chưa liên kết khách hàng" });
+
+            var maDH = "DH" + DateTime.Now.ToString("MMddHHmm");
+
+
             var donHang = new DonHang
             {
-                MaDh = dto.MaDH,
+                MaDh = maDH,
 
-                MaKh = dto.MaKH,
+                MaKh = maKH,
 
                 MaPttt = dto.MaPTTT,
 
@@ -88,7 +97,7 @@ namespace FSHOP.API.Controllers
 
                 ChiTietDonHangs = dto.DanhSachChiTiet.Select(x => new ChiTietDonHang
                 {
-                    MaDh = dto.MaDH,
+                    MaDh = maDH,
                     MaSp = x.MaSp,
                     SoLuong = x.SoLuong,
                     DonGia = 0
@@ -98,7 +107,7 @@ namespace FSHOP.API.Controllers
             var result = _service.TaoDonHang(donHang);
 
             if (result == "Đặt hàng thành công")
-                return Ok(new { message = result });
+                return Ok(new { message = result, maDH = maDH });
 
             return BadRequest(new { message = result });
         }

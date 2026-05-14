@@ -39,7 +39,8 @@ namespace FSHOP.Common.DTOs.HeThong
         public string TenKH { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Số điện thoại là bắt buộc")]
-        [Phone(ErrorMessage = "Số điện thoại không đúng định dạng")]
+        [RegularExpression(@"^0\d{9}$",
+        ErrorMessage = "Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0")]
         public string SDT { get; set; } = string.Empty;
 
         public string? DiaChi { get; set; }
