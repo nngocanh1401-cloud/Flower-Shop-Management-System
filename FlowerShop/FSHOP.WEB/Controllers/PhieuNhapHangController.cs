@@ -10,6 +10,8 @@ namespace FSHOP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
+
     public class PhieuNhapHangController : ControllerBase
     {
         private readonly PhieuNhapHangService _phieuNhapHangService;

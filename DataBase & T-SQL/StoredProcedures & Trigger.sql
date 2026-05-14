@@ -82,7 +82,7 @@ SELECT * FROM TrangThai
 -- = HuyDonHang =
 -- ==============
 GO
-ALTER PROCEDURE HuyDonHang
+CREATE OR ALTER PROCEDURE HuyDonHang
     @MaDH NVARCHAR(10)
 AS
 BEGIN
@@ -123,7 +123,7 @@ END
 ------------------------
 -- TEST HỦY ĐƠN HÀNG --
 ------------------------
-EXEC HuyDonHang 'DH009'
+EXEC HuyDonHang 'DH006'
 --check
 SELECT * FROM DonHang
 SELECT * FROM ChiTietDonHang

@@ -475,7 +475,7 @@ public partial class FshopContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
 
-        modelBuilder.Entity<VwBaoCaoSanPham>().HasNoKey().ToView("BaoCaoSanPham");
+        modelBuilder.Entity<VwBaoCaoSanPham>().HasNoKey().ToView("Vw_BaoCaoSanPham");
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
