@@ -354,18 +354,38 @@ namespace FSHOP.DAL.Repositories
 
         public string HuyDonHangBangEf(string maDH)
         {
-            var dh = _context.DonHangs.FirstOrDefault(x => x.MaDh == maDH);
+            var dh = _context.DonHangs
+                .Include(x => x.ChiTietDonHangs)
+                .FirstOrDefault(x => x.MaDh == maDH);
+
             if (dh == null)
                 return "Không tìm thấy đơn hàng";
 
+            if (dh.MaTrangThai == 4)
+                return "Đơn hàng đã hủy trước đó";
+
+            using var transaction = _context.Database.BeginTransaction();
+
             try
             {
-                HuyDonHang(maDH);
+                foreach (var ct in dh.ChiTietDonHangs)
+                {
+                    var sp = _context.SanPhams.FirstOrDefault(x => x.MaSp == ct.MaSp);
+                    if (sp != null)
+                        sp.SoLuongTon += ct.SoLuong;
+                }
+
+                dh.MaTrangThai = 4;
+
+                _context.SaveChanges();
+                transaction.Commit();
+
                 return "Hủy đơn hàng thành công";
             }
             catch (Exception ex)
             {
-                return $"Không thể hủy đơn hàng: {FormatDbSaveError(ex)}";
+                transaction.Rollback();
+                return $"Không thể hủy đơn hàng: {ex.GetBaseException().Message}";
             }
         }
 

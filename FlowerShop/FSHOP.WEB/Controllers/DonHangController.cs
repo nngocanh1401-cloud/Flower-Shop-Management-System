@@ -207,9 +207,6 @@ namespace FSHOP.API.Controllers
             if (result == "Hủy đơn hàng thành công")
                 return Ok(new { message = result });
 
-            if (result == "Không tìm thấy đơn hàng")
-                return NotFound(new { message = result });
-
             return BadRequest(new { message = result });
         }
 
