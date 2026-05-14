@@ -17,7 +17,7 @@ namespace FSHOP.API.Controllers
         {
             _ctx = ctx;
         }
-
+        // kiem tra so dien thoai de biet co la khach hang chua truoc khi tao don
         [HttpGet("tim-sdt")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> TimTheoSdt(string sdt)
@@ -36,7 +36,7 @@ namespace FSHOP.API.Controllers
                 diaChi = kh.DiaChi
             });
         }
-
+        // admin tao don hang cho khach hang
         [HttpPost("admin")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> TaoKhachHang([FromBody] KhachHangDTO dto)
@@ -82,6 +82,23 @@ namespace FSHOP.API.Controllers
             } while (await _ctx.KhachHangs.AnyAsync(x => x.MaKh == maKH));
 
             return maKH;
+        }
+        // lay danh sach khach hang
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _ctx.KhachHangs
+                .Select(kh => new
+                {
+                    maKH = kh.MaKh,
+                    tenKH = kh.TenKh,
+                    sdt = kh.Sdt,
+                    diaChi = kh.DiaChi
+                })
+                .ToListAsync();
+
+            return Ok(result);
         }
     }
 }
