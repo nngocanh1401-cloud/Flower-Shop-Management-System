@@ -97,12 +97,17 @@ namespace FSHOP.BLL
             if (dh == null)
                 return "Không tìm thấy đơn hàng";
 
+            if (dh.MaTrangThai == 4)
+                return "Đơn hàng đã hủy, không thể cập nhật trạng thái";
+
+            if (maTrangThai == 4)
+                return HuyDonHang(maDH);
+
             try
             {
                 dh.MaTrangThai = maTrangThai;
 
                 _donHangRepo.Update(dh);
-
                 _donHangRepo.Save();
 
                 return "Cập nhật trạng thái thành công";

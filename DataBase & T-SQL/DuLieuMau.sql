@@ -117,3 +117,5 @@ INSERT INTO VaiTro VALUES (1, N'Admin'), (2, N'KhachHang');
 
 DELETE FROM NguoiDung
 WHERE TenDangNhap = 'admin'
+
+Select * from DonHang
