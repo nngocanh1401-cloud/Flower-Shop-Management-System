@@ -5,6 +5,7 @@ using FSHOP.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FSHOP.API.Controllers
 {
@@ -63,17 +64,24 @@ namespace FSHOP.API.Controllers
                 }).ToList()
             });
         }
-
         // POST api/donhang
         [HttpPost]
         [Authorize(Roles = "KhachHang")] // Chỉ Khachhang mới được đặt hàng
         public IActionResult Create([FromBody] TaoDonHangDTO dto)
         {
+            var maKH = User.FindFirst("MaKH")?.Value;
+
+            if (string.IsNullOrWhiteSpace(maKH))
+                return Unauthorized(new { message = "Tài khoản chưa liên kết khách hàng" });
+
+            var maDH = "DH" + DateTime.Now.ToString("MMddHHmm");
+
+
             var donHang = new DonHang
             {
-                MaDh = dto.MaDH,
+                MaDh = maDH,
 
-                MaKh = dto.MaKH,
+                MaKh = maKH,
 
                 MaPttt = dto.MaPTTT,
 
@@ -88,7 +96,7 @@ namespace FSHOP.API.Controllers
 
                 ChiTietDonHangs = dto.DanhSachChiTiet.Select(x => new ChiTietDonHang
                 {
-                    MaDh = dto.MaDH,
+                    MaDh = maDH,
                     MaSp = x.MaSp,
                     SoLuong = x.SoLuong,
                     DonGia = 0
@@ -98,7 +106,48 @@ namespace FSHOP.API.Controllers
             var result = _service.TaoDonHang(donHang);
 
             if (result == "Đặt hàng thành công")
-                return Ok(new { message = result });
+                return Ok(new { message = result, maDH = maDH });
+
+            return BadRequest(new { message = result });
+        }
+
+        private string TaoMaDonHang()
+        {
+            return "DH" + DateTime.Now.ToString("MMddHHmm");
+        }
+
+        // POST api/donhang/admin
+        [HttpPost("admin")]
+        [Authorize(Roles = "Admin")] // admin tao don cho KH khi khach hang dat don qua DT/offline
+        public IActionResult TaoDonHangAdmin([FromBody] TaoDonHangAdminDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.MaKH))
+                return BadRequest(new { message = "Vui lòng chọn khách hàng" });
+
+            var maDH = TaoMaDonHang();
+
+            var donHang = new DonHang
+            {
+                MaDh = maDH,
+                MaKh = dto.MaKH,
+                MaPttt = dto.MaPTTT,
+                MaVoucher = string.IsNullOrWhiteSpace(dto.MaVoucher) ? null : dto.MaVoucher,
+                MaTrangThai = 1,
+                NgayDat = DateTime.Now,
+                TongTien = 0,
+                ChiTietDonHangs = dto.DanhSachChiTiet.Select(x => new ChiTietDonHang
+                {
+                    MaDh = maDH,
+                    MaSp = x.MaSp,
+                    SoLuong = x.SoLuong,
+                    DonGia = 0
+                }).ToList()
+            };
+
+            var result = _service.TaoDonHang(donHang);
+
+            if (result == "Đặt hàng thành công")
+                return Ok(new { message = result, maDH });
 
             return BadRequest(new { message = result });
         }

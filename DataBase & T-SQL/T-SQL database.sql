@@ -160,7 +160,12 @@ WHERE TABLE_NAME = 'NguoiDung'
 USE FShop
 GO
 DELETE FROM NguoiDung
-WHERE TenDangNhap = 'Thuhuong123'
+WHERE TenDangNhap = 'ngocanh'
 select * from DonHang
 Select * from SanPham
-select * from TrangThai
+select * from KhachHang
+select * from NguoiDung
+select * from PhuongThucThanhToan
+select * from Voucher
+select * from ChiTietDonHang
+

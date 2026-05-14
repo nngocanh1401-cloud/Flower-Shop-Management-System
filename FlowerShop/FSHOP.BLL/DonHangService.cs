@@ -21,8 +21,17 @@ namespace FSHOP.BLL
         /// <summary>Gộp dòng trùng MaSP; tạo đơn bằng EF (tránh EXEC ThemDonHang + trigger lồng 32 tầng).</summary>
         public string TaoDonHang(DonHang dh)
         {
+            if (dh == null)
+                return "Dữ liệu đơn hàng không hợp lệ";
+
+            if (string.IsNullOrWhiteSpace(dh.MaKh))
+                return "Tài khoản chưa liên kết khách hàng";
+
             if (dh.ChiTietDonHangs == null || !dh.ChiTietDonHangs.Any())
                 return "Danh sách sản phẩm không được rỗng";
+
+            if (dh.ChiTietDonHangs.Any(x => x.SoLuong <= 0))
+                return "Số lượng sản phẩm phải lớn hơn 0";
 
             var merged = dh.ChiTietDonHangs
                 .GroupBy(c => c.MaSp)
@@ -34,6 +43,7 @@ namespace FSHOP.BLL
                     DonGia = 0
                 })
                 .ToList();
+
             dh.ChiTietDonHangs = merged;
 
             return _donHangRepo.TaoDonHangBangEf(dh);
