@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace FSHOP.Common.DTO.Kho
+namespace FSHOP.Common.DTOs.Kho
 {
-    //Dùng để xem danh sách phiếu nhập
-    public class PhieuNhapHangDTO
+    public class CapNhatPhieuNhapDTO
     {
-        public string MaPhieuNhap { get; set; } = string.Empty;
-
         public string MaNCC { get; set; } = string.Empty;
 
         public int MaTrangThai { get; set; }
 
         public DateTime? NgayNhap { get; set; }
-
-        public decimal TongTien { get; set; }
     }
 }

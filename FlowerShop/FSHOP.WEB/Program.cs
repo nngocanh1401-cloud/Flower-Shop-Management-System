@@ -26,10 +26,11 @@ builder.Services.AddScoped<IDanhMucRepository, DanhMucRepository>();
 // ADO.NET — truyền connection string
 builder.Services.AddScoped<INhaCungCapRepository>(
     provider => new NhaCungCapRepository(connStr));
-
 builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
 builder.Services.AddScoped<IBaoCaoRepository, BaoCaoRepository>();
+builder.Services.AddScoped<IPhieuNhapHangRepository, PhieuNhapHangRepository>();
 
+builder.Services.AddScoped<PhieuNhapHangService>();
 builder.Services.AddScoped<BaoCaoService>();
 builder.Services.AddScoped<SanPhamService>();
 builder.Services.AddScoped<DonHangService>();

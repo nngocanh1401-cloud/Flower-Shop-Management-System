@@ -31,14 +31,50 @@ namespace FSHOP.DAL.Repositories
         public void ThemPhieuNhap(string maPhieuNhap, string maNCC,
                            int maTrangThai, string maSP, int soLuong)
         {
-            _context.Database.ExecuteSqlRaw(
-                "EXEC ThemPhieuNhap @MaPhieuNhap, @MaNCC, @MaTrangThai, @MaSP, @SoLuong",
-                new SqlParameter("@MaPhieuNhap", maPhieuNhap),
-                new SqlParameter("@MaNCC", maNCC),
-                new SqlParameter("@MaTrangThai", maTrangThai),
-                new SqlParameter("@MaSP", maSP),
-                new SqlParameter("@SoLuong", soLuong)
-            );
+            try
+            {
+                _context.Database.ExecuteSqlRaw(
+                    "EXEC ThemPhieuNhap @MaPhieuNhap, @MaNCC, @MaTrangThai, @MaSP, @SoLuong",
+                    new SqlParameter("@MaPhieuNhap", maPhieuNhap),
+                    new SqlParameter("@MaNCC", maNCC),
+                    new SqlParameter("@MaTrangThai", maTrangThai),
+                    new SqlParameter("@MaSP", maSP),
+                    new SqlParameter("@SoLuong", soLuong)
+                );
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.GetBaseException().Message);
+            }
+
+        }
+        public void XoaPhieuNhapKemChiTiet(string maPhieuNhap)
+        {
+            using var transaction = _context.Database.BeginTransaction();
+
+            try
+            {
+                var chiTiet = _context.ChiTietNhapHangs
+                    .Where(x => x.MaPhieuNhap == maPhieuNhap)
+                    .ToList();
+
+                _context.ChiTietNhapHangs.RemoveRange(chiTiet);
+
+                var phieuNhap = _context.PhieuNhapHangs
+                    .FirstOrDefault(x => x.MaPhieuNhap == maPhieuNhap);
+
+                if (phieuNhap != null)
+                    _context.PhieuNhapHangs.Remove(phieuNhap);
+
+                _context.SaveChanges();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
     }
 }
+

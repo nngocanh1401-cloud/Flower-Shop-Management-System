@@ -133,7 +133,7 @@ SELECT * FROM SanPham
 -- =================
 -- = ThemPhieuNhap =
 -- =================
-GO
+
 ALTER PROCEDURE ThemPhieuNhap
 @MaPhieuNhap NVARCHAR(10),
 @MaNCC NVARCHAR(10),
@@ -142,45 +142,70 @@ ALTER PROCEDURE ThemPhieuNhap
 @SoLuong INT
 AS
 BEGIN
-	BEGIN TRANSACTION
-	BEGIN TRY
-	DECLARE @DonGia DECIMAL(18,2)
+    SET NOCOUNT ON;
 
-        -- Lấy đơn giá từ sản phẩm
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        DECLARE @DonGia DECIMAL(18,2);
+
         SELECT @DonGia = DonGia
         FROM SanPham
-        WHERE MaSP = @MaSP
+        WHERE MaSP = @MaSP;
 
-        -- Check sản phẩm tồn tại
         IF @DonGia IS NULL
         BEGIN
-            RAISERROR(N'Sản phẩm không tồn tại',16,1)
-            ROLLBACK
-            RETURN
+            THROW 50001, N'Sản phẩm không tồn tại', 1;
         END
-	IF NOT EXISTS (SELECT 1 FROM PhieuNhapHang WHERE MaPhieuNhap=@MaPhieuNhap)
-	BEGIN
-		INSERT INTO PhieuNhapHang(MaPhieuNhap, MaNCC, MaTrangThai, NgayNhap, TongTien)
-        VALUES (@MaPhieuNhap, @MaNCC, @MaTrangThai, GETDATE(), 0)
-	END
 
-		-- ChiTietNhapHang
-		INSERT INTO ChiTietNhapHang
-        VALUES (@MaPhieuNhap, @MaSP, @SoLuong, @DonGia, NULL)
+        IF @SoLuong <= 0
+        BEGIN
+            THROW 50002, N'Số lượng nhập phải lớn hơn 0', 1;
+        END
 
-		-- Tổng tiền
+        IF NOT EXISTS (SELECT 1 FROM NhaCungCap WHERE MaNCC = @MaNCC)
+        BEGIN
+            THROW 50003, N'Nhà cung cấp không tồn tại', 1;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM PhieuNhapHang WHERE MaPhieuNhap = @MaPhieuNhap)
+        BEGIN
+            INSERT INTO PhieuNhapHang(MaPhieuNhap, MaNCC, MaTrangThai, NgayNhap, TongTien)
+            VALUES (@MaPhieuNhap, @MaNCC, @MaTrangThai, GETDATE(), 0);
+        END
+
+        IF EXISTS (
+            SELECT 1
+            FROM ChiTietNhapHang
+            WHERE MaPhieuNhap = @MaPhieuNhap
+              AND MaSP = @MaSP
+        )
+        BEGIN
+            UPDATE ChiTietNhapHang
+            SET SoLuong = SoLuong + @SoLuong
+            WHERE MaPhieuNhap = @MaPhieuNhap
+              AND MaSP = @MaSP;
+        END
+        ELSE
+        BEGIN
+            INSERT INTO ChiTietNhapHang(MaPhieuNhap, MaSP, SoLuong, DonGia, HanSuDung)
+            VALUES (@MaPhieuNhap, @MaSP, @SoLuong, @DonGia, NULL);
+        END
+
         UPDATE PhieuNhapHang
         SET TongTien = TongTien + (@SoLuong * @DonGia)
-        WHERE MaPhieuNhap = @MaPhieuNhap
+        WHERE MaPhieuNhap = @MaPhieuNhap;
 
-		COMMIT
+        COMMIT;
     END TRY
-
     BEGIN CATCH
-        ROLLBACK
-        PRINT ERROR_MESSAGE()
+        IF @@TRANCOUNT > 0
+            ROLLBACK;
+
+        THROW;
     END CATCH
 END
+GO
 
 --------------------------
 -- TEST THÊM PHIẾU NHẬP --
@@ -393,4 +418,10 @@ BEGIN
         ROLLBACK TRANSACTION; THROW;
     END CATCH
 END;
+USE Fshop
 GO
+SELECT * FROM NhaCungCap
+SELECT * FROM PhieuNhapHang
+SELECT * FROM ChiTietNhapHang
+SELECT * FROM SanPham WHERE MaSP = 'SP001'
+select * from DonHang

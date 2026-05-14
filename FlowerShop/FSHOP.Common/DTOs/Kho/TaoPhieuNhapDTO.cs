@@ -7,11 +7,10 @@ namespace FSHOP.Common.DTO.Kho
     //Nhận dữ liệu từ form tạo phiếu
     public class TaoPhieuNhapDTO
     {
-        // Phần ghi vào bảng PhieuNhapHang
-        public string MaNCC { get; set; }
-        public int MaTrangThai { get; set; }
+        public string MaPhieuNhap { get; set; } = string.Empty;
 
-        // Phần ghi vào bảng ChiTietPhieuNhap
-        public List<ChiTietPhieuNhapDTO> DanhSachChiTiet { get; set; }
+        public string MaNCC { get; set; } = string.Empty;
+
+        public List<ChiTietPhieuNhapDTO> DanhSachChiTiet { get; set; } = new();
     }
 }
