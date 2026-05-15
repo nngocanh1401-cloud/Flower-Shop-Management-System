@@ -7,10 +7,13 @@ namespace FSHOP.Common.DTO.BanHang
     //Chỉ lấy những thông tin khách cần thấy
     public class VoucherDTO
     {
-        public string MaVoucher { get; set; }
-        public string TenVoucher { get; set; }
+        public string MaVoucher { get; set; } = string.Empty;
+        public string TenVoucher { get; set; } = string.Empty;
+        public DateOnly NgayBd { get; set; }
+        public DateOnly NgayKt { get; set; }
         public decimal GiaTriGiam { get; set; }
-        public string LoaiGiam { get; set; }
+        public string LoaiGiam { get; set; } = string.Empty;
         public decimal DieuKienApDung { get; set; }
+        public int SoLuong { get; set; }
     }
 }

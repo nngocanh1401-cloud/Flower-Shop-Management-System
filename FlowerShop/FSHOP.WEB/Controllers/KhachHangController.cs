@@ -100,6 +100,35 @@ namespace FSHOP.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var kh = await _ctx.KhachHangs.FindAsync(id);
+
+            if (kh == null)
+                return NotFound(new { message = "Không tìm thấy khách hàng" });
+
+            // Kiểm tra khách hàng đã có đơn hàng hay chưa
+            bool daCoDonHang = await _ctx.DonHangs.AnyAsync(d => d.MaKh == id);
+
+            if (daCoDonHang)
+                return BadRequest(new
+                {
+                    message = "Không thể xóa khách hàng vì khách hàng đã có đơn hàng"
+                });
+
+            _ctx.KhachHangs.Remove(kh);
+            await _ctx.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Xóa khách hàng thành công"
+            });
+        }
+
+
     }
 }
 
