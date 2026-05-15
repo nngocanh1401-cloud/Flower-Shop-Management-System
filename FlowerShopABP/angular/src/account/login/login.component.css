@@ -1,0 +1,380 @@
+/* =========================
+   BACKGROUND TOÀN TRANG
+========================= */
+
+.login-page {
+    position: relative;
+    min-height: 100vh;
+
+    background-image:
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.78)),
+        url('../../assets/img/hoa.jpg');
+
+    background-size: cover;
+    background-position: center-center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+/* =========================
+   LỚP MỜ PHÍA SAU
+========================= */
+.overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(circle at top left,
+        rgba(255,255,255,0.08),
+        transparent 40%);
+
+    backdrop-filter: blur(4px);
+}
+
+/* =========================
+   KHUNG LOGIN
+========================= */
+.login-card {
+    position: relative;
+    z-index: 10;
+
+    width: 420px;
+
+    padding: 55px 45px;
+
+    border-radius: 22px;
+
+    background: rgba(20, 20, 20, 0.55);
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.45);
+
+    color: white;
+
+    animation: floatCard 0.7s ease;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes floatCard {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   LOGO/TITLE
+========================= */
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h1 {
+    color: white;
+
+    font-size: 38px;
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+    letter-spacing: 1px;
+}
+
+.logo h1 i {
+    color: #ff7aa2;
+    margin-right: 10px;
+}
+
+.shop-slogan {
+    color: rgba(255,255,255,0.72);
+
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+/* =========================
+   FORM
+========================= */
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: rgba(255,255,255,0.88);
+}
+
+/* =========================
+   INPUT
+========================= */
+.form-group input {
+    width: 100%;
+    height: 54px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    background: rgba(255,255,255,0.08);
+
+    color: white;
+
+    padding: 0 16px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: all 0.25s ease;
+}
+
+.form-group input::placeholder {
+    color: rgba(255,255,255,0.45);
+}
+
+.form-group input:focus {
+    border-color: #ff7aa2;
+
+    background: rgba(255,255,255,0.12);
+
+    box-shadow:
+        0 0 0 3px rgba(255,122,162,0.15);
+}
+
+/* =========================
+   NÚT LOGIN
+========================= */
+.btn-login {
+    width: 100%;
+    height: 54px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, #ff4f81, #ff7aa2);
+
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    margin-top: 10px;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(255,122,162,0.35);
+}
+
+/* =========================
+   LỖI
+========================= */
+.error-box {
+    background: rgba(255, 80, 80, 0.15);
+
+    border: 1px solid rgba(255, 80, 80, 0.25);
+
+    color: #ffb3b3;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+/* =========================
+   FOOTER NHỎ
+========================= */
+.login-footer {
+    text-align: center;
+
+    margin-top: 22px;
+
+    color: rgba(255,255,255,0.5);
+
+    font-size: 13px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media screen and (max-width: 576px) {
+
+    .login-card {
+        width: 92%;
+        padding: 40px 25px;
+    }
+
+    .logo h1 {
+        font-size: 30px;
+    }
+}
+
+/* FULL SCREEN FIX */
+:host {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+.login-page {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 50px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+
+    transform: translateY(-50%);
+
+    background: transparent;
+    border: none;
+
+    color: #999;
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+.toggle-password:hover {
+    color: #ff6b9d;
+}
+
+.success-box {
+    background: rgba(40, 200, 120, 0.15);
+
+    border: 1px solid rgba(40, 200, 120, 0.25);
+
+    color: #a8ffd0;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+.btn-back-login {
+    width: 100%;
+    height: 48px;
+
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+
+    background: rgba(255,255,255,0.08);
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    margin-top: 12px;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+}
+
+.btn-back-login:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+.input-readonly {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.btn-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+    color: #666;
+
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+}
+
+.btn-eye:hover {
+    color: #222;
+}

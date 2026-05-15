@@ -1,0 +1,81 @@
+<div class="shop-page">
+    <header class="shop-header">
+        <div>
+            <h1>Flower Shop</h1>
+            <p>Hoa tươi cho mọi khoảnh khắc</p>
+        </div>
+
+        <a class="admin-link" href="/account/login">
+            Đăng nhập quản trị
+        </a>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <h2>Chọn hoa xinh cho ngày đặc biệt</h2>
+            <p>Khám phá các mẫu hoa tươi đang có tại cửa hàng.</p>
+
+            <div class="search-box">
+                <input
+                    type="text"
+                    [(ngModel)]="tuKhoa"
+                    placeholder="Tìm hoa theo tên hoặc mã sản phẩm..."
+                    (keyup.enter)="timKiemSanPham()" />
+
+                <button (click)="timKiemSanPham()">
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="product-section">
+        <div class="section-title">
+            <h2>Danh sách sản phẩm</h2>
+            <p *ngIf="!dangTai">{{ danhSachHienThi.length }} sản phẩm đang hiển thị</p>
+        </div>
+
+        <div *ngIf="dangTai" class="loading-box">
+            Đang tải sản phẩm...
+        </div>
+
+        <div *ngIf="!dangTai && danhSachHienThi.length === 0" class="empty-box">
+            Không có sản phẩm phù hợp.
+        </div>
+
+        <div class="product-grid" *ngIf="!dangTai && danhSachHienThi.length > 0">
+            <div class="product-card" *ngFor="let sp of danhSachHienThi">
+                <div class="product-image">
+                    <img
+                        [src]="layAnhSanPham(sp)"
+                        [alt]="layTenSP(sp)"
+                        (error)="xuLyLoiAnh($event)" />
+                </div>
+
+                <div class="product-info">
+                    <div class="product-code">
+                        {{ layMaSP(sp) }}
+                    </div>
+
+                    <h3>{{ layTenSP(sp) }}</h3>
+
+                    <p class="category">
+                        Danh mục: {{ layMaDM(sp) || 'Chưa phân loại' }}
+                    </p>
+
+                    <p class="stock" [class.out-stock]="laySoLuongTon(sp) <= 0">
+                        {{ laySoLuongTon(sp) > 0 ? 'Còn hàng: ' + laySoLuongTon(sp) : 'Hết hàng' }}
+                    </p>
+
+                    <div class="price">
+                        {{ layDonGia(sp) | number:'1.0-0' }} đ
+                    </div>
+
+                    <button class="view-button" [disabled]="laySoLuongTon(sp) <= 0">
+                        {{ laySoLuongTon(sp) > 0 ? 'Xem sản phẩm' : 'Tạm hết hàng' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,44 @@
+.ket-qua-khach-hang {
+    border-left: 4px solid #28a745;
+}
+
+.khong-tim-thay {
+    border-left: 4px solid #ffc107;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 700;
+}
+
+textarea {
+    resize: none;
+}
+
+:host ::ng-deep .p-datatable {
+    font-size: 14px;
+}
+
+:host ::ng-deep .p-datatable thead th {
+    background: #f8f9fa;
+    color: #212529;
+    font-weight: 700;
+}
+
+:host ::ng-deep .p-autocomplete {
+    width: 100%;
+}
+
+:host ::ng-deep .p-autocomplete-input {
+    width: 100%;
+    height: 38px;
+    font-size: 14px;
+}
+
+:host ::ng-deep .p-autocomplete-dropdown {
+    height: 38px;
+}
+
+:host ::ng-deep .p-autocomplete-panel {
+    z-index: 30000 !important;
+}

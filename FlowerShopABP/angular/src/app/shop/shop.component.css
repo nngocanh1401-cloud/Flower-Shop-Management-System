@@ -1,0 +1,253 @@
+.shop-page {
+    min-height: 100vh;
+    background: #fff7fb;
+    color: #2f2f2f;
+    font-family: Arial;
+}
+
+.shop-header {
+    height: 72px;
+    padding: 0 60px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.shop-header h1 {
+    margin: 0;
+    color: #d63384;
+    font-weight: 800;
+}
+
+.shop-header p {
+    margin: 2px 0 0;
+    color: #777;
+}
+
+.admin-link {
+    text-decoration: none;
+    color: #d63384;
+    border: 1px solid #d63384;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.admin-link:hover {
+    background: #d63384;
+    color: #ffffff;
+}
+
+.hero-section {
+    padding: 70px 60px;
+    background: linear-gradient(120deg, #ffe0ef, #fff7fb);
+}
+
+.hero-content {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hero-content h2 {
+    font-size: 42px;
+    color: #b02a68;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.hero-content p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 28px;
+}
+
+.search-box {
+    display: flex;
+    max-width: 620px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(214, 51, 132, 0.16);
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 15px 20px;
+    font-size: 15px;
+}
+
+.search-box button {
+    border: none;
+    background: #d63384;
+    color: white;
+    padding: 0 26px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background: #b02a68;
+}
+
+.product-section {
+    padding: 45px 60px;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 24px;
+}
+
+.section-title h2 {
+    margin: 0;
+    color: #333;
+    font-weight: 800;
+}
+
+.section-title p {
+    margin: 0;
+    color: #777;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 24px;
+}
+
+.product-card {
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.product-image {
+    height: 190px;
+    background: #f8d7e8;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 18px;
+}
+
+.product-code {
+    display: inline-block;
+    background: #f1f3f5;
+    color: #666;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.product-info h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: #333;
+}
+
+.category {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.stock {
+    color: #198754;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.out-stock {
+    color: #dc3545;
+}
+
+.price {
+    color: #dc3545;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.view-button {
+    width: 100%;
+    border: none;
+    background: #d63384;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.view-button:hover:not(:disabled) {
+    background: #b02a68;
+}
+
+.view-button:disabled {
+    background: #adb5bd;
+    cursor: not-allowed;
+}
+
+.loading-box,
+.empty-box {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 16px;
+    text-align: center;
+    color: #777;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 768px) {
+    .shop-header {
+        padding: 0 20px;
+    }
+
+    .hero-section,k
+    .product-section {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .hero-content h2 {
+        font-size: 30px;
+    }
+
+    .search-box {
+        flex-direction: column;
+        border-radius: 18px;
+    }
+
+    .search-box button {
+        padding: 12px;
+    }
+}
