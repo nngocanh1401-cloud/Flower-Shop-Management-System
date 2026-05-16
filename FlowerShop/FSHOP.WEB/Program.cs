@@ -35,6 +35,7 @@ builder.Services.AddScoped<BaoCaoService>();
 builder.Services.AddScoped<SanPhamService>();
 builder.Services.AddScoped<DonHangService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<NhaCungCapService>();
 
 // --- Cấu hình JWT Authentication ---
 builder.Services.AddAuthentication(options =>
