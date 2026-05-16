@@ -1,102 +1,100 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-import { environment } from '../../environments/environment';
-
 @Component({
-  selector: 'app-shop',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './shop.component.html',
-  styleUrl: './shop.component.css'
+    selector: 'app-shop',
+    standalone: true,
+    imports: [CommonModule, FormsModule, HttpClientModule],
+    templateUrl: './shop.component.html',
+    styleUrls: ['./shop.component.css']
 })
 export class ShopComponent implements OnInit {
-  danhSachSanPham: any[] = [];
-  danhSachHienThi: any[] = [];
+    danhSachSanPham: any[] = [];
+    danhSachHienThi: any[] = [];
+    tuKhoa = '';
+    dangTai = false;
 
-  tuKhoa: string = '';
-  dangTai: boolean = false;
+    private apiUrl = 'https://localhost:7066/api/SanPham';
 
-  constructor(
-    private http: HttpClient,
-    private cdr: ChangeDetectorRef
-  ) {}
+    constructor(
+        private http: HttpClient,
+        private cdr: ChangeDetectorRef,
+        private zone: NgZone
+    ) {}
 
-  ngOnInit(): void {
-    this.layDanhSachSanPham();
-  }
-
-  layDanhSachSanPham() {
-    this.dangTai = true;
-
-    const apiUrl = environment.fshopApiUrl + '/api/SanPham';
-
-    this.http.get<any[]>(apiUrl).subscribe({
-      next: (data) => {
-        this.danhSachSanPham = data || [];
-        this.danhSachHienThi = this.danhSachSanPham;
-        this.dangTai = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Lỗi tải sản phẩm:', err);
-        this.danhSachSanPham = [];
-        this.danhSachHienThi = [];
-        this.dangTai = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  timKiemSanPham() {
-    const keyword = this.tuKhoa.trim().toLowerCase();
-
-    if (!keyword) {
-      this.danhSachHienThi = this.danhSachSanPham;
-      return;
+    ngOnInit(): void {
+        console.log('SHOP COMPONENT ĐÃ CHẠY');
+        this.loadSanPham();
     }
 
-    this.danhSachHienThi = this.danhSachSanPham.filter(sp => {
-      const maSP = this.layMaSP(sp).toLowerCase();
-      const tenSP = this.layTenSP(sp).toLowerCase();
+    loadSanPham(): void {
+        console.log('BẮT ĐẦU GỌI API SẢN PHẨM');
+        this.dangTai = true;
 
-      return maSP.includes(keyword) || tenSP.includes(keyword);
-    });
-  }
+        this.http.get<any[]>(this.apiUrl).subscribe({
+            next: (res) => {
+                console.log('DỮ LIỆU API:', res);
 
-  layMaSP(sp: any): string {
-    return sp.maSP || sp.maSp || '';
-  }
+                this.zone.run(() => {
+                    this.danhSachSanPham = [...res];
+                    this.danhSachHienThi = [...res];
+                    this.dangTai = false;
 
-  layTenSP(sp: any): string {
-    return sp.tenSP || sp.tenSp || '';
-  }
+                    console.log('SỐ SP HIỂN THỊ:', this.danhSachHienThi.length);
 
-  layDonGia(sp: any): number {
-    return sp.donGia || 0;
-  }
+                    this.cdr.detectChanges();
+                });
+            },
+            error: (err) => {
+                console.error('LỖI API:', err);
 
-  laySoLuongTon(sp: any): number {
-    return sp.soLuongTon || 0;
-  }
-
-  layMaDM(sp: any): string {
-    return sp.maDM || sp.maDm || '';
-  }
-
-  layAnhSanPham(sp: any): string {
-    const maSP = this.layMaSP(sp);
-
-    if (!maSP) {
-      return 'assets/img/hoa.jpg';
+                this.zone.run(() => {
+                    this.dangTai = false;
+                    this.cdr.detectChanges();
+                });
+            }
+        });
     }
 
-    return `assets/img/${maSP}.jpg`;
-  }
+    timKiemSanPham(): void {
+        const keyword = this.tuKhoa.trim().toLowerCase();
 
-  xuLyLoiAnh(event: any) {
-    event.target.src = 'assets/img/hoa.jpg';
-  }
+        if (!keyword) {
+            this.danhSachHienThi = [...this.danhSachSanPham];
+            return;
+        }
+
+        this.danhSachHienThi = this.danhSachSanPham.filter(sp =>
+            this.layTenSP(sp).toLowerCase().includes(keyword) ||
+            this.layMaSP(sp).toLowerCase().includes(keyword)
+        );
+    }
+
+    layMaSP(sp: any): string {
+        return sp?.maSp || sp?.maSP || sp?.MaSp || '';
+    }
+
+    layTenSP(sp: any): string {
+        return sp?.tenSp || sp?.tenSP || sp?.TenSp || 'Sản phẩm';
+    }
+
+    layDonGia(sp: any): number {
+        return sp?.donGia || sp?.DonGia || 0;
+    }
+
+    laySoLuongTon(sp: any): number {
+        return sp?.soLuongTon || sp?.SoLuongTon || 0;
+    }
+
+    layAnhSanPham(sp: any): string {
+        const maSp = this.layMaSP(sp);
+        return sp?.hinhAnh || sp?.HinhAnh || `assets/img/products/${maSp}.jpg`;
+    }
+
+    xuLyLoiAnh(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        img.src = 'assets/images/products/default.jpg';
+    }
 }

@@ -1,8 +1,6 @@
 ﻿USE FShop;
 GO
--- ===============
--- = ThemDonHang =
--- ===============
+-- ThemDonHang
 ALTER PROCEDURE ThemDonHang
  @MaDH NVARCHAR(10),
  @MaKH NVARCHAR(10),
@@ -46,20 +44,16 @@ BEGIN
         PRINT ERROR_MESSAGE()
     END CATCH
 END
-------------------------
--- TEST THÊM ĐƠN HÀNG --
-------------------------
+
+-- TEST THÊM ĐƠN HÀNG 
 EXEC ThemDonHang 'DH010', 'KH003', 1, NULL, 3, 'SP008', 5
 --check
 SELECT * FROM DonHang
 SELECT * FROM ChiTietDonHang
 SELECT * FROM SanPham
 
----------------------------------------------------
 
--- ====================
--- = CapNhatTrangThai =
--- ====================
+--  CapNhatTrangThai 
 GO
 CREATE PROCEDURE CapNhatTrangThai
     @MaDH NVARCHAR(10),
@@ -70,17 +64,14 @@ BEGIN
     SET MaTrangThai = @MaTrangThai
     WHERE MaDH = @MaDH
 END
-------------------------------
 -- TEST CẬP NHẬT TRẠNG THÁI --
-------------------------------
+
 --CapNhatTrangThai
 EXEC CapNhatTrangThai 'DH001',3
 SELECT * FROM TrangThai
 
--------------------------------------------------------
--- ==============
--- = HuyDonHang =
--- ==============
+
+--  HuyDonHang 
 GO
 CREATE OR ALTER PROCEDURE HuyDonHang
     @MaDH NVARCHAR(10)
@@ -120,21 +111,19 @@ BEGIN
        THROW;
     END CATCH
 END
-------------------------
+
 -- TEST HỦY ĐƠN HÀNG --
-------------------------
 EXEC HuyDonHang 'DH006'
 --check
 SELECT * FROM DonHang
 SELECT * FROM ChiTietDonHang
 SELECT * FROM SanPham
------------------------------------------------------
 
--- =================
--- = ThemPhieuNhap =
--- =================
 
-ALTER PROCEDURE ThemPhieuNhap
+
+-- ThemPhieuNhap 
+
+CREATE OR ALTER PROCEDURE ThemPhieuNhap
 @MaPhieuNhap NVARCHAR(10),
 @MaNCC NVARCHAR(10),
 @MaTrangThai INT,
@@ -207,9 +196,7 @@ BEGIN
 END
 GO
 
---------------------------
--- TEST THÊM PHIẾU NHẬP --
---------------------------
+-- TEST THÊM PHIẾU NHẬP 
 EXEC ThemPhieuNhap'PN009','NCC002', 6,'SP001', 10
 -- check
 SELECT * FROM PhieuNhapHang
@@ -361,9 +348,7 @@ BEGIN
     JOIN inserted i ON sp.MaSP = i.MaSP
 END
 
--- =================
--- = CapNhatTonKho =
--- =================
+--  CapNhatTonKho 
 GO
 ALTER TRIGGER CapNhatTonKho
 ON ChiTietDonHang
@@ -376,9 +361,8 @@ BEGIN
     JOIN inserted i ON sp.MaSP = i.MaSP
 END
 
-/*-- ==============
--- = HoanTonKho =
--- ==============
+/*
+-- HoanTonKho 
 GO
 ALTER TRIGGER HoanTonKho
 ON ChiTietTraHang

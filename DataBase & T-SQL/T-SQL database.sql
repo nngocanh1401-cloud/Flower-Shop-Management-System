@@ -168,4 +168,5 @@ select * from NguoiDung
 select * from PhuongThucThanhToan
 select * from Voucher
 select * from ChiTietDonHang
+select * from PhieuNhapHang
 
