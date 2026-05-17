@@ -112,6 +112,7 @@ CREATE TABLE ChiTietNhapHang (
     HanSuDung DATE,
     PRIMARY KEY (MaPhieuNhap, MaSP)
 );
+-- them seek data
 
 CREATE TABLE VaiTro (
     MaVaiTro  INT          PRIMARY KEY,
@@ -127,5 +128,7 @@ CREATE TABLE NguoiDung (
     NgayTao      DATETIME      DEFAULT GETDATE(),
     IsActive     BIT           DEFAULT 1
 );
+
+
 
 
