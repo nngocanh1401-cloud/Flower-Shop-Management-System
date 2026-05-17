@@ -153,14 +153,6 @@ CREATE TABLE NguoiDung (
     NgayTao      DATETIME      DEFAULT GETDATE(),
     IsActive     BIT           DEFAULT 1
 );
-GO
-SELECT * 
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_NAME = 'NguoiDung'
-USE FShop
-GO
-DELETE FROM NguoiDung
-WHERE TenDangNhap = 'ngocanh'
 select * from DonHang
 Select * from SanPham
 select * from KhachHang
