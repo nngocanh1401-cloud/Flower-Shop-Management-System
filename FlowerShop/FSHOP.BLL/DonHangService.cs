@@ -1,11 +1,12 @@
-﻿using FSHOP.DAL.Interfaces;
+﻿using FSHOP.Common.DTOs.BanHang;
+using FSHOP.DAL.Interfaces;
 using FSHOP.DAL.Models;
+using FSHOP.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FSHOP.DAL.Repositories;
 
 namespace FSHOP.BLL
 {
@@ -48,6 +49,10 @@ namespace FSHOP.BLL
             return _donHangRepo.TaoDonHangBangEf(dh);
         }
 
+        public IEnumerable<LichSuMuaHangDTO> GetLichSuMuaHang(string maKH)
+        {
+            return _donHangRepo.GetLichSuMuaHang(maKH);
+        }
         public IEnumerable<DonHang> GetAllDonHang()
         {
             return _donHangRepo.GetDanhSach();

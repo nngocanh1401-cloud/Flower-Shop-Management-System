@@ -1,4 +1,5 @@
-﻿using FSHOP.DAL.Interfaces;
+﻿using FSHOP.Common.DTOs.BanHang;
+using FSHOP.DAL.Interfaces;
 using FSHOP.DAL.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,38 @@ namespace FSHOP.DAL.Repositories
             return BuildDonHangQuery()
                 .Where(dh => dh.MaTrangThai == maTrangThai)
                 .ToList();
+        }
+
+        public IEnumerable<LichSuMuaHangDTO> GetLichSuMuaHang(string maKH)
+        {
+            var result = new List<LichSuMuaHangDTO>();
+
+            using var conn = new SqlConnection(_context.Database.GetConnectionString());
+
+            using var cmd = new SqlCommand(
+                "SELECT * FROM dbo.fn_LichSuMuaHang(@MaKH)",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@MaKH", maKH);
+
+            conn.Open();
+
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                result.Add(new LichSuMuaHangDTO
+                {
+                    MaDH = reader["MaDH"].ToString(),
+                    NgayDat = reader["NgayDat"] as DateTime?,
+                    TongTien = Convert.ToDecimal(reader["TongTien"]),
+                    TenTrangThai = reader["TenTrangThai"].ToString(),
+                    SoLoaiSP = Convert.ToInt32(reader["SoLoaiSP"])
+                });
+            }
+
+            return result;
         }
 
         public IEnumerable<DonHang> LocDonHang(string? maKH, int? maTrangThai, int? maPttt, string? maVoucher, DateTime? tuNgay, DateTime? denNgay, string? keyword)
@@ -347,8 +380,6 @@ namespace FSHOP.DAL.Repositories
                 return $"Lỗi cập nhật đơn hàng: {FormatDbSaveError(ex)}";
             }
         }
-
-        /// <summary>Lấy thông báo lỗi SQL (FK, trùng MaDH, …) từ InnerException.</summary>
         private static string FormatDbSaveError(Exception ex)
             => ex.GetBaseException().Message;
 
@@ -387,22 +418,6 @@ namespace FSHOP.DAL.Repositories
                 transaction.Rollback();
                 return $"Không thể hủy đơn hàng: {ex.GetBaseException().Message}";
             }
-        }
-
-        public void HuyDonHang(string maDH)
-        {
-            _context.Database.ExecuteSqlRaw(
-                "EXEC HuyDonHang @MaDH",
-                new SqlParameter("@MaDH", maDH)
-            );
-        }
-        public void CapNhatTrangThai(string maDH, int maTrangThai)
-        {
-            _context.Database.ExecuteSqlRaw(
-                "EXEC CapNhatTrangThai @MaDH, @MaTrangThai",
-                new SqlParameter("@MaDH", maDH),
-                new SqlParameter("@MaTrangThai", maTrangThai)
-            );
         }
     }
 }

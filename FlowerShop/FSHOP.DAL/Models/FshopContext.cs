@@ -29,8 +29,6 @@ public partial class FshopContext : DbContext
 
     public virtual DbSet<PhieuNhapHang> PhieuNhapHangs { get; set; }
 
-    public virtual DbSet<PhieuTraHang> PhieuTraHangs { get; set; }
-
     public virtual DbSet<PhuongThucThanhToan> PhuongThucThanhToans { get; set; }
 
     public virtual DbSet<SanPham> SanPhams { get; set; }
@@ -47,17 +45,6 @@ public partial class FshopContext : DbContext
     public virtual DbSet<VwTonKhoSanPham> VwTonKhoSanPhams { get; set; }
 
     public virtual DbSet<VwTopSanPhamBanChay> VwTopSanPhamBanChays { get; set; }
-
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-50HKF50\\SQLEXPRESS01;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
-    //}
-
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-GQUJ66B\\SQLEXPRESS;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
-    //}
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -107,29 +94,6 @@ public partial class FshopContext : DbContext
                 .HasForeignKey(d => d.MaSp)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ChiTietNha__MaSP__00200768");
-        });
-
-        modelBuilder.Entity<ChiTietTraHang>(entity =>
-        {
-            entity.HasKey(e => new { e.MaPhieuTra, e.MaSp }).HasName("PK__ChiTietT__CFFA5AC76E3D2459");
-
-            entity.ToTable("ChiTietTraHang");
-
-            entity.Property(e => e.MaPhieuTra).HasMaxLength(10);
-            entity.Property(e => e.MaSp)
-                .HasMaxLength(10)
-                .HasColumnName("MaSP");
-            entity.Property(e => e.DonGia).HasColumnType("decimal(18, 2)");
-
-            entity.HasOne(d => d.MaPhieuTraNavigation).WithMany(p => p.ChiTietTraHangs)
-                .HasForeignKey(d => d.MaPhieuTra)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ChiTietTr__MaPhi__06CD04F7");
-
-            entity.HasOne(d => d.MaSpNavigation).WithMany(p => p.ChiTietTraHangs)
-                .HasForeignKey(d => d.MaSp)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ChiTietTra__MaSP__07C12930");
         });
 
         modelBuilder.Entity<DanhMuc>(entity =>
@@ -255,28 +219,6 @@ public partial class FshopContext : DbContext
                 .HasForeignKey(d => d.MaTrangThai)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PhieuNhap__MaTra__7B5B524B");
-        });
-
-        modelBuilder.Entity<PhieuTraHang>(entity =>
-        {
-            entity.HasKey(e => e.MaPhieuTra).HasName("PK__PhieuTra__1D880A46476823FD");
-
-            entity.ToTable("PhieuTraHang");
-
-            entity.Property(e => e.MaPhieuTra).HasMaxLength(10);
-            entity.Property(e => e.LyDo).HasMaxLength(200);
-            entity.Property(e => e.MaPhieuNhap).HasMaxLength(10);
-            entity.Property(e => e.TongTienTra).HasColumnType("decimal(18, 2)");
-
-            entity.HasOne(d => d.MaPhieuNhapNavigation).WithMany(p => p.PhieuTraHangs)
-                .HasForeignKey(d => d.MaPhieuNhap)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PhieuTraH__MaPhi__02FC7413");
-
-            entity.HasOne(d => d.MaTrangThaiNavigation).WithMany(p => p.PhieuTraHangs)
-                .HasForeignKey(d => d.MaTrangThai)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PhieuTraH__MaTra__03F0984C");
         });
 
         modelBuilder.Entity<PhuongThucThanhToan>(entity =>
