@@ -4,7 +4,6 @@ using System.Text;
 
 namespace FSHOP.Common.DTO.BanHang
 {
-    //Dùng để hiển thị lịch sử đơn hàng
     public class DonHangDTO
     {
         public string MaDH { get; set; }

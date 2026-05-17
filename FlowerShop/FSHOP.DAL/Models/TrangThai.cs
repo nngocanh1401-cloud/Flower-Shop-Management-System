@@ -16,6 +16,4 @@ public partial class TrangThai
     public virtual ICollection<DonHang> DonHangs { get; set; } = new List<DonHang>();
 
     public virtual ICollection<PhieuNhapHang> PhieuNhapHangs { get; set; } = new List<PhieuNhapHang>();
-
-    public virtual ICollection<PhieuTraHang> PhieuTraHangs { get; set; } = new List<PhieuTraHang>();
 }

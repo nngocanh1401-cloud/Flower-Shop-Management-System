@@ -60,18 +60,6 @@ namespace FSHOP.API.Controllers
 
             return BadRequest(new { message = result });
         }
-
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(string id)
-        {
-            var result = _phieuNhapHangService.XoaPhieuNhap(id);
-
-            if (result == "Xóa phiếu nhập thành công")
-                return Ok(new { message = result });
-
-            return NotFound(new { message = result });
-        }
     }
 }
 

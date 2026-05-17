@@ -20,7 +20,16 @@ namespace FSHOP.DAL.Repositories
                 .Where(p => p.MaNcc == maNCC)
                 .ToList();
         }
-
+        public IEnumerable<PhieuNhapHang> GetDanhSach()
+        {
+            return _context.PhieuNhapHangs
+                .Include(p => p.ChiTietNhapHangs)
+                    .ThenInclude(ct => ct.MaSpNavigation)
+                .Include(p => p.MaNccNavigation)
+                .Include(p => p.MaTrangThaiNavigation)
+                .OrderByDescending(p => p.NgayNhap)
+                .ToList();
+        }
         public IEnumerable<PhieuNhapHang> GetByDateRange(DateTime tuNgay, DateTime denNgay)
         {
             return _dbSet

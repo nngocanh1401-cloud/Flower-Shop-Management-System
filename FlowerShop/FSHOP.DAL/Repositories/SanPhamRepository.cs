@@ -46,18 +46,11 @@ namespace FSHOP.DAL.Repositories
                     .Where(x => x.MaSp == id)
                     .ToList();
 
-                var chiTietTraHangs = _context.ChiTietTraHangs
-                    .Where(x => x.MaSp == id)
-                    .ToList();
-
                 if (chiTietDonHangs.Any())
                     _context.ChiTietDonHangs.RemoveRange(chiTietDonHangs);
 
                 if (chiTietNhapHangs.Any())
                     _context.ChiTietNhapHangs.RemoveRange(chiTietNhapHangs);
-
-                if (chiTietTraHangs.Any())
-                    _context.ChiTietTraHangs.RemoveRange(chiTietTraHangs);
 
                 _dbSet.Remove(sanPham);
                 _context.SaveChanges();

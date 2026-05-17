@@ -30,7 +30,6 @@ namespace FSHOP.BLL
         //  Đăng nhập 
         public async Task<LoginResponseDTO?> DangNhapAsync(string tenDangNhap, string matKhau)
         {
-            // Lưu ý: Đảm bảo bảng NguoiDung có navigation property MaVaiTroNavigation
             var nguoiDung = await _ctx.NguoiDungs
                 .Include(nd => nd.MaVaiTroNavigation)
                 .FirstOrDefaultAsync(nd => nd.TenDangNhap == tenDangNhap);
@@ -64,11 +63,11 @@ namespace FSHOP.BLL
             if (await _ctx.NguoiDungs.AnyAsync(nd => nd.TenDangNhap == dto.TenDangNhap))
                 throw new Exception("Tên đăng nhập đã tồn tại");
 
-            // Tạo mã người dùng mới dựa trên logic của bạn (ví dụ: ND + chuỗi thời gian)
+            // Tạo mã người dùng mới
             var maMoi = await TaoMaNguoiDungMoiAsync();
             var hashPW = BCrypt.Net.BCrypt.HashPassword(dto.MatKhau);
 
-            // Gọi Stored Procedure sp_DangKy (Thành viên B làm trong Tuần 1)
+            // Gọi Stored Procedure sp_DangKy
             await _ctx.Database.ExecuteSqlRawAsync(
                 "EXEC sp_DangKy @MaNguoiDung={0}, @TenDangNhap={1}, @MatKhauHash={2}, @TenKH={3}, @SDT={4}, @DiaChi={5}",
                 maMoi, dto.TenDangNhap, hashPW, dto.TenKH, dto.SDT, dto.DiaChi ?? "");
@@ -113,7 +112,6 @@ namespace FSHOP.BLL
             await _ctx.SaveChangesAsync();
             return true;
         }
-
         //  Tạo JWT Token 
         private string TaoJwtToken(string maNguoiDung, string tenDangNhap, string vaiTro, string? maKH)
         {

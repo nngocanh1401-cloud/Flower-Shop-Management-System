@@ -33,7 +33,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,KhachHang")] // Cả 2 đều vào được, nhưng phải kiểm tra đơn hàng đó có đúng của khách hàng đang đăng nhập không. Nếu không, khách hàng A có thể xem đơn hàng của khách hàng B.
+        [Authorize(Roles = "Admin,KhachHang")] // Cả 2 đều vào được, KhachHang chỉ xem đơn của mình
         public IActionResult GetById(string id)
         {
             var result = _service.GetById(id);
@@ -153,7 +153,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")] // chỉ admin sửa đơn hàng, khách hàng được sửa đơn khi đơn chưa xử lý thì cần kiểm tra thêm trong service.
+        [Authorize(Roles = "Admin")] // chỉ admin sửa đơn hàng
         public IActionResult Update(string id, [FromBody] CapNhatDonHangDTO dto)
         {
             var donHang = new DonHang
@@ -199,7 +199,7 @@ namespace FSHOP.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền xóa/hủy đơn hàng của hệ thống
+        [Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền hủy đơn hàng của hệ thống
         public IActionResult Delete(string id)
         {
             var result = _service.HuyDonHang(id);

@@ -18,9 +18,8 @@ namespace FSHOP.BLL
             _sanPhamrepo = sanPhamrepo;
             _danhMucRepo = danhMucRepo;
         }
-        // =========================
-        // LẤY DANH SÁCH SẢN PHẨM
-        // =========================
+        
+        //Tạo sản phẩm
         public string TaoSanPham(SanPham sp)
         {
             var validateResult = KiemTraSanPham(sp);
@@ -46,12 +45,10 @@ namespace FSHOP.BLL
 
         public IEnumerable<SanPham> GetAllSanPham()
         {
-            // GỌI DAL
+            // Gọi DAL
             return _sanPhamrepo.GetAll();
         }
-        // =========================
-        // VALIDATE + THÊM LOGIC
-        // =========================
+        //Validate 
         public string KiemTraSanPham(SanPham sp)
         {
             if (sp == null)
@@ -77,10 +74,9 @@ namespace FSHOP.BLL
 
         public List<SanPham> TimKiemSanPham(string keyword)
         {
-            // 1. GỌI DAL
             var list = _sanPhamrepo.GetAll();
 
-            // 2. XỬ LÝ LINQ (BLL)
+            // Xử lý LinQ
             return list.Where(x => x.TenSp != null &&
             x.TenSp.ToLower().Contains(keyword.ToLower())).ToList();
         }

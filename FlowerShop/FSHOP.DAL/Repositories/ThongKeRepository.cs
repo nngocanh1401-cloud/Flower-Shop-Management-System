@@ -23,7 +23,7 @@ namespace FSHOP.DAL.Repositories
         {
             try
             {
-                // 1. Kéo dữ liệu từ View lên RAM (sử dụng LINQ to Objects)
+                // Kéo dữ liệu từ View lên
                 var danhSachTonKho = _context.VwTonKhoSanPhams.ToList();
 
                 if (danhSachTonKho.Count == 0)
@@ -31,13 +31,12 @@ namespace FSHOP.DAL.Repositories
                     return (false, "Không có dữ liệu tồn kho để xuất.");
                 }
 
-                // 2. Sử dụng LINQ to XML để tạo cấu trúc phân cấp
+                // Tạo cấu trúc phân câp bằng LINQ to XML
                 XDocument xmlDoc = new XDocument(
                     new XDeclaration("1.0", "utf-8", "yes"),
                     new XElement("BaoCaoTonKho",
                         new XAttribute("NgayXuat", DateTime.Now.ToString("dd-MM-yyyy HH:mm")),
 
-                        // Vòng lặp LINQ biến mỗi dòng dữ liệu thành một block XML
                         danhSachTonKho.Select(item =>
                             new XElement("SanPham",
                                 new XElement("MaSp", item.MaSp),
@@ -48,26 +47,25 @@ namespace FSHOP.DAL.Repositories
                     )
                 );
 
-                // 3. Lưu thành tệp vật lý tại đường dẫn được chỉ định
+                // Lưu
                 xmlDoc.Save(filePath);
 
                 return (true, $"Đã xuất file XML thành công tại: {filePath}");
             }
             catch (Exception ex)
             {
-                // Bắt lỗi nếu không có quyền ghi file hoặc đường dẫn sai
                 return (false, $"Lỗi khi xuất file XML: {ex.Message}");
             }
         }
 
         public IEnumerable<ThongKeNhapKhoDTO> ThongKeTongNhapTheoSanPham()
         {
-            // 1. Lấy dữ liệu thô và ép lên RAM
+            // Lấy dữ liệu
             var toanBoChiTiet = _context.ChiTietNhapHangs.ToList();
 
-            // 2. Thao tác LINQ to Objects
+            // Thao tác LINQ to Objects
             var ketQuaThongKe = toanBoChiTiet
-                // Dùng .Where để lọc bớt dữ liệu rác (ví dụ chỉ lấy chi tiết có số lượng > 0)
+                // Dùng .Where để lọc bớt dữ liệu rác
                 .Where(ct => ct.SoLuong > 0)
 
                 // Dùng .GroupBy để gom tất cả các dòng có chung Mã Sản Phẩm lại thành 1 nhóm

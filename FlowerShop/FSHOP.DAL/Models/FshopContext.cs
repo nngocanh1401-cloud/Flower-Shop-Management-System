@@ -14,11 +14,10 @@ public partial class FshopContext : DbContext
     {
     }
     public virtual DbSet<NguoiDung> NguoiDungs { get; set; }
+
     public virtual DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
 
     public virtual DbSet<ChiTietNhapHang> ChiTietNhapHangs { get; set; }
-
-    public virtual DbSet<ChiTietTraHang> ChiTietTraHangs { get; set; }
 
     public virtual DbSet<DanhMuc> DanhMucs { get; set; }
 

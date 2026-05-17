@@ -12,21 +12,19 @@ namespace FSHOP.BLL
     public class BaoCaoService
     {
         private readonly IBaoCaoRepository _baoCaoRepo;
-        // Báo cáo sản phẩm tổng quát
+
         public BaoCaoService(IBaoCaoRepository baoCaoRepo)
         {
             _baoCaoRepo = baoCaoRepo;
         }
 
+        //báo cáo sản phẩm
         public List<VwBaoCaoSanPham> LayBaoCaoSanPham()
         {
             return _baoCaoRepo.GetBaoCao();
         }
-        // Báo cáo doanh thu theo tháng
-        //public List<VwDoanhThuTheoThang> LayDoanhThu()
-        //{
-        //    return _baoCaoRepo.GetDoanhThu();
-        //}
+
+        //Báo cáo doanh thu theo tháng, năm
         public List<VwDoanhThuTheoThang> LayDoanhThu(int? nam, int? thang)
         {
             return _baoCaoRepo.LayDoanhThu(nam, thang);

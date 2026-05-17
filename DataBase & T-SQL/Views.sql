@@ -53,7 +53,6 @@ GO
 
 select * from  vw_TonKhoSanPham
 
-
 -- View 4: Chi tiết đơn hàng đầy đủ (join nhiều bảng)
 CREATE VIEW vw_ChiTietDonHang AS
 SELECT
@@ -75,7 +74,6 @@ JOIN SanPham sp                 ON ct.MaSP     = sp.MaSP;
 GO
 select * from  vw_ChiTietDonHang
 
-
 -- View 5: Báo cáo sản phẩm
 CREATE VIEW Vw_BaoCaoSanPham
 AS
@@ -95,10 +93,4 @@ GROUP BY
     sp.DonGia
 GO
 
--- ADD HAM TRIGGER DR TINH KHI CO VOUCHER
-USE FShop
-GO
-
-SELECT * FROM ChiTietDonHang
-SELECT TABLE_NAME
-FROM INFORMATION_SCHEMA.TABLES
+select * from  vw_ChiTietDonHang

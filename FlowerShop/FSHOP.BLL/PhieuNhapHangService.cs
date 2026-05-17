@@ -18,14 +18,35 @@ namespace FSHOP.BLL
         {
             _phieuNhapHangRepo = repo;
         }
-        public IEnumerable<PhieuNhapHang> GetAll()
+        public IEnumerable<PhieuNhapHangDTO> GetAll()
         {
-            return _phieuNhapHangRepo.GetAll();
+            return _phieuNhapHangRepo.GetDanhSach()
+         .Select(p => new PhieuNhapHangDTO
+         {
+             MaPhieuNhap = p.MaPhieuNhap,
+             MaNCC = p.MaNcc,
+             TenNCC = p.MaNccNavigation?.TenNcc,
+             MaTrangThai = p.MaTrangThai,
+             TenTrangThai = p.MaTrangThaiNavigation?.TenTrangThai,
+             NgayNhap = p.NgayNhap,
+             TongTien = p.TongTien,
+
+             ChiTietNhapHangs = p.ChiTietNhapHangs.Select(ct => new ChiTietPhieuNhapDTO
+             {
+                 MaSP = ct.MaSp,
+                 TenSP = ct.MaSpNavigation?.TenSp,
+                 SoLuong = ct.SoLuong,
+                 DonGia = ct.DonGia,
+                 ThanhTien = ct.SoLuong * ct.DonGia
+             }).ToList()
+         })
+         .ToList();
         }
 
         public PhieuNhapHangDTO GetById(string id)
         {
-            var p = _phieuNhapHangRepo.GetById(id);
+            var p = _phieuNhapHangRepo.GetDanhSach()
+        .FirstOrDefault(x => x.MaPhieuNhap == id);
 
             if (p == null) return null;
 
@@ -33,9 +54,20 @@ namespace FSHOP.BLL
             {
                 MaPhieuNhap = p.MaPhieuNhap,
                 MaNCC = p.MaNcc,
+                TenNCC = p.MaNccNavigation?.TenNcc,
                 MaTrangThai = p.MaTrangThai,
+                TenTrangThai = p.MaTrangThaiNavigation?.TenTrangThai,
                 NgayNhap = p.NgayNhap,
-                TongTien = p.TongTien
+                TongTien = p.TongTien,
+
+                ChiTietNhapHangs = p.ChiTietNhapHangs.Select(ct => new ChiTietPhieuNhapDTO
+                {
+                    MaSP = ct.MaSp,
+                    TenSP = ct.MaSpNavigation?.TenSp,
+                    SoLuong = ct.SoLuong,
+                    DonGia = ct.DonGia,
+                    ThanhTien = ct.SoLuong * ct.DonGia
+                }).ToList()
             };
         }
         public string TaoPhieuNhap(TaoPhieuNhapDTO dto)

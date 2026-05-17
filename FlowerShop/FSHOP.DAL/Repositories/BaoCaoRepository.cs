@@ -20,13 +20,9 @@ namespace FSHOP.DAL.Repositories
         }
         public List<VwTopSanPhamBanChay> GetTopBanChay()
         {
-            // Gọi dữ liệu từ View tương ứng trong Database
+            // Gọi View
             return _context.VwTopSanPhamBanChays.ToList();
         }
-        //public List<VwDoanhThuTheoThang> GetDoanhThu()
-        //{
-        //    return _context.VwDoanhThuTheoThangs.ToList();
-        //}
         public List<VwDoanhThuTheoThang> LayDoanhThu(int? nam, int? thang)
         {
             var query = _context.VwDoanhThuTheoThangs.AsQueryable();

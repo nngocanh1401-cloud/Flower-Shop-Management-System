@@ -19,12 +19,12 @@ namespace FSHOP.API.Controllers
             _authService = authService;
         }
 
-        /// <summary>Đăng nhập — trả về JWT token</summary>
+        //Đăng nhập — trả về JWT token//
         [HttpPost("dangnhap")]
         [AllowAnonymous]
         public async Task<IActionResult> DangNhap([FromBody] LoginRequestDTO dto)
         {
-            // Gọi service xử lý đăng nhập
+            //Gọi service xử lý đăng nhập
             var result = await _authService.DangNhapAsync(dto.TenDangNhap, dto.MatKhau);
 
             if (result == null)
@@ -33,7 +33,7 @@ namespace FSHOP.API.Controllers
             return Ok(result);
         }
 
-        /// <summary>Đăng ký tài khoản khách hàng mới</summary>
+        //Đăng ký tài khoản khách hàng mới
         [HttpPost("dangky")]
         [AllowAnonymous]
         public async Task<IActionResult> DangKy([FromBody] DangKyDTO dto)
@@ -50,12 +50,12 @@ namespace FSHOP.API.Controllers
             }
         }
 
-        /// <summary>Đổi mật khẩu — yêu cầu đăng nhập</summary>
+        //Đổi mật khẩu — yêu cầu đăng nhập
         [HttpPut("doimatkhau")]
-        [Authorize] // Yêu cầu có Token hợp lệ
+        [Authorize] //Yêu cầu có Token hợp lệ
         public async Task<IActionResult> DoiMatKhau([FromBody] DoiMatKhauDTO dto)
         {
-            // Lấy mã người dùng (MaNguoiDung) từ Claims của JWT token
+            // Lấy mã người dùng từ Claims của JWT token
             var maNguoiDung = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(maNguoiDung))

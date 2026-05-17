@@ -19,7 +19,5 @@ public partial class SanPham
 
     public virtual ICollection<ChiTietNhapHang> ChiTietNhapHangs { get; set; } = new List<ChiTietNhapHang>();
 
-    public virtual ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; } = new List<ChiTietTraHang>();
-
     public virtual DanhMuc? MaDmNavigation { get; set; }
 }

@@ -18,7 +18,6 @@ namespace FSHOP.BLL
             _donHangRepo = donHangRepo;
         }
 
-        /// <summary>Gộp dòng trùng MaSP; tạo đơn bằng EF (tránh EXEC ThemDonHang + trigger lồng 32 tầng).</summary>
         public string TaoDonHang(DonHang dh)
         {
             if (dh == null)

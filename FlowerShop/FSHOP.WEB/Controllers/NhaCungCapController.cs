@@ -1,4 +1,5 @@
 ﻿using FSHOP.BLL;
+using FSHOP.Common.DTOs.Kho;
 using FSHOP.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -38,31 +39,39 @@ namespace FSHOP.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult Create([FromBody] NhaCungCap ncc)
+        public IActionResult Create([FromBody] TaoNhaCungCapDTO dto)
         {
+            var ncc = new NhaCungCap
+            {
+                MaNcc = dto.MaNCC,
+                TenNcc = dto.TenNCC,
+                DiaChi = dto.DiaChi,
+                Sdt = dto.SDT,
+                Email = dto.Email,
+                MaSoThue = dto.MaSoThue
+            };
+
             var result = _service.Create(ncc);
+
             return Ok(new { message = result });
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult Update(string id, [FromBody] NhaCungCap ncc)
+        public IActionResult Update(string id, [FromBody] CapNhatNhaCungCapDTO dto)
         {
+            var ncc = new NhaCungCap
+            {
+                TenNcc = dto.TenNcc,
+                DiaChi = dto.DiaChi,
+                Sdt = dto.Sdt,
+                Email = dto.Email,
+                MaSoThue = dto.MaSoThue
+            };
+
             var result = _service.Update(id, ncc);
 
             if (result == "Cập nhật nhà cung cấp thành công")
-                return Ok(new { message = result });
-
-            return NotFound(new { message = result });
-        }
-
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(string id)
-        {
-            var result = _service.Delete(id);
-
-            if (result == "Xóa nhà cung cấp thành công")
                 return Ok(new { message = result });
 
             return NotFound(new { message = result });

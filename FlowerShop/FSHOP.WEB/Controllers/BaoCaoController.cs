@@ -22,15 +22,6 @@ namespace FSHOP.API.Controllers
             var data = _service.LayBaoCaoSanPham();
             return Ok(data);
         }
-        // GET api/baocao/doanhthu
-        //[HttpGet("doanhthu")]
-        //public IActionResult DoanhThu()
-        //{
-        //    var data = _service.LayDoanhThu();
-
-        //    return Ok(data);
-        //}
-
         [HttpGet("doanhthu")]
         public IActionResult GetDoanhThu(int? nam, int? thang)
         {

@@ -9,7 +9,7 @@ namespace FSHOP.DAL.Interfaces
 {
     public interface IThongKeRepository
     {
-        // Trả về true nếu xuất file thành công, kèm theo thông báo lỗi nếu có
+        // Trả về true nếu xuất file thành công, ngược lại báo lỗi
         (bool IsSuccess, string Message) XuatTonKhoRaXml(string filePath);
         IEnumerable<ThongKeNhapKhoDTO> ThongKeTongNhapTheoSanPham();
     }
