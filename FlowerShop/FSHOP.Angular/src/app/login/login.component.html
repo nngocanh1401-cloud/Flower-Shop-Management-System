@@ -1,0 +1,153 @@
+<div class="login-page-wrapper">
+    <div class="login-card">
+        <div class="login-left">
+            <div class="brand-box">
+                <div class="brand-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+
+                <h1>Cái Tiệm Bán Hoa</h1>
+                <p>Hệ thống quản lý cửa hàng hoa</p>
+            </div>
+
+            <div class="login-note">
+                <h2>{{ cheDoDoiMatKhau ? 'Cập nhật bảo mật' : 'Chào mừng trở lại!' }}</h2>
+                <p *ngIf="!cheDoDoiMatKhau">
+                    Đăng nhập để quản lý sản phẩm, đơn hàng, khách hàng và báo cáo.
+                </p>
+                <p *ngIf="cheDoDoiMatKhau">
+                    Nhập mật khẩu cũ và mật khẩu mới để cập nhật tài khoản của bạn.
+                </p>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <h3>{{ cheDoDoiMatKhau ? 'Đổi mật khẩu' : 'Đăng nhập quản trị' }}</h3>
+            <p class="sub-title">
+                {{ cheDoDoiMatKhau ? 'Vui lòng nhập thông tin mật khẩu' : 'Vui lòng nhập tài khoản để tiếp tục' }}
+            </p>
+
+            <div *ngIf="thongBaoLoi" class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ thongBaoLoi }}
+            </div>
+
+            <div *ngIf="thongBaoThanhCong" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                {{ thongBaoThanhCong }}
+            </div>
+
+            <!-- FORM ĐĂNG NHẬP -->
+            <div *ngIf="!cheDoDoiMatKhau">
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+
+                    <div class="input-group-custom">
+                        <i class="fas fa-user"></i>
+                        <input type="text" [(ngModel)]="tenDangNhap" placeholder="Nhập tên đăng nhập..."
+                            (keyup.enter)="dangNhap()" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+
+                    <div class="input-group-custom">
+                        <i class="fas fa-lock"></i>
+
+                        <input [type]="hienMatKhauDangNhap ? 'text' : 'password'" [(ngModel)]="matKhau"
+                            placeholder="Nhập mật khẩu..." (keyup.enter)="dangNhap()" />
+
+                        <button type="button" class="eye-btn" (click)="hienMatKhauDangNhap = !hienMatKhauDangNhap">
+                            <i class="fas" [ngClass]="hienMatKhauDangNhap ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-btn-wrapper">
+                    <button class="login-btn" [disabled]="dangXuLy" (click)="dangNhap()">
+                        <span *ngIf="!dangXuLy">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Đăng nhập
+                        </span>
+
+                        <span *ngIf="dangXuLy">
+                            Đang đăng nhập...
+                        </span>
+                    </button>
+                </div>
+
+                <div class="login-actions">
+                    <a routerLink="/shop">
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại trang bán hàng
+                    </a>
+                </div>
+            </div>
+
+            <!-- FORM ĐỔI MẬT KHẨU -->
+            <div *ngIf="cheDoDoiMatKhau">
+
+                <div class="form-group">
+                    <label>Tên đăng nhập hiện tại</label>
+
+                    <div class="input-group-custom input-readonly">
+                        <i class="fas fa-user"></i>
+
+                        <input type="text" [value]="tenDangNhapHienTai" readonly />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu cũ</label>
+
+                    <div class="input-group-custom">
+                        <i class="fas fa-lock"></i>
+
+                        <input [type]="hienMatKhauCu ? 'text' : 'password'" [(ngModel)]="matKhauCu"
+                            placeholder="Nhập mật khẩu cũ..." />
+
+                        <button type="button" class="eye-btn" (click)="hienMatKhauCu = !hienMatKhauCu">
+                            <i class="fas" [ngClass]="hienMatKhauCu ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu mới</label>
+
+                    <div class="input-group-custom">
+                        <i class="fas fa-key"></i>
+
+                        <input [type]="hienMatKhauMoi ? 'text' : 'password'" [(ngModel)]="matKhauMoi"
+                            placeholder="Nhập mật khẩu mới..." (keyup.enter)="doiMatKhau()" />
+
+                        <button type="button" class="eye-btn" (click)="hienMatKhauMoi = !hienMatKhauMoi">
+                            <i class="fas" [ngClass]="hienMatKhauMoi ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="btn-update-password-wrapper">
+                    <button class="login-btn btn-update-password" [disabled]="dangXuLy" (click)="doiMatKhau()">
+                        <span *ngIf="!dangXuLy">
+                            <i class="fas fa-save"></i>
+                            Cập nhật mật khẩu
+                        </span>
+
+                        <span *ngIf="dangXuLy">
+                            Đang xử lý...
+                        </span>
+                    </button>
+                </div>
+
+                <div class="login-actions">
+                    <a href="javascript:;" (click)="chuyenVeDangNhap()">
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại đăng nhập
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

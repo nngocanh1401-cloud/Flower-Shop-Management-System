@@ -1,0 +1,649 @@
+<div class="kho-page">
+    <p-toast></p-toast>
+
+    <!-- HEADER -->
+    <div class="kho-header">
+        <div>
+            <h2>
+                <i class="fas fa-warehouse"></i>
+                QUẢN LÝ KHO HÀNG
+            </h2>
+            <p>Quản lý phiếu nhập hàng và thông tin nhà cung cấp.</p>
+        </div>
+
+        <button class="btn btn-outline-primary" (click)="taiDuLieuKho()">
+            <i class="fas fa-sync-alt"></i>
+            Tải lại
+        </button>
+    </div>
+
+    <!-- TAB -->
+    <div class="tab-kho">
+        <button class="tab-btn" [class.active]="tabDangChon === 'phieuNhap'" (click)="chonTab('phieuNhap')">
+            <i class="fas fa-file-invoice"></i>
+            Phiếu nhập hàng
+        </button>
+
+        <button class="tab-btn" [class.active]="tabDangChon === 'nhaCungCap'" (click)="chonTab('nhaCungCap')">
+            <i class="fas fa-truck"></i>
+            Nhà cung cấp
+        </button>
+    </div>
+
+    <!-- ========================= -->
+    <!-- TAB PHIẾU NHẬP -->
+    <!-- ========================= -->
+    <div *ngIf="tabDangChon === 'phieuNhap'" class="kho-card">
+        <div class="section-header">
+            <div>
+                <h4>
+                    <i class="fas fa-list"></i>
+                    Danh sách phiếu nhập
+                </h4>
+                <p>Theo dõi các phiếu nhập hàng trong kho.</p>
+            </div>
+
+            <button class="btn btn-success" (click)="moDialogTaoPhieu()">
+                <i class="fas fa-plus"></i>
+                Tạo phiếu nhập
+            </button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="form-control"
+                placeholder="Tìm mã phiếu, mã NCC, tên NCC, ngày nhập, trạng thái..." [(ngModel)]="tuKhoaPhieuNhap"
+                (ngModelChange)="timKiemPhieuNhap()" />
+
+            <button class="btn btn-primary" (click)="timKiemPhieuNhap()">
+                <i class="fas fa-search"></i>
+                Tìm
+            </button>
+
+            <button class="btn btn-secondary" (click)="lamMoiTimKiemPhieuNhap()">
+                <i class="fas fa-sync-alt"></i>
+                Làm mới
+            </button>
+        </div>
+
+        <p-table [value]="danhSachPhieuNhapHienThi" [paginator]="true" [rows]="8"
+            styleClass="p-datatable-gridlines p-datatable-striped">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Mã phiếu</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Ngày nhập</th>
+                    <th class="text-right">Tổng tiền</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-pn>
+                <tr>
+                    <td class="font-weight-bold text-primary">
+                        {{ layMaPhieuNhap(pn) }}
+                    </td>
+
+                    <td>
+                        <span class="font-weight-bold">{{ layMaNCCPhieu(pn) }}</span>
+                        <small class="d-block text-muted">
+                            {{ layTenNCCTheoMa(layMaNCCPhieu(pn)) || pn?.maNccNavigation?.tenNcc || 'Chưa rõ NCC' }}
+                        </small>
+                    </td>
+
+                    <td>
+                        {{ layNgayNhapPhieu(pn) ? (layNgayNhapPhieu(pn) | date:'dd/MM/yyyy') : 'Chưa có' }}
+                    </td>
+
+                    <td class="text-right text-danger font-weight-bold">
+                        {{ dinhDangTien(layTongTienPhieu(pn)) }} đ
+                    </td>
+
+                    <td class="text-center">
+                        <span class="badge" [ngClass]="{
+                                'badge-warning': layMaTrangThaiPhieu(pn) === 5,
+                                'badge-success': layMaTrangThaiPhieu(pn) === 6
+                            }">
+                            {{ layTenTrangThaiPhieu(pn) }}
+                        </span>
+                    </td>
+
+                    <td class="text-center">
+                        <button class="btn btn-outline-info btn-sm mr-1" title="Xem chi tiết"
+                            (click)="xemChiTietPhieuNhap(pn)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm mr-1" title="Cập nhật"
+                            (click)="moDialogCapNhatPhieu(pn)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                        <button class="btn btn-outline-danger btn-sm" title="Xóa" (click)="xoaPhieuNhap(pn)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-4">
+                        Chưa có phiếu nhập nào!
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!-- ========================= -->
+    <!-- TAB NHÀ CUNG CẤP -->
+    <!-- ========================= -->
+    <div *ngIf="tabDangChon === 'nhaCungCap'" class="kho-card">
+        <div class="section-header">
+            <div>
+                <h4>
+                    <i class="fas fa-truck"></i>
+                    Danh sách nhà cung cấp
+                </h4>
+                <p>Quản lý thông tin nhà cung cấp. Phần này không dùng để xem chi tiết nhập hàng.</p>
+            </div>
+
+            <button class="btn btn-success" (click)="moDialogTaoNCC()">
+                <i class="fas fa-plus"></i>
+                Thêm NCC
+            </button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="form-control"
+                placeholder="Tìm mã NCC, tên NCC, SĐT, email, địa chỉ, mã số thuế..." [(ngModel)]="tuKhoaNCC"
+                (ngModelChange)="timKiemNCC()" />
+
+            <button class="btn btn-primary" (click)="timKiemNCC()">
+                <i class="fas fa-search"></i>
+                Tìm
+            </button>
+
+            <button class="btn btn-secondary" (click)="lamMoiTimKiemNCC()">
+                <i class="fas fa-sync-alt"></i>
+                Làm mới
+            </button>
+        </div>
+
+        <p-table [value]="danhSachNhaCungCapHienThi" [paginator]="true" [rows]="8"
+            styleClass="p-datatable-gridlines p-datatable-striped">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Mã NCC</th>
+                    <th>Tên NCC</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Địa chỉ</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-ncc>
+                <tr>
+                    <td class="font-weight-bold text-primary">
+                        {{ layMaNCC(ncc) }}
+                    </td>
+
+                    <td class="font-weight-bold">
+                        {{ layTenNCC(ncc) }}
+                    </td>
+
+                    <td>{{ laySdtNCC(ncc) }}</td>
+
+                    <td>{{ layEmailNCC(ncc) }}</td>
+
+                    <td>{{ layDiaChiNCC(ncc) }}</td>
+
+                    <td class="text-center">
+                        <button class="btn btn-outline-info btn-sm mr-1" title="Xem" (click)="xemNhaCungCap(ncc)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm mr-1" title="Sửa"
+                            (click)="moDialogCapNhatNCC(ncc)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                        <button class="btn btn-outline-danger btn-sm" title="Xóa" (click)="xoaNhaCungCap(ncc)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-4">
+                        Chưa có nhà cung cấp nào!
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!-- DIALOG TẠO PHIẾU -->
+    <p-dialog [(visible)]="hienThiDialogTaoPhieu" [modal]="true" [style]="{ width: '760px' }"
+        header="TẠO PHIẾU NHẬP HÀNG" styleClass="p-fluid">
+
+        <ng-template pTemplate="content">
+            <h6 class="dialog-section-title">1. Thông tin phiếu nhập</h6>
+            <div class="ma-phieu-preview">
+                <span>Mã phiếu nhập</span>
+                <strong>{{ taoMaPhieuNhapMoi() }}</strong>
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold">
+                    Nhà cung cấp <span class="text-danger">*</span>
+                </label>
+
+                <p-dropdown [options]="layDanhSachNCCDropdown()" [(ngModel)]="phieuMoi.maNCC" optionLabel="label"
+                    optionValue="value" [filter]="true" filterBy="label" placeholder="-- Chọn nhà cung cấp --"
+                    appendTo="body" styleClass="w-100">
+                </p-dropdown>
+            </div>
+
+            <h6 class="dialog-section-title text-success mt-4">2. Thêm sản phẩm nhập kho</h6>
+
+            <div class="khung-them-san-pham">
+                <div style="flex: 2;">
+                    <label class="small font-weight-bold mb-1">Sản phẩm</label>
+
+                    <p-dropdown [options]="danhSachSanPham" [(ngModel)]="maSPTam" optionLabel="label"
+                        optionValue="value" [filter]="true" filterBy="label"
+                        placeholder="-- Nhập tên hoặc mã sản phẩm --" appendTo="body" styleClass="w-100">
+                    </p-dropdown>
+                </div>
+
+                <div style="flex: 1;">
+                    <label class="small font-weight-bold mb-1">Số lượng</label>
+
+                    <p-inputNumber [(ngModel)]="soLuongTam" [showButtons]="true" [min]="1">
+                    </p-inputNumber>
+                </div>
+
+                <div>
+                    <button class="btn btn-warning" (click)="themSanPhamVaoPhieu()">
+                        <i class="fas fa-cart-plus"></i>
+                        Thêm
+                    </button>
+                </div>
+            </div>
+
+            <p-table [value]="phieuMoi.danhSachChiTiet" styleClass="p-datatable-sm p-datatable-gridlines mt-3">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Sản phẩm nhập</th>
+                        <th class="text-right">Đơn giá</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-right">Thành tiền</th>
+                        <th class="text-center" style="width: 80px;">Xóa</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-sp let-i="rowIndex">
+                    <tr>
+                        <td class="font-weight-bold text-secondary">
+                            {{ sp.maSP }} - {{ sp.tenSP }}
+                        </td>
+
+                        <td class="text-right">
+                            {{ dinhDangTien(sp.donGia) }} đ
+                        </td>
+
+                        <td class="text-center">
+                            {{ sp.soLuong }}
+                        </td>
+
+                        <td class="text-right text-danger font-weight-bold">
+                            {{ dinhDangTien(tinhThanhTienNhap(sp)) }} đ
+                        </td>
+
+                        <td class="text-center">
+                            <button class="btn btn-outline-danger btn-sm" (click)="xoaSanPhamKhoiPhieu(i)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted font-italic">
+                            Chưa có sản phẩm nào trong phiếu nhập
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <div class="tong-tien-nhap-box" *ngIf="phieuMoi.danhSachChiTiet.length > 0">
+                <span>Tổng tiền phiếu nhập:</span>
+                <strong>{{ dinhDangTien(tinhTongTienPhieuMoi()) }} đ</strong>
+            </div>
+
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button class="btn btn-secondary mr-2" (click)="hienThiDialogTaoPhieu = false">
+                Hủy
+            </button>
+
+            <button class="btn btn-success" (click)="taoPhieuNhap()">
+                <i class="fas fa-check"></i>
+                Xác nhận
+            </button>
+        </ng-template>
+    </p-dialog>
+
+    <!-- DIALOG CHI TIẾT PHIẾU -->
+    <p-dialog [(visible)]="hienThiDialogChiTietPhieu" [modal]="true" [style]="{ width: '820px' }"
+        header="CHI TIẾT PHIẾU NHẬP" styleClass="p-fluid">
+
+        <ng-template pTemplate="content">
+            <div *ngIf="phieuChiTiet">
+                <div class="info-grid">
+                    <div>
+                        <strong>Mã phiếu:</strong>
+                        <span class="text-primary font-weight-bold">{{ layMaPhieuNhap(phieuChiTiet) }}</span>
+                    </div>
+
+                    <div>
+                        <strong>Nhà cung cấp:</strong>
+                        {{ layMaNCCPhieu(phieuChiTiet) }} - {{ layTenNCCTheoMa(layMaNCCPhieu(phieuChiTiet)) ||
+                        phieuChiTiet?.maNccNavigation?.tenNcc || 'Chưa rõ' }}
+                    </div>
+
+                    <div>
+                        <strong>Ngày nhập:</strong>
+                        {{ layNgayNhapPhieu(phieuChiTiet) ? (layNgayNhapPhieu(phieuChiTiet) | date:'dd/MM/yyyy') : 'Chưa
+                        có' }}
+                    </div>
+
+                    <div>
+                        <strong>Trạng thái:</strong>
+                        {{ layTenTrangThaiPhieu(phieuChiTiet) }}
+                    </div>
+
+                    <div>
+                        <strong>Tổng tiền:</strong>
+                        <span class="text-danger font-weight-bold">
+                            {{ dinhDangTien(layTongTienPhieu(phieuChiTiet)) }} đ
+                        </span>
+                    </div>
+                </div>
+
+                <h6 class="dialog-section-title mt-3">
+                    <i class="fas fa-boxes"></i>
+                    Sản phẩm trong phiếu nhập
+                </h6>
+
+                <p-table [value]="layChiTietNhapHang(phieuChiTiet)"
+                    styleClass="p-datatable-sm p-datatable-gridlines mt-2">
+
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Mã SP</th>
+                            <th>Tên sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-right">Đơn giá</th>
+                            <th class="text-right">Thành tiền</th>
+                            <th>Hạn sử dụng</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-ct>
+                        <tr>
+                            <td class="font-weight-bold text-secondary">
+                                {{ layMaSPChiTiet(ct) }}
+                            </td>
+
+                            <td>
+                                {{ layTenSPChiTiet(ct) || 'Chưa có tên' }}
+                            </td>
+
+                            <td class="text-center">
+                                {{ laySoLuongChiTiet(ct) }}
+                            </td>
+
+                            <td class="text-right">
+                                {{ dinhDangTien(layDonGiaChiTiet(ct)) }} đ
+                            </td>
+
+                            <td class="text-right text-danger font-weight-bold">
+                                {{ dinhDangTien(layThanhTienChiTiet(ct)) }} đ
+                            </td>
+
+                            <td>
+                                {{ layHanSuDungChiTiet(ct) ? (layHanSuDungChiTiet(ct) | date:'dd/MM/yyyy') : '-' }}
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                Phiếu nhập chưa có chi tiết sản phẩm
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button class="btn btn-secondary" (click)="dongDialogChiTietPhieu()">
+                Đóng
+            </button>
+        </ng-template>
+    </p-dialog>
+
+    <!-- DIALOG CẬP NHẬT PHIẾU -->
+    <p-dialog [(visible)]="hienThiDialogCapNhatPhieu" [modal]="true" [style]="{ width: '540px' }"
+        header="CẬP NHẬT PHIẾU NHẬP" styleClass="p-fluid">
+
+        <ng-template pTemplate="content">
+            <div class="form-group">
+                <label class="font-weight-bold">Mã phiếu</label>
+                <input type="text" class="form-control bg-light font-weight-bold text-primary"
+                    [(ngModel)]="phieuCapNhat.maPhieuNhap" readonly />
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold">Nhà cung cấp</label>
+
+                <p-dropdown [options]="layDanhSachNCCDropdown()" [(ngModel)]="phieuCapNhat.maNCC" optionLabel="label"
+                    optionValue="value" [filter]="true" filterBy="label" placeholder="-- Chọn nhà cung cấp --"
+                    appendTo="body" styleClass="w-100">
+                </p-dropdown>
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold">Trạng thái</label>
+
+                <p-dropdown [options]="danhSachTrangThaiPhieuNhap" [(ngModel)]="phieuCapNhat.maTrangThai"
+                    optionLabel="label" optionValue="value" appendTo="body" styleClass="w-100">
+                </p-dropdown>
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold">Ngày nhập</label>
+                <input type="date" class="form-control" [(ngModel)]="phieuCapNhat.ngayNhap" />
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button class="btn btn-secondary mr-2" (click)="hienThiDialogCapNhatPhieu = false">
+                Hủy
+            </button>
+
+            <button class="btn btn-primary" (click)="capNhatPhieuNhap()">
+                <i class="fas fa-save"></i>
+                Lưu
+            </button>
+        </ng-template>
+    </p-dialog>
+
+    <!-- DIALOG TẠO NCC -->
+    <p-dialog [(visible)]="hienThiDialogTaoNCC" [modal]="true" [style]="{ width: '600px' }" header="THÊM NHÀ CUNG CẤP"
+        styleClass="p-fluid">
+
+        <ng-template pTemplate="content">
+            <div class="form-row-custom">
+                <div class="form-group">
+                    <label>Mã NCC <span class="text-danger">*</span></label>
+                    <input class="form-control" [(ngModel)]="nccMoi.maNcc" placeholder="VD: NCC001" />
+                </div>
+
+                <div class="form-group">
+                    <label>Tên NCC <span class="text-danger">*</span></label>
+                    <input class="form-control" [(ngModel)]="nccMoi.tenNcc" placeholder="Nhập tên nhà cung cấp..." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <input class="form-control" [(ngModel)]="nccMoi.diaChi" placeholder="Nhập địa chỉ..." />
+            </div>
+
+            <div class="form-row-custom">
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input class="form-control" [(ngModel)]="nccMoi.sdt" placeholder="Nhập SĐT..." />
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input class="form-control" [(ngModel)]="nccMoi.email" placeholder="Nhập email..." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Mã số thuế</label>
+                <input class="form-control" [(ngModel)]="nccMoi.maSoThue" placeholder="Nhập mã số thuế..." />
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button class="btn btn-secondary mr-2" (click)="hienThiDialogTaoNCC = false">
+                Hủy
+            </button>
+
+            <button class="btn btn-success" (click)="taoNhaCungCap()">
+                <i class="fas fa-check"></i>
+                Thêm
+            </button>
+        </ng-template>
+    </p-dialog>
+
+    <!-- DIALOG CẬP NHẬT NCC -->
+    <p-dialog [(visible)]="hienThiDialogCapNhatNCC" [modal]="true" [style]="{ width: '600px' }"
+        header="CẬP NHẬT NHÀ CUNG CẤP" styleClass="p-fluid">
+
+        <ng-template pTemplate="content">
+            <div class="form-row-custom">
+                <div class="form-group">
+                    <label>Mã NCC</label>
+                    <input class="form-control bg-light font-weight-bold text-primary" [(ngModel)]="nccCapNhat.maNcc"
+                        readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>Tên NCC <span class="text-danger">*</span></label>
+                    <input class="form-control" [(ngModel)]="nccCapNhat.tenNcc" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <input class="form-control" [(ngModel)]="nccCapNhat.diaChi" />
+            </div>
+
+            <div class="form-row-custom">
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input class="form-control" [(ngModel)]="nccCapNhat.sdt" />
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input class="form-control" [(ngModel)]="nccCapNhat.email" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Mã số thuế</label>
+                <input class="form-control" [(ngModel)]="nccCapNhat.maSoThue" />
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button class="btn btn-secondary mr-2" (click)="hienThiDialogCapNhatNCC = false">
+                Hủy
+            </button>
+
+            <button class="btn btn-primary" (click)="capNhatNhaCungCap()">
+                <i class="fas fa-save"></i>
+                Lưu
+            </button>
+        </ng-template>
+    </p-dialog>
+
+    <!-- DIALOG XEM NCC -->
+    <p-dialog [(visible)]="hienThiDialogXemNCC" [modal]="true" [style]="{ width: '560px' }"
+        header="THÔNG TIN NHÀ CUNG CẤP" styleClass="p-fluid">
+
+        <ng-template pTemplate="content">
+            <div *ngIf="nccDangXem" class="info-grid ncc-info">
+                <div>
+                    <strong>Mã NCC:</strong>
+                    <span class="text-primary font-weight-bold">{{ layMaNCC(nccDangXem) }}</span>
+                </div>
+
+                <div>
+                    <strong>Tên NCC:</strong>
+                    {{ layTenNCC(nccDangXem) }}
+                </div>
+
+                <div>
+                    <strong>SĐT:</strong>
+                    {{ laySdtNCC(nccDangXem) || 'Chưa có' }}
+                </div>
+
+                <div>
+                    <strong>Email:</strong>
+                    {{ layEmailNCC(nccDangXem) || 'Chưa có' }}
+                </div>
+
+                <div>
+                    <strong>Địa chỉ:</strong>
+                    {{ layDiaChiNCC(nccDangXem) || 'Chưa có' }}
+                </div>
+
+                <div>
+                    <strong>Mã số thuế:</strong>
+                    {{ layMaSoThueNCC(nccDangXem) || 'Chưa có' }}
+                </div>
+            </div>
+
+            <div class="note-box mt-3">
+                <i class="fas fa-info-circle"></i>
+                Mục này chỉ xem thông tin nhà cung cấp. Chi tiết nhập hàng xem ở tab Phiếu nhập hàng.
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button class="btn btn-secondary" (click)="hienThiDialogXemNCC = false">
+                Đóng
+            </button>
+        </ng-template>
+    </p-dialog>
+</div>

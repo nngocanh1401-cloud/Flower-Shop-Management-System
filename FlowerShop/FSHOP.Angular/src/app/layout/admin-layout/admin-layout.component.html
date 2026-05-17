@@ -1,0 +1,86 @@
+<div class="wrapper admin-wrapper" [class.sidebar-collapse]="!sidebarOpen">
+
+    <!-- NAVBAR -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <button class="nav-link btn btn-link" type="button" (click)="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </li>
+
+            <li class="nav-item d-none d-sm-inline-block">
+                <a routerLink="/shop" class="nav-link">Shop</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <span class="nav-link text-muted">
+                    <i class="fas fa-user-circle"></i>
+                    Admin
+                </span>
+            </li>
+
+            <li class="nav-item">
+                <a routerLink="/login" [queryParams]="{ mode: 'change-password' }"
+                    class="btn btn-outline-primary btn-sm mt-1 mr-2">
+                    <i class="fas fa-key"></i>
+                    Đổi mật khẩu
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <button class="btn btn-outline-danger btn-sm mt-1 mr-2" (click)="dangXuat()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a routerLink="/app/san-pham" class="brand-link">
+            <i class="fas fa-seedling brand-image text-success" style="font-size: 24px;"></i>
+            <span class="brand-text font-weight-light">FshopABP</span>
+        </a>
+
+        <div class="sidebar">
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="image">
+                    <i class="fas fa-user-circle text-light" style="font-size: 32px;"></i>
+                </div>
+                <div class="info">
+                    <a href="javascript:;" class="d-block">Admin</a>
+                </div>
+            </div>
+
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column nav-flat">
+                    <li class="nav-item" *ngFor="let item of menuItems">
+                        <a class="nav-link" [routerLink]="item.route" [class.active]="item.isActive">
+                            <i class="nav-icon" [ngClass]="item.icon"></i>
+                            <p>{{ item.label }}</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="content-wrapper">
+        <section class="content pt-3 px-3">
+            <router-outlet></router-outlet>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <strong>Copyright © 2026 <span class="text-primary">FshopABP</span>.</strong>
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 1.0
+        </div>
+    </footer>
+</div>

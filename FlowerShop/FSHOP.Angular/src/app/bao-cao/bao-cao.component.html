@@ -1,0 +1,189 @@
+<div class="bao-cao-page">
+
+    <!-- HEADER -->
+    <div class="bao-cao-header">
+        <div>
+            <h2>
+                <i class="fas fa-chart-line"></i>
+                BÁO CÁO THỐNG KÊ
+            </h2>
+            <p>Dashboard tổng hợp doanh thu, tồn kho và sản phẩm bán chạy.</p>
+        </div>
+
+        <button class="btn btn-outline-primary" (click)="taiTatCaBaoCao()">
+            <i class="fas fa-sync-alt"></i>
+            Tải lại dashboard
+        </button>
+    </div>
+
+    <!-- CARDS -->
+    <div class="thong-ke-grid">
+        <div class="thong-ke-card card-doanh-thu">
+            <div class="card-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+
+            <div>
+                <p>Tổng doanh thu</p>
+                <h3>{{ dinhDangTien(tongDoanhThu) }} đ</h3>
+                <span>{{ layThangNamHienThi() }}</span>
+            </div>
+        </div>
+
+        <div class="thong-ke-card card-ton-kho">
+            <div class="card-icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+
+            <div>
+                <p>Tổng tồn kho</p>
+                <h3>{{ tongTonKho | number:'1.0-0' }}</h3>
+                <span>Số lượng sản phẩm đang tồn</span>
+            </div>
+        </div>
+
+        <div class="thong-ke-card card-da-ban">
+            <div class="card-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+
+            <div>
+                <p>Top 10 đã bán</p>
+                <h3>{{ tongDaBan | number:'1.0-0' }}</h3>
+                <span>Tổng số lượng trong top 10</span>
+            </div>
+        </div>
+
+        <div class="thong-ke-card card-top">
+            <div class="card-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+
+            <div>
+                <p>Sản phẩm bán chạy</p>
+                <h3 class="ten-san-pham-top">{{ sanPhamBanChay }}</h3>
+                <span>Dựa trên top 10 sản phẩm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-box" *ngIf="dangTai">
+        <i class="fas fa-spinner fa-spin"></i>
+        Đang tải dữ liệu báo cáo...
+    </div>
+
+    <!-- CHART ROW 1 -->
+    <div class="chart-grid">
+
+        <!-- BIỂU ĐỒ DOANH THU -->
+        <div class="chart-card chart-card-large">
+            <div class="chart-title chart-title-doanh-thu">
+                <div>
+                    <h4>Doanh thu</h4>
+                    <p>{{ layThangNamHienThi() }}</p>
+                </div>
+
+                <div class="bo-loc-doanh-thu-trong-card">
+                    <div>
+                        <label>Năm</label>
+                        <select class="form-control form-control-sm" [(ngModel)]="nam">
+                            <option *ngFor="let y of danhSachNam" [value]="y">
+                                {{ y }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Tháng</label>
+                        <select class="form-control form-control-sm" [(ngModel)]="thang">
+                            <option *ngFor="let m of danhSachThang" [ngValue]="m.value">
+                                {{ m.label }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary btn-sm" (click)="locDoanhThu()">
+                        <i class="fas fa-filter"></i>
+                        Lọc
+                    </button>
+
+                    <button class="btn btn-outline-success btn-sm" (click)="xuatDoanhThuXml()">
+                        <i class="fas fa-file-code"></i>
+                        XML
+                    </button>
+                </div>
+            </div>
+
+            <div class="khung-bieu-do-doanh-thu">
+                <apx-chart *ngIf="doanhThuSeries[0]?.data?.length > 0" [series]="doanhThuSeries" [chart]="doanhThuChart"
+                    [xaxis]="doanhThuXAxis" [stroke]="doanhThuStroke" [dataLabels]="doanhThuDataLabels"
+                    [tooltip]="doanhThuTooltip" [fill]="doanhThuFill" [yaxis]="doanhThuYAxis">
+                </apx-chart>
+            </div>
+
+            <div class="chu-thich-bieu-do">
+                <span>
+                    <i class="fas fa-circle text-primary"></i>
+                    Trục ngang: Thời gian (Tháng)
+                </span>
+
+                <span>
+                    <i class="fas fa-circle text-success"></i>
+                    Trục dọc: Doanh thu (Triệu đồng)
+                </span>
+            </div>
+
+            <div class="empty-chart" *ngIf="duLieuDoanhThu.length === 0">
+                Chưa có dữ liệu doanh thu.
+            </div>
+        </div>
+
+        <!-- BIỂU ĐỒ TỒN KHO -->
+        <div class="chart-card">
+            <div class="chart-title">
+                <div>
+                    <h4>Cơ cấu tồn kho</h4>
+                </div>
+
+                <button class="btn btn-outline-success btn-sm" (click)="xuatTonKhoXml()">
+                    <i class="fas fa-file-code"></i>
+                    XML
+                </button>
+            </div>
+
+            <apx-chart *ngIf="tonKhoSeries.length > 0" [series]="tonKhoSeries" [chart]="tonKhoChart"
+                [labels]="tonKhoLabels" [legend]="tonKhoLegend" [tooltip]="tonKhoTooltip"
+                [responsive]="tonKhoResponsive">
+            </apx-chart>
+
+            <div class="empty-chart" *ngIf="duLieuTonKho.length === 0">
+                Chưa có dữ liệu tồn kho.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TOP 10 -->
+    <div class="chart-card mt-3">
+        <div class="chart-title">
+            <div>
+                <h4>Top 10 sản phẩm bán chạy nhất</h4>
+            </div>
+
+            <button class="btn btn-outline-success btn-sm" (click)="xuatTop10Xml()">
+                <i class="fas fa-file-code"></i>
+                XML
+            </button>
+        </div>
+
+        <apx-chart *ngIf="top10Series[0]?.data?.length > 0" [series]="top10Series" [chart]="top10Chart"
+            [xaxis]="top10XAxis" [plotOptions]="top10PlotOptions" [dataLabels]="top10DataLabels">
+        </apx-chart>
+
+        <div class="empty-chart" *ngIf="duLieuTop10.length === 0">
+            Chưa có dữ liệu top 10 sản phẩm.
+        </div>
+    </div>
+
+</div>
