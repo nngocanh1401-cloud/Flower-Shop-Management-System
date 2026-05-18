@@ -1,69 +1,131 @@
-.bao-cao-page {
-    padding: 6px 0 24px;
+:host {
+    display: block;
 }
+
+/* =========================
+   BÁO CÁO PAGE - STYLE ĐỒNG BỘ ĐƠN HÀNG
+========================= */
+
+.bao-cao-page {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 0 0 24px;
+}
+
+/* =========================
+   HEADER
+========================= */
 
 .bao-cao-header {
     background: #ffffff;
-    border-radius: 12px;
+    border: 1px solid #e6f2ea;
+    border-radius: 16px;
     padding: 22px 24px;
-    margin-bottom: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+    margin-bottom: 0;
 }
 
 .bao-cao-header h2 {
     margin: 0;
-    color: #17a2b8;
+    color: #263238;
+    font-size: 28px;
     font-weight: 900;
-    font-size: 32px;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .bao-cao-header h2 i {
-    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: #edfdf3;
+    color: #2f8f5b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex: 0 0 auto;
 }
 
 .bao-cao-header p {
-    margin: 6px 0 0;
-    color: #6c757d;
+    margin: 5px 0 0 64px;
+    color: #697586;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-.bo-loc-bao-cao {
+.bao-cao-header .btn {
+    height: 38px;
+    border-radius: 10px;
+    padding: 0 16px;
+    font-weight: 800;
+    border-color: #9bd8b4;
+    color: #2f8f5b;
+    background: #ffffff;
+    box-shadow: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.bao-cao-header .btn:hover {
+    background: #edfdf3;
+    border-color: #7fc99e;
+    color: #2f8f5b;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading-box {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #c2410c;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
     display: flex;
-    align-items: end;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
 }
 
-.bo-loc-bao-cao label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #495057;
-    margin-bottom: 4px;
-}
-
-.bo-loc-bao-cao select {
-    min-width: 110px;
-}
+/* =========================
+   STAT CARDS
+========================= */
 
 .thong-ke-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-bottom: 18px;
+    margin-bottom: 0;
 }
 
 .thong-ke-card {
     background: #ffffff;
-    border-radius: 14px;
-    padding: 18px;
+    border: 1px solid #e6f2ea;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: none;
     display: flex;
     align-items: center;
-    gap: 14px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    border-left: 5px solid #dee2e6;
+    gap: 16px;
+    border-left: none;
+    min-height: 118px;
+    transition: 0.18s ease;
+}
+
+.thong-ke-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(39, 98, 63, 0.08);
 }
 
 .thong-ke-card .card-icon {
@@ -73,55 +135,44 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
     color: #ffffff;
+    font-size: 22px;
+    flex: 0 0 auto;
 }
 
 .thong-ke-card p {
-    margin: 0;
-    color: #6c757d;
-    font-weight: 700;
+    margin: 0 0 5px;
+    color: #697586;
+    font-weight: 800;
     font-size: 14px;
 }
 
 .thong-ke-card h3 {
-    margin: 4px 0;
+    margin: 0;
+    color: #1f2937;
     font-size: 24px;
     font-weight: 900;
-    color: #212529;
+    line-height: 1.25;
 }
 
 .thong-ke-card span {
-    color: #6c757d;
-    font-size: 12px;
-}
-
-.card-doanh-thu {
-    border-left-color: #d63384;
+    display: block;
+    margin-top: 5px;
+    color: #697586;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .card-doanh-thu .card-icon {
     background: #d63384;
 }
 
-.card-ton-kho {
-    border-left-color: #20c997;
-}
-
 .card-ton-kho .card-icon {
     background: #20c997;
 }
 
-.card-da-ban {
-    border-left-color: #0d6efd;
-}
-
 .card-da-ban .card-icon {
     background: #0d6efd;
-}
-
-.card-top {
-    border-left-color: #ffc107;
 }
 
 .card-top .card-icon {
@@ -129,9 +180,14 @@
 }
 
 .ten-san-pham-top {
-    font-size: 18px !important;
+    font-size: 19px !important;
     line-height: 1.25;
+    max-width: 180px;
 }
+
+/* =========================
+   CHART LAYOUT
+========================= */
 
 .chart-grid {
     display: grid;
@@ -142,123 +198,57 @@
 .chart-card {
     position: relative;
     background: #ffffff;
-    border-radius: 14px;
+    border: 1px solid #e6f2ea;
+    border-radius: 16px;
     padding: 18px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+    overflow: visible;
 }
+
+.chart-card-large {
+    min-height: 520px;
+}
+
+/* =========================
+   CHART TITLE
+========================= */
 
 .chart-title {
     display: flex;
     justify-content: space-between;
-    align-items: start;
-    margin-bottom: 10px;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
 }
 
 .chart-title h4 {
     margin: 0;
-    font-size: 20px;
+    color: #263238;
+    font-size: 22px;
     font-weight: 900;
-    color: #343a40;
+    line-height: 1.3;
 }
 
 .chart-title p {
-    margin: 4px 0 0;
-    color: #343a40;
-    font-size: 20px;
-    font-weight: 900;
-}
-
-.loading-box {
-    background: #fff3cd;
-    border: 1px solid #ffeeba;
-    color: #856404;
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    font-weight: 700;
-}
-
-.loading-box i {
-    margin-right: 8px;
-}
-
-.empty-chart {
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-    padding: 12px 0;
-}
-
-:host ::ng-deep .apexcharts-toolbar {
-    display: none !important;
-}
-
-@media (max-width: 1100px) {
-    .thong-ke-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .chart-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .bao-cao-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .bo-loc-bao-cao {
-        justify-content: flex-start;
-        flex-wrap: wrap;
-    }
-}
-
-@media (max-width: 600px) {
-    .thong-ke-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .bao-cao-header h2 {
-        font-size: 26px;
-    }
-}
-
-.bao-cao-header .btn {
-    white-space: nowrap;
-}
-
-.chu-thich-bieu-do {
-    display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
-    padding: 8px 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    color: #6c757d;
-    font-size: 13px;
-    margin-top: 6px;
-}
-
-.chu-thich-bieu-do span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    margin: 5px 0 0;
+    color: #697586;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .chart-title .btn {
+    height: 36px;
+    border-radius: 8px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     white-space: nowrap;
 }
 
-@media (max-width: 1100px) {
-    .chart-title-doanh-thu {
-        flex-direction: column;
-    }
-
-    .bo-loc-doanh-thu-trong-card {
-        width: 100%;
-    }
-}
-
+/* =========================
+   FILTER DOANH THU
+========================= */
 
 .chart-title-doanh-thu {
     display: flex;
@@ -273,33 +263,69 @@
     align-items: end;
     gap: 8px;
     flex-wrap: wrap;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
+    background: #f8fbf9;
+    border: 1px solid #e1ebe4;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 .bo-loc-doanh-thu-trong-card label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
-    color: #495057;
+    color: #344054;
     margin-bottom: 4px;
 }
 
 .bo-loc-doanh-thu-trong-card select {
-    min-width: 105px;
+    min-width: 110px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #d7e3dc;
+    color: #344054;
+    box-shadow: none;
+}
+
+.bo-loc-doanh-thu-trong-card select:focus {
+    outline: none;
+    border-color: #d7e3dc;
+    box-shadow: none;
 }
 
 .bo-loc-doanh-thu-trong-card .btn {
-    height: 31px;
-    white-space: nowrap;
+    height: 36px;
 }
 
-:host ::ng-deep apx-chart {
-    display: block;
-    width: 100%;
-    min-height: 330px;
+/* =========================
+   BUTTON COLORS
+========================= */
+
+.btn-primary {
+    background: #47cf80 !important;
+    border-color: #47cf80 !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 18px rgba(67, 199, 121, 0.18);
 }
+
+.btn-primary:hover {
+    background: #39b978 !important;
+    border-color: #39b978 !important;
+}
+
+.btn-outline-success {
+    color: #2f8f5b !important;
+    border-color: #9bd8b4 !important;
+    background: #ffffff !important;
+}
+
+.btn-outline-success:hover {
+    background: #edfdf3 !important;
+    color: #2f8f5b !important;
+    border-color: #7fc99e !important;
+}
+
+/* =========================
+   CHART BODY
+========================= */
 
 .khung-bieu-do-doanh-thu {
     display: block;
@@ -308,10 +334,151 @@
     margin-top: 8px;
 }
 
-.chart-card {
-    overflow: visible;
+:host ::ng-deep apx-chart {
+    display: block;
+    width: 100%;
+    min-height: 330px;
 }
 
-.chart-card-large {
-    min-height: 520px;
+:host ::ng-deep .apexcharts-toolbar {
+    display: none !important;
 }
+
+:host ::ng-deep .apexcharts-legend {
+    font-family: inherit !important;
+}
+
+/* =========================
+   CHÚ THÍCH
+========================= */
+
+.chu-thich-bieu-do {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f8fbf9;
+    border: 1px solid #edf2ef;
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: #697586;
+    font-size: 13px;
+}
+
+.chu-thich-bieu-do span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-chart {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff7ed;
+    color: #c2410c;
+    font-weight: 700;
+    text-align: center;
+    font-style: normal;
+}
+
+/* =========================
+   TOP 10 CARD
+========================= */
+
+.chart-card.mt-3 {
+    margin-top: 0 !important;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1200px) {
+    .thong-ke-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-title-doanh-thu {
+        flex-direction: column;
+    }
+
+    .bo-loc-doanh-thu-trong-card {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .bao-cao-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bao-cao-header p {
+        margin-left: 0;
+    }
+
+    .thong-ke-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-title {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bo-loc-doanh-thu-trong-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bo-loc-doanh-thu-trong-card select,
+    .bo-loc-doanh-thu-trong-card .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .bao-cao-header h2 {
+        font-size: 22px;
+    }
+
+    .bao-cao-header h2 i {
+        width: 44px;
+        height: 44px;
+        font-size: 19px;
+    }
+
+    .thong-ke-card {
+        padding: 18px;
+    }
+
+    .thong-ke-card h3 {
+        font-size: 21px;
+    }
+}
+
+
+:host ::ng-deep .apexcharts-canvas,
+:host ::ng-deep .apexcharts-svg,
+:host ::ng-deep .apexcharts-text,
+:host ::ng-deep .apexcharts-xaxis text,
+:host ::ng-deep .apexcharts-yaxis text,
+:host ::ng-deep .apexcharts-datalabel,
+:host ::ng-deep .apexcharts-legend-text,
+:host ::ng-deep .apexcharts-title-text,
+:host ::ng-deep .apexcharts-tooltip,
+:host ::ng-deep .apexcharts-tooltip-text,
+:host ::ng-deep .apexcharts-menu {
+    font-family: "Segoe UI", "Inter", "Roboto", Arial, sans-serif !important;
+    font-weight: 500 !important;
+}
+

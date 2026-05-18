@@ -1,185 +1,225 @@
-<div class="card p-3">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-info font-weight-bold m-0">
-            <i class="fas fa-shopping-cart"></i> QUẢN LÝ ĐƠN HÀNG
-        </h2>
+<p-toast></p-toast>
 
-        <button class="btn btn-success" (click)="moDialogTaoDon()">
-            <i class="fas fa-plus"></i> Tạo Đơn Hàng
+<div class="don-hang-page">
+
+    <!-- HEADER CARD -->
+    <div class="order-header-card">
+        <div class="page-title-box">
+            <div class="page-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+
+            <div>
+                <h2>QUẢN LÝ ĐƠN HÀNG</h2>
+                <p>Quản lý danh sách đơn hàng, trạng thái xử lý và chi tiết hóa đơn.</p>
+            </div>
+        </div>
+
+        <button class="btn-add-order" (click)="moDialogTaoDon()">
+            <i class="fas fa-plus"></i>
+            Tạo đơn hàng
         </button>
     </div>
 
-    <!-- THANH TÌM KIẾM + BỘ LỌC -->
-    <div class="khung-tim-kiem mb-3" #khungTimKiem>
-        <div class="thanh-tim-kiem">
+    <!-- FILTER CARD -->
+    <div class="order-filter-card">
+        <div class="order-search-group">
+            <div class="order-search-box">
+                <i class="fas fa-search"></i>
 
-            <div class="vung-input-tim">
-                <p-autoComplete [(ngModel)]="boLocDonHang.keyword" [suggestions]="goiYTuKhoaTongHop"
-                    (completeMethod)="locGoiYTuKhoaTongHop($event)" (onFocus)="moHopLoc()"
-                    (onKeyUp)="anHopLocKhiNhapTimKiem()" (onSelect)="timKiemNhanh()" placeholder="Tìm kiếm đơn hàng..."
-                    [dropdown]="false" styleClass="o-nhap-tim-kiem" inputStyleClass="input-tim-kiem">
-                </p-autoComplete>
+                <input type="text" class="form-control order-search-input" [(ngModel)]="boLocDonHang.keyword"
+                    (ngModelChange)="timKiemNhanhTuDong()" (keyup.enter)="timKiemNhanhTuDong()"
+                    placeholder="Tìm mã đơn, tên khách hàng, trạng thái..." />
             </div>
 
-            <button class="nut-tim-kiem" (click)="timKiemNhanh()">
+            <button class="btn-order-search" type="button" (click)="timKiemNhanhTuDong()">
                 Tìm
             </button>
 
-            <button class="nut-mo-bo-loc" (click)="batTatHopLoc()">
-                <i class="fas" [ngClass]="hienThiHopLoc ? 'fa-caret-up' : 'fa-caret-down'"></i>
+            <button class="btn-order-refresh" type="button" (click)="lamMoiTimKiem()">
+                <i class="fas fa-rotate-right"></i>
+                Làm mới
             </button>
         </div>
 
-        <div class="bang-bo-loc" *ngIf="hienThiHopLoc">
-            <div class="cot-bo-loc">
-                <h6>
-                    <i class="fas fa-calendar-alt text-secondary"></i>
-                    Thời gian đặt hàng
-                </h6>
+        <button class="btn-order-filter-toggle" type="button" (click)="batTatHopLoc()">
+            <i class="fas fa-filter"></i>
+            <span>Lọc</span>
+            <i class="fas" [ngClass]="hienThiHopLoc ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        </button>
+    </div>
 
-                <label class="nhan-bo-loc">Từ ngày</label>
-                <input type="date" class="form-control form-control-sm mb-2" [(ngModel)]="boLocDonHang.tuNgay" />
+    <!-- FILTER PANEL -->
+    <div class="order-filter-panel" *ngIf="hienThiHopLoc">
+        <div class="filter-column">
+            <h6>
+                <i class="fas fa-calendar-alt"></i>
+                Thời gian đặt hàng
+            </h6>
 
-                <label class="nhan-bo-loc">Đến ngày</label>
-                <input type="date" class="form-control form-control-sm" [(ngModel)]="boLocDonHang.denNgay" />
-            </div>
+            <label>Từ ngày</label>
+            <input type="date" class="form-control form-control-sm mb-2" [(ngModel)]="boLocDonHang.tuNgay" />
 
-            <div class="cot-bo-loc">
-                <h6>
-                    <i class="fas fa-keyboard text-info"></i>
-                    Tìm theo mã
-                </h6>
+            <label>Đến ngày</label>
+            <input type="date" class="form-control form-control-sm" [(ngModel)]="boLocDonHang.denNgay" />
+        </div>
 
-                <label class="nhan-bo-loc">Mã đơn hàng</label>
-                <p-autoComplete [(ngModel)]="boLocDonHang.maDH" [suggestions]="goiYMaDH"
-                    (completeMethod)="locGoiYMaDH($event)" placeholder="Nhập mã đơn hàng..." [dropdown]="true"
-                    styleClass="w-100" panelStyleClass="goi-y-don-hang-panel">
-                </p-autoComplete>
+        <div class="filter-column">
+            <h6>
+                <i class="fas fa-keyboard"></i>
+                Tìm theo mã
+            </h6>
 
-                <label class="nhan-bo-loc mt-2">Mã khách hàng</label>
-                <p-autoComplete [(ngModel)]="boLocDonHang.maKH" [suggestions]="goiYMaKH"
-                    (completeMethod)="locGoiYMaKH($event)" placeholder="Nhập mã khách hàng..." [dropdown]="true"
-                    styleClass="w-100" panelStyleClass="goi-y-don-hang-panel">
-                </p-autoComplete>
+            <label>Mã đơn hàng</label>
+            <p-autoComplete [(ngModel)]="boLocDonHang.maDH" [suggestions]="goiYMaDH"
+                (completeMethod)="locGoiYMaDH($event)" placeholder="Nhập mã đơn hàng..." [dropdown]="true"
+                styleClass="w-100" panelStyleClass="goi-y-don-hang-panel">
+            </p-autoComplete>
 
-                <label class="nhan-bo-loc mt-2">Mã voucher</label>
-                <p-autoComplete [(ngModel)]="boLocDonHang.maVoucher" [suggestions]="goiYMaVoucher"
-                    (completeMethod)="locGoiYMaVoucher($event)" placeholder="Nhập mã voucher..." [dropdown]="true"
-                    styleClass="w-100" panelStyleClass="goi-y-don-hang-panel">
-                </p-autoComplete>
-            </div>
+            <label class="mt-2">Mã khách hàng</label>
+            <p-autoComplete [(ngModel)]="boLocDonHang.maKH" [suggestions]="goiYMaKH"
+                (completeMethod)="locGoiYMaKH($event)" placeholder="Nhập mã khách hàng..." [dropdown]="true"
+                styleClass="w-100" panelStyleClass="goi-y-don-hang-panel">
+            </p-autoComplete>
 
-            <div class="cot-bo-loc">
-                <h6>
-                    <i class="fas fa-sliders-h text-warning"></i>
-                    Điều kiện lọc
-                </h6>
+            <label class="mt-2">Mã voucher</label>
+            <p-autoComplete [(ngModel)]="boLocDonHang.maVoucher" [suggestions]="goiYMaVoucher"
+                (completeMethod)="locGoiYMaVoucher($event)" placeholder="Nhập mã voucher..." [dropdown]="true"
+                styleClass="w-100" panelStyleClass="goi-y-don-hang-panel">
+            </p-autoComplete>
+        </div>
 
-                <label class="nhan-bo-loc">Phương thức thanh toán</label>
-                <p-dropdown [options]="danhSachPTTT" [(ngModel)]="boLocDonHang.maPTTT" optionLabel="label"
-                    optionValue="value" placeholder="Tất cả PTTT" [showClear]="true" appendTo="body"
-                    [baseZIndex]="30000">
-                </p-dropdown>
+        <div class="filter-column">
+            <h6>
+                <i class="fas fa-sliders-h"></i>
+                Điều kiện lọc
+            </h6>
 
-                <label class="nhan-bo-loc mt-2">Trạng thái</label>
-                <p-dropdown [options]="danhSachTrangThai" [(ngModel)]="boLocDonHang.maTrangThai" optionLabel="label"
-                    optionValue="value" placeholder="Tất cả trạng thái" [showClear]="true" appendTo="body"
-                    [baseZIndex]="30000">
-                </p-dropdown>
+            <label>Phương thức thanh toán</label>
 
-                <div class="khu-vuc-nut-loc mt-3">
-                    <button class="btn btn-primary btn-sm mr-2" (click)="apDungBoLoc()">
-                        <i class="fas fa-search"></i>
-                        Áp dụng
-                    </button>
+            <p-dropdown [options]="danhSachPTTT" [(ngModel)]="boLocDonHang.maPTTT" optionLabel="label"
+                optionValue="value" placeholder="Tất cả PTTT" [showClear]="true" appendTo="body" [baseZIndex]="30000">
+            </p-dropdown>
 
-                    <button class="btn btn-secondary btn-sm" (click)="lamMoiBoLoc()">
-                        <i class="fas fa-sync-alt"></i>
-                        Làm mới
-                    </button>
-                </div>
+            <label class="mt-2">Trạng thái</label>
+            <p-dropdown [options]="danhSachTrangThai" [(ngModel)]="boLocDonHang.maTrangThai" optionLabel="label"
+                optionValue="value" placeholder="Tất cả trạng thái" [showClear]="true" appendTo="body"
+                [baseZIndex]="30000">
+            </p-dropdown>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary btn-sm" type="button" (click)="apDungBoLoc()">
+                    <i class="fas fa-search"></i>
+                    Áp dụng
+                </button>
+
+                <button class="btn btn-secondary btn-sm" type="button" (click)="lamMoiBoLoc()">
+                    <i class="fas fa-sync-alt"></i>
+                    Làm mới
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- HIỂN THỊ DANH SÁCH ĐƠN HÀNG -->
-    <p-table [value]="danhSachDonHang" [paginator]="true" [rows]="10"
-        styleClass="p-datatable-gridlines p-datatable-striped">
 
-        <ng-template pTemplate="header">
-            <tr>
-                <th pSortableColumn="maDH">
-                    Mã ĐH <p-sortIcon field="maDH"></p-sortIcon>
-                </th>
+    <!-- TABLE CARD -->
+    <div class="order-table-card">
+        <div class="table-card-header">
+            <div>
+                <h4>Danh sách đơn hàng</h4>
+                <p>Hiển thị thông tin đơn hàng hiện có trong cửa hàng.</p>
+            </div>
+        </div>
 
-                <th pSortableColumn="tenKhachHang">
-                    Khách Hàng <p-sortIcon field="tenKhachHang"></p-sortIcon>
-                </th>
+        <!-- BẢNG ĐƠN HÀNG -->
+        <p-table [value]="danhSachDonHang" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
+            styleClass="order-table">
 
-                <th pSortableColumn="ngayDat">
-                    Ngày Đặt <p-sortIcon field="ngayDat"></p-sortIcon>
-                </th>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="maDH">
+                        Mã ĐH <p-sortIcon field="maDH"></p-sortIcon>
+                    </th>
 
-                <th pSortableColumn="tongTien">
-                    Tổng Tiền <p-sortIcon field="tongTien"></p-sortIcon>
-                </th>
+                    <th pSortableColumn="tenKhachHang">
+                        Khách Hàng <p-sortIcon field="tenKhachHang"></p-sortIcon>
+                    </th>
 
-                <th class="text-center">Trạng Thái</th>
-                <th class="text-center">Xem Chi Tiết</th>
-            </tr>
-        </ng-template>
+                    <th pSortableColumn="ngayDat">
+                        Ngày Đặt <p-sortIcon field="ngayDat"></p-sortIcon>
+                    </th>
 
-        <ng-template pTemplate="body" let-dh>
-            <tr>
-                <td class="font-weight-bold text-secondary">{{ dh.maDH }}</td>
-                <td>{{ dh.tenKhachHang }}</td>
-                <td>{{ dh.ngayDat | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td class="text-danger font-weight-bold">{{ dh.tongTien | number:'1.0-0' }} đ</td>
+                    <th pSortableColumn="tongTien">
+                        Tổng Tiền <p-sortIcon field="tongTien"></p-sortIcon>
+                    </th>
 
-                <td class="text-center">
-                    <span class="badge" [ngClass]="{
-                            'badge-warning': dh.tenTrangThai === 'Chờ xử lý',
-                            'badge-primary': dh.tenTrangThai === 'Đang giao',
-                            'badge-success': dh.tenTrangThai === 'Hoàn thành',
-                            'badge-danger': dh.tenTrangThai === 'Đã hủy'
-                        }">
-                        {{ dh.tenTrangThai }}
-                    </span>
-                </td>
+                    <th class="text-center">Trạng Thái</th>
+                    <th class="text-center">Chi Tiết</th>
+                </tr>
+            </ng-template>
 
-                <td class="text-center">
-                    <button class="btn btn-outline-info btn-sm mr-1" title="Xem chi tiết" (click)="xemChiTiet(dh.maDH)">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </td>
-            </tr>
-        </ng-template>
+            <ng-template pTemplate="body" let-dh>
+                <tr>
+                    <td class="ma-don">{{ dh.maDH }}</td>
+                    <td class="ten-khach">{{ dh.tenKhachHang }}</td>
+                    <td>{{ dh.ngayDat | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td class="tong-tien">{{ dh.tongTien | number:'1.0-0' }} đ</td>
 
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td colspan="6" class="text-center p-4">
-                    Chưa có đơn hàng nào!
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+                    <td class="text-center">
+                        <span class="trang-thai-badge" [ngClass]="{
+                        'tt-cho-xu-ly': dh.tenTrangThai === 'Chờ xử lý',
+                        'tt-dang-giao': dh.tenTrangThai === 'Đang giao',
+                        'tt-hoan-thanh': dh.tenTrangThai === 'Hoàn thành',
+                        'tt-da-huy': dh.tenTrangThai === 'Đã hủy'
+                    }">
+                            {{ dh.tenTrangThai }}
+                        </span>
+                    </td>
+
+                    <td class="text-center">
+                        <button class="btn btn-outline-info btn-sm btn-action" title="Xem chi tiết"
+                            (click)="xemChiTiet(dh.maDH)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-4 empty-text">
+                        Không tìm thấy đơn hàng nào!
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
 </div>
 
-<p-toast></p-toast>
+<!-- DIALOG CHI TIẾT -->
+<p-dialog [(visible)]="hienThiDialogChiTiet" [style]="{ width: '760px' }" [modal]="true"
+    styleClass="p-fluid berry-dialog dialog-chi-tiet-don">
 
-<!-- HIỂN THỊ DIALOG CHI TIẾT ĐƠN HÀNG -->
-<p-dialog [(visible)]="hienThiDialogChiTiet" [style]="{ width: '750px' }" header="CHI TIẾT HÓA ĐƠN" [modal]="true"
-    styleClass="p-fluid">
+    <ng-template pTemplate="header">
+        <div class="dialog-header-custom">
+            <div>
+                <h4 class="dialog-title">
+                    <i class="fas fa-file-invoice"></i>
+                    CHI TIẾT HÓA ĐƠN
+                </h4>
+                <p class="dialog-subtitle">Thông tin đơn hàng và danh sách sản phẩm.</p>
+            </div>
+        </div>
+    </ng-template>
 
     <ng-template pTemplate="content">
         <div *ngIf="donHangChiTiet">
-            <div class="row mb-3 bg-light p-3 rounded">
-                <div class="col-6">
+            <div class="thong-tin-hoa-don-box">
+                <div class="thong-tin-col">
                     <p>
                         <strong>Mã ĐH: </strong>
-                        <span class="text-primary font-weight-bold">
-                            {{ donHangChiTiet.maDH }}
-                        </span>
+                        <span class="text-primary font-weight-bold">{{ donHangChiTiet.maDH }}</span>
                     </p>
 
                     <p>
@@ -193,29 +233,37 @@
                     </p>
                 </div>
 
-                <div class="col-6">
+                <div class="thong-tin-col">
                     <p>
                         <strong>Thanh toán: </strong>
                         {{ donHangChiTiet.tenPTTT }}
                     </p>
 
-                    <div class="d-flex align-items-center">
-                        <strong class="mr-2">Trạng thái:</strong>
+                    <p>
+                        <strong>Voucher:&nbsp;</strong>
+                        <span class="voucher-detail-text" [class.no-voucher]="!layMaVoucherDonHang(donHangChiTiet)">
+                            {{ layTenVoucherDonHang(donHangChiTiet) }}
+                        </span>
+                    </p>
+
+                    <div class="trang-thai-update-row">
+                        <strong class="mr-2">Trạng thái: </strong>
 
                         <p-dropdown [options]="danhSachTrangThai" [(ngModel)]="donHangChiTiet.maTrangThai"
-                            optionLabel="label" optionValue="value" [style]="{ width: '180px' }" appendTo="body"
+                            optionLabel="label" optionValue="value" [style]="{ width: '190px' }" appendTo="body"
                             (onChange)="cdr.detectChanges()">
                         </p-dropdown>
                     </div>
                 </div>
             </div>
 
-            <h5 class="text-secondary border-bottom pb-2 mt-3">
+            <h5 class="section-title">
                 <i class="fas fa-box-open"></i>
                 Danh sách sản phẩm
             </h5>
 
-            <p-table [value]="donHangChiTiet.chiTiet" styleClass="p-datatable-sm p-datatable-gridlines mt-2">
+            <p-table [value]="donHangChiTiet.chiTiet"
+                styleClass="p-datatable-sm p-datatable-gridlines mt-2 berry-table">
 
                 <ng-template pTemplate="header">
                     <tr>
@@ -229,7 +277,7 @@
 
                 <ng-template pTemplate="body" let-ct>
                     <tr>
-                        <td class="font-weight-bold text-secondary">{{ ct.maSP }}</td>
+                        <td class="ma-sp">{{ ct.maSP }}</td>
                         <td>{{ ct.tenSP }}</td>
                         <td class="text-center">{{ ct.soLuong }}</td>
                         <td class="text-right">{{ ct.donGia | number:'1.0-0' }} đ</td>
@@ -240,17 +288,43 @@
                 </ng-template>
             </p-table>
 
-            <div class="text-right mt-4">
-                <h4 class="text-danger font-weight-bold">
-                    TỔNG CỘNG: {{ donHangChiTiet.tongTien | number:'1.0-0' }} đ
-                </h4>
+            <div class="chi-tiet-tong-tien-box">
+
+                <div class="dong-tong-ct" *ngIf="layMaVoucherDonHang(donHangChiTiet)">
+                    <span>Giá gốc</span>
+                    <b class="gia-goc-ct">
+                        {{ tinhTongTienGocChiTiet(donHangChiTiet) | number:'1.0-0' }} đ
+                    </b>
+                </div>
+
+                <div class="dong-tong-ct" *ngIf="layMaVoucherDonHang(donHangChiTiet)">
+                    <span>Voucher áp dụng</span>
+                    <b class="voucher-ct">
+                        {{ layTenVoucherDonHang(donHangChiTiet) }}
+                    </b>
+                </div>
+
+                <div class="dong-tong-ct" *ngIf="layMaVoucherDonHang(donHangChiTiet)">
+                    <span>Giảm giá</span>
+                    <b class="giam-gia-ct">
+                        - {{ tinhTienGiamChiTiet(donHangChiTiet) | number:'1.0-0' }} đ
+                    </b>
+                </div>
+
+                <div class="dong-tong-ct tong-cuoi-ct">
+                    <span>Tổng cộng</span>
+                    <b>
+                        {{ tinhTongSauGiamChiTiet(donHangChiTiet) | number:'1.0-0' }} đ
+                    </b>
+                </div>
+
             </div>
         </div>
     </ng-template>
 
     <ng-template pTemplate="footer">
-        <div class="d-flex justify-content-end w-100" style="gap: 10px;">
-            <button pButton pRipple label="Đóng" class="p-button-secondary" (click)="dongDialogChiTiet()">
+        <div class="dialog-footer-actions">
+            <button pButton pRipple label="Đóng" class="p-button-text p-button-secondary" (click)="dongDialogChiTiet()">
             </button>
 
             <button *ngIf="donHangChiTiet?.maTrangThai != trangThaiBanDau" pButton pRipple label="Cập nhật"
@@ -260,12 +334,12 @@
     </ng-template>
 </p-dialog>
 
-<!-- HIỂN THỊ DIALOG TẠO ĐƠN HÀNG MỚI -->
-<p-dialog [(visible)]="hienThiDialogTaoDon" [style]="{ width: '720px' }" [modal]="true"
-    styleClass="p-fluid dialog-tao-don">
+<!-- DIALOG TẠO ĐƠN -->
+<p-dialog [(visible)]="hienThiDialogTaoDon" [style]="{ width: '760px' }" [modal]="true"
+    styleClass="p-fluid berry-dialog dialog-tao-don">
 
     <ng-template pTemplate="header">
-        <div class="dialog-title-box">
+        <div class="dialog-header-custom">
             <div>
                 <h4 class="dialog-title">
                     <i class="fas fa-shopping-cart"></i>
@@ -279,165 +353,278 @@
     </ng-template>
 
     <ng-template pTemplate="content">
-        <h6 class="text-primary font-weight-bold border-bottom pb-2">
-            1. Thông tin Hóa đơn
-        </h6>
+        <div class="tao-don-wrapper">
 
-        <div class="form-row">
-            <div class="col-12 form-group">
-                <label class="font-weight-bold">
-                    Số điện thoại khách hàng <span class="text-danger">*</span>
-                </label>
+            <!-- SECTION 1 -->
+            <div class="tao-don-section">
+                <h6 class="section-title section-title-blue">
+                    1. Thông tin hóa đơn
+                </h6>
 
-                <p-autoComplete [(ngModel)]="sdtTaoDon" [suggestions]="goiYKhachHangTaoDon"
-                    (completeMethod)="locGoiYKhachHangTaoDon($event)" (onSelect)="chonKhachHangTaoDon($event)"
-                    field="label" placeholder="Nhập SĐT hoặc tên khách hàng..." [dropdown]="true" styleClass="w-100"
-                    appendTo="body" [baseZIndex]="30000">
-                </p-autoComplete>
+                <div class="field-block full-width">
+                    <label class="field-label">
+                        Số điện thoại khách hàng <span class="text-danger">*</span>
+                    </label>
 
-                <small class="text-muted" *ngIf="donHangMoi.maKH">
-                    Đã chọn khách hàng:
-                    <b>{{ donHangMoi.maKH }}</b>
-                </small>
+                    <p-autoComplete [(ngModel)]="sdtTaoDon" [suggestions]="goiYKhachHangTaoDon"
+                        (completeMethod)="locGoiYKhachHangTaoDon($event)" (onSelect)="chonKhachHangTaoDon($event)"
+                        field="label" placeholder="Nhập SĐT hoặc tên khách hàng..." [dropdown]="true" styleClass="w-100"
+                        appendTo="body" [baseZIndex]="30000">
+                    </p-autoComplete>
+
+                    <small class="text-muted selected-kh" *ngIf="donHangMoi.maKH">
+                        Đã chọn khách hàng:
+                        <b>{{ donHangMoi.maKH }}</b>
+                    </small>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="field-block">
+                        <label class="field-label">Phương thức thanh toán</label>
+                        <p-dropdown [options]="danhSachPTTT" [(ngModel)]="donHangMoi.maPTTT" optionLabel="label"
+                            optionValue="value" appendTo="body" styleClass="w-100">
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field-block">
+                        <label class="field-label">Áp dụng Voucher</label>
+                        <p-dropdown [options]="danhSachVoucher" [(ngModel)]="donHangMoi.maVoucher" optionLabel="label"
+                            optionValue="value" [filter]="true" filterBy="label" placeholder="-- Không sử dụng --"
+                            appendTo="body" styleClass="w-100" (onChange)="xuLyChonVoucher($event)">
+
+                            <ng-template pTemplate="item" let-voucher>
+                                <div class="voucher-option" [ngClass]="{ 'voucher-them-moi': voucher.laThemMoi }">
+
+                                    <i *ngIf="voucher.laThemMoi" class="fas fa-plus-circle">
+                                    </i>
+
+                                    <span>{{ voucher.label }}</span>
+                                </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="selectedItem" let-voucher>
+                                <span *ngIf="voucher && !voucher.laThemMoi">
+                                    {{ voucher.label }}
+                                </span>
+
+                                <span *ngIf="!voucher || voucher.laThemMoi">
+                                    -- Không sử dụng --
+                                </span>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="form-row mt-2">
-            <div class="col-6 form-group">
-                <label class="font-weight-bold">Phương thức Thanh Toán</label>
+            <!-- SECTION 2 -->
+            <div class="tao-don-section">
+                <h6 class="section-title section-title-green">
+                    2. Chi tiết đơn hàng
+                </h6>
 
-                <p-dropdown [options]="danhSachPTTT" [(ngModel)]="donHangMoi.maPTTT" optionLabel="label"
-                    optionValue="value" appendTo="body">
-                </p-dropdown>
-            </div>
+                <div class="cart-builder">
+                    <div class="field-block san-pham-col">
+                        <label class="field-label small-label">Chọn sản phẩm</label>
+                        <p-dropdown [options]="danhSachSanPham" [(ngModel)]="maSpTam" optionLabel="label"
+                            optionValue="value" [filter]="true" filterBy="label"
+                            placeholder="-- Nhập tên hoặc mã sản phẩm --" appendTo="body" styleClass="w-100">
+                        </p-dropdown>
+                    </div>
 
-            <div class="col-6 form-group">
-                <label class="font-weight-bold">Áp dụng Voucher</label>
+                    <div class="field-block so-luong-col">
+                        <label class="field-label small-label">Số lượng</label>
+                        <p-inputNumber [(ngModel)]="soLuongTam" [showButtons]="true" [min]="1" styleClass="w-100">
+                        </p-inputNumber>
+                    </div>
 
-                <p-dropdown [options]="danhSachVoucher" [(ngModel)]="donHangMoi.maVoucher" optionLabel="label"
-                    optionValue="value" placeholder="-- Chọn mã giảm giá --" appendTo="body" styleClass="w-100">
-                </p-dropdown>
-            </div>
-        </div>
-
-        <h6 class="text-success font-weight-bold border-bottom pb-2 mt-4">
-            2. Bỏ hoa vào giỏ
-        </h6>
-
-        <div class="d-flex align-items-end mb-3 bg-light p-2 rounded" style="gap: 10px; border: 1px dashed #ccc;">
-
-            <div style="flex: 2;">
-                <label class="small font-weight-bold mb-1">Chọn Sản Phẩm</label>
-
-                <p-dropdown [options]="danhSachSanPham" [(ngModel)]="maSpTam" optionLabel="label" optionValue="value"
-                    [filter]="true" filterBy="label" placeholder="-- Nhập tên hoặc mã sản phẩm --" appendTo="body"
-                    styleClass="w-100">
-                </p-dropdown>
-            </div>
-
-            <div style="flex: 1;">
-                <label class="small font-weight-bold mb-1">Số lượng</label>
-
-                <p-inputNumber [(ngModel)]="soLuongTam" [showButtons]="true" [min]="1">
-                </p-inputNumber>
-            </div>
-
-            <div>
-                <button pButton pRipple icon="pi pi-cart-plus" label="Thêm" class="p-button-warning"
-                    (click)="themVaoGioHang()">
-                </button>
-            </div>
-        </div>
-
-        <p-table [value]="donHangMoi.danhSachChiTiet" styleClass="p-datatable-sm p-datatable-gridlines">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Sản phẩm đã chọn</th>
-                    <th class="text-right">Đơn giá</th>
-                    <th class="text-center">Số lượng</th>
-                    <th class="text-right">Thành tiền</th>
-                    <th class="text-center" style="width: 80px;">Xóa</th>
-                </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-sp let-i="rowIndex">
-                <tr>
-                    <td class="font-weight-bold text-secondary">
-                        {{sp.maSp}} - {{sp.tenSp}}
-                    </td>
-
-                    <td class="text-right">
-                        {{(sp.donGia || 0) | number:'1.0-0'}} đ
-                    </td>
-
-                    <td class="text-center">
-                        {{sp.soLuong}}
-                    </td>
-
-                    <td class="text-right text-danger font-weight-bold">
-                        {{((sp.donGia || 0) * (sp.soLuong || 0)) | number:'1.0-0'}} đ
-                    </td>
-
-                    <td class="text-center">
-                        <button pButton pRipple icon="pi pi-trash"
-                            class="p-button-rounded p-button-danger p-button-text p-button-sm"
-                            (click)="xoaKhoiGioHang(i)">
+                    <div class="action-col">
+                        <button pButton pRipple icon="pi pi-cart-plus" label="Thêm"
+                            class="p-button-success btn-them-gio" (click)="themVaoGioHang()">
                         </button>
-                    </td>
-                </tr>
-            </ng-template>
+                    </div>
+                </div>
 
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="5" class="text-center text-muted font-italic">
-                        Chưa có sản phẩm nào trong giỏ
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+                <p-table [value]="donHangMoi.danhSachChiTiet"
+                    styleClass="p-datatable-sm p-datatable-gridlines bang-gio-hang mt-3">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Sản phẩm đã chọn</th>
+                            <th class="text-right">Đơn giá</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-right">Thành tiền</th>
+                            <th class="text-center" style="width: 80px;">Xóa</th>
+                        </tr>
+                    </ng-template>
 
-        <div class="tong-ket-don-hang mt-3" *ngIf="donHangMoi.danhSachChiTiet?.length > 0">
+                    <ng-template pTemplate="body" let-sp let-i="rowIndex">
+                        <tr>
+                            <td class="font-weight-bold text-secondary">
+                                {{sp.maSp}} - {{sp.tenSp}}
+                            </td>
 
-            <div class="dong-tong-ket" *ngIf="coVoucherDuocChon()">
-                <span class="nhan-tong-ket">Giá gốc</span>
-                <span class="gia-goc">
-                    {{ tinhTongTienGoc() | number:'1.0-0' }} đ
-                </span>
+                            <td class="text-right">
+                                {{(sp.donGia || 0) | number:'1.0-0'}} đ
+                            </td>
+
+                            <td class="text-center">
+                                {{sp.soLuong}}
+                            </td>
+
+                            <td class="text-right text-danger font-weight-bold">
+                                {{((sp.donGia || 0) * (sp.soLuong || 0)) | number:'1.0-0'}} đ
+                            </td>
+
+                            <td class="text-center">
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-text p-button-sm"
+                                    (click)="xoaKhoiGioHang(i)">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted font-italic empty-cart-text">
+                                Chưa có sản phẩm nào trong giỏ
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <div class="tong-ket-don-hang mt-3" *ngIf="donHangMoi.danhSachChiTiet?.length > 0">
+
+                    <div class="dong-tong-ket" *ngIf="coVoucherDuocChon()">
+                        <span class="nhan-tong-ket">Giá gốc</span>
+                        <span class="gia-goc">
+                            {{ tinhTongTienGoc() | number:'1.0-0' }} đ
+                        </span>
+                    </div>
+
+                    <div class="dong-tong-ket" *ngIf="coVoucherDuocChon()">
+                        <span class="nhan-tong-ket">Voucher áp dụng</span>
+                        <span class="gia-voucher">
+                            {{ layTenVoucherDayDu() }} ({{ hienThiMoTaVoucher() }})
+                        </span>
+                    </div>
+
+                    <div class="dong-tong-ket" *ngIf="coVoucherDuocChon()">
+                        <span class="nhan-tong-ket">Giảm giá</span>
+                        <span class="tien-giam">
+                            - {{ tinhTienGiamVoucher() | number:'1.0-0' }} đ
+                        </span>
+                    </div>
+
+                    <div class="dong-tong-ket tong-cuoi">
+                        <span class="nhan-tong-cuoi">Tổng tiền cần thanh toán</span>
+                        <span class="gia-tong-cuoi">
+                            {{ tinhTongTienThanhToan() | number:'1.0-0' }} đ
+                        </span>
+                    </div>
+
+                    <small class="text-muted d-block mt-2" *ngIf="coVoucherDuocChon() && tinhTienGiamVoucher() === 0">
+                        Voucher hiện chưa đủ điều kiện áp dụng hoặc đã hết hạn / hết lượt.
+                    </small>
+                </div>
             </div>
 
-            <div class="dong-tong-ket" *ngIf="coVoucherDuocChon()">
-                <span class="nhan-tong-ket">Voucher áp dụng</span>
-                <span class="gia-voucher">
-                    {{ layTenVoucherDayDu() }} ({{ hienThiMoTaVoucher() }})
-                </span>
-            </div>
-
-            <div class="dong-tong-ket" *ngIf="coVoucherDuocChon()">
-                <span class="nhan-tong-ket">Giảm giá</span>
-                <span class="tien-giam">
-                    - {{ tinhTienGiamVoucher() | number:'1.0-0' }} đ
-                </span>
-            </div>
-
-            <div class="dong-tong-ket tong-cuoi">
-                <span class="nhan-tong-cuoi">Tổng tiền cần thanh toán</span>
-                <span class="gia-tong-cuoi">
-                    {{ tinhTongTienThanhToan() | number:'1.0-0' }} đ
-                </span>
-            </div>
-
-            <small class="text-muted d-block mt-2" *ngIf="coVoucherDuocChon() && tinhTienGiamVoucher() === 0">
-                Voucher hiện chưa đủ điều kiện áp dụng hoặc đã hết hạn / hết lượt.
-            </small>
         </div>
     </ng-template>
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple label="Hủy" class="p-button-secondary"
-            (click)="hienThiDialogTaoDon = false">
+        <div class="dialog-footer-actions">
+            <button pButton pRipple label="Hủy" class="p-button-outlined p-button-secondary"
+                (click)="hienThiDialogTaoDon = false">
+            </button>
+
+            <button pButton pRipple label="Xác nhận" class="p-button-success" (click)="taoDonHangMoi()">
+            </button>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<!-- DIALOG THÊM VOUCHER MỚI -->
+<p-dialog [(visible)]="hienThiDialogTaoVoucher" [style]="{ width: '520px' }" [modal]="true" header="THÊM VOUCHER MỚI"
+    styleClass="p-fluid dialog-tao-voucher" [baseZIndex]="40000" (onHide)="dongDialogTaoVoucher()">
+
+    <ng-template pTemplate="content">
+        <div class="form-group">
+            <label class="font-weight-bold">
+                Mã voucher <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control bg-light font-weight-bold text-primary"
+                [(ngModel)]="voucherMoi.maVoucher" readonly />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">
+                Tên voucher <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" [(ngModel)]="voucherMoi.tenVoucher"
+                placeholder="VD: Giảm 20% cho đơn từ 700k" />
+        </div>
+
+        <div class="form-row">
+            <div class="col-6 form-group">
+                <label class="font-weight-bold">Ngày bắt đầu</label>
+                <input type="date" class="form-control" [(ngModel)]="voucherMoi.ngayBd" />
+            </div>
+
+            <div class="col-6 form-group">
+                <label class="font-weight-bold">Ngày kết thúc</label>
+                <input type="date" class="form-control" [(ngModel)]="voucherMoi.ngayKt" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-6 form-group">
+                <label class="font-weight-bold">Loại giảm</label>
+
+                <p-dropdown [options]="danhSachLoaiGiamVoucher" [(ngModel)]="voucherMoi.loaiGiam" optionLabel="label"
+                    optionValue="value" appendTo="body" [baseZIndex]="50000">
+                </p-dropdown>
+            </div>
+
+            <div class="col-6 form-group">
+                <label class="font-weight-bold">
+                    Giá trị giảm
+                    <span *ngIf="voucherMoi.loaiGiam === 'PhanTram'">(%)</span>
+                    <span *ngIf="voucherMoi.loaiGiam === 'TienMat'">(VNĐ)</span>
+                </label>
+
+                <p-inputNumber [(ngModel)]="voucherMoi.giaTriGiam" [min]="0" [showButtons]="true">
+                </p-inputNumber>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-6 form-group">
+                <label class="font-weight-bold">Điều kiện áp dụng</label>
+
+                <p-inputNumber [(ngModel)]="voucherMoi.dieuKienApDung" [min]="0" [showButtons]="true">
+                </p-inputNumber>
+                <p>
+                    <small class="text-muted">
+                        Ví dụ: 700000 nghĩa là áp dụng cho đơn từ 700.000đ.
+                    </small>
+                </p>
+
+            </div>
+
+            <div class="col-6 form-group">
+                <label class="font-weight-bold">Số lượng</label>
+
+                <p-inputNumber [(ngModel)]="voucherMoi.soLuong" [min]="0" [showButtons]="true">
+                </p-inputNumber>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Hủy" class="p-button-secondary" (click)="dongDialogTaoVoucher()">
         </button>
 
-        <button pButton pRipple label="Xác nhận" class="p-button-success" (click)="taoDonHangMoi()">
+        <button pButton pRipple label="Thêm voucher" class="p-button-success" (click)="taoVoucherMoi()">
         </button>
     </ng-template>
 </p-dialog>

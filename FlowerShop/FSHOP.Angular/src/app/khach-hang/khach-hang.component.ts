@@ -48,6 +48,8 @@ export interface GoiYKhachHang {
 })
 export class KhachHangComponent implements OnInit {
   danhSachKhachHang: KhachHang[] = [];
+  danhSachKhachHangGoc: KhachHang[] = [];
+
   danhSachGoiYKhachHang: GoiYKhachHang[] = [];
   goiYKhachHang: GoiYKhachHang[] = [];
   khachHangTimThay: KhachHang | null = null;
@@ -101,7 +103,8 @@ export class KhachHangComponent implements OnInit {
 
     this.http.get<KhachHang[]>(apiUrl).subscribe({
       next: (data) => {
-        this.danhSachKhachHang = data || [];
+        this.danhSachKhachHangGoc = data || [];
+        this.danhSachKhachHang = [...this.danhSachKhachHangGoc];
 
         this.capNhatDanhSachGoiYSdt();
 
@@ -123,6 +126,56 @@ export class KhachHangComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  timKiemKhachHangTuDong() {
+    const tuKhoa = this.chuanHoaTimKiemKhachHang(this.sdtTimKiem);
+
+    this.khachHangTimThay = null;
+    this.dangTimKiem = false;
+
+    if (!tuKhoa) {
+      this.danhSachKhachHang = [...this.danhSachKhachHangGoc];
+      this.daTimKiem = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.daTimKiem = true;
+
+    this.danhSachKhachHang = this.danhSachKhachHangGoc.filter((kh: any) => {
+      const noiDungCanTim = [
+        this.layMaKhachHang(kh),
+        this.layTenKhachHang(kh),
+        this.laySdt(kh),
+        this.layDiaChi(kh)
+      ].join(' ');
+
+      return this.chuanHoaTimKiemKhachHang(noiDungCanTim).includes(tuKhoa);
+    });
+
+    this.cdr.detectChanges();
+  }
+
+  chuanHoaTimKiemKhachHang(value: any): string {
+    return (value || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'd')
+      .trim();
+  }
+
+  moDialogThemKhachHangTuTimKiem() {
+    const tuKhoa = (this.sdtTimKiem || '').trim();
+
+    const chiLaySdtNeuNguoiDungNhapSo = /^0?\d{1,10}$/.test(tuKhoa)
+      ? tuKhoa
+      : '';
+
+    this.moDialogThemKhachHang(chiLaySdtNeuNguoiDungNhapSo);
   }
 
   capNhatDanhSachGoiYSdt() {
@@ -340,6 +393,13 @@ export class KhachHangComponent implements OnInit {
     this.khachHangTimThay = null;
     this.daTimKiem = false;
     this.dangTimKiem = false;
+
+    if (this.danhSachKhachHangGoc.length > 0) {
+      this.danhSachKhachHang = [...this.danhSachKhachHangGoc];
+      this.cdr.detectChanges();
+      return;
+    }
+
     this.layDanhSachKhachHang();
   }
 

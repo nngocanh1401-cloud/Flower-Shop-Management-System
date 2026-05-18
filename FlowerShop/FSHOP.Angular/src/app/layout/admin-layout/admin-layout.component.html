@@ -14,27 +14,29 @@
             </li>
         </ul>
 
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <span class="nav-link text-muted">
-                    <i class="fas fa-user-circle"></i>
-                    Admin
-                </span>
-            </li>
+        <ul class="navbar-nav ml-auto topbar-right">
+            <li class="nav-item admin-menu-wrapper">
+                <button type="button" class="admin-profile-btn" (click)="batTatMenuAdmin()">
+                    <div class="admin-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
 
-            <li class="nav-item">
-                <a routerLink="/login" [queryParams]="{ mode: 'change-password' }"
-                    class="btn btn-outline-primary btn-sm mt-1 mr-2">
-                    <i class="fas fa-key"></i>
-                    Đổi mật khẩu
-                </a>
-            </li>
+                    <span class="admin-name">Admin</span>
 
-            <li class="nav-item">
-                <button class="btn btn-outline-danger btn-sm mt-1 mr-2" (click)="dangXuat()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
+                    <i class="fas fa-chevron-down admin-arrow" [class.rotate]="hienMenuAdmin"></i>
                 </button>
+
+                <div class="admin-dropdown" *ngIf="hienMenuAdmin">
+                    <button type="button" class="admin-dropdown-item" (click)="doiMatKhau()">
+                        <i class="fas fa-key"></i>
+                        Đổi mật khẩu
+                    </button>
+
+                    <button type="button" class="admin-dropdown-item logout" (click)="dangXuat()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
             </li>
         </ul>
     </nav>
@@ -42,14 +44,14 @@
     <!-- SIDEBAR -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a routerLink="/app/san-pham" class="brand-link">
-            <i class="fas fa-seedling brand-image text-success" style="font-size: 24px;"></i>
-            <span class="brand-text font-weight-light">FshopABP</span>
+            <i class="fas fa-seedling brand-image"></i>
+            <span class="brand-text">Cái Tiệm Bán Hoa</span>
         </a>
 
         <div class="sidebar">
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
-                    <i class="fas fa-user-circle text-light" style="font-size: 32px;"></i>
+                    <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="info">
                     <a href="javascript:;" class="d-block">Admin</a>
@@ -78,9 +80,5 @@
 
     <!-- FOOTER -->
     <footer class="main-footer">
-        <strong>Copyright © 2026 <span class="text-primary">FshopABP</span>.</strong>
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 1.0
-        </div>
     </footer>
 </div>

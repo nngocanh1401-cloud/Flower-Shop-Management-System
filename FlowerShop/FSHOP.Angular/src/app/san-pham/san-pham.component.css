@@ -1,80 +1,649 @@
-/* Tiêu đề và các nút */
-.card-header-content {
+.product-page {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* HEADER */
+.product-header-card {
+    background: #ffffff;
+    border: 1px solid #e6f2ea;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem; 
+    gap: 16px;
 }
 
-.search-group-container {
+.page-title-box {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 14px;
 }
 
-.p-inputgroup .clear-btn {
-    background-color: white;
-    border-left: none;
-    color: #e24c4c;
-}
-
-.p-inputgroup .clear-btn:hover {
-    background-color: #ffeeee;
-    color: #ce3131;
-}
-
-.form-group label {
-    margin-bottom: 0.5rem;
-}
-.form-row {
-    display: flex;
-    gap: 1rem;
-}
-.form-row .col-6 {
-    flex: 1;
-}
-
-.d-flex .p-button-danger {
-    background-color: rgb(255, 223, 223);
-}
-
-.search-group-container .btn-success {
-    font-size: small;
-}
-
-::v-deep .p-inputnumber input {
-    width: 100% !important;
-    padding: 5px 10px;
-}
-
-.search-bar {
-    width: 320px;
-    display: flex;
-    align-items: stretch;
-}
-
-.search-bar input {
-    height: 40px;
-    border-radius: 6px;
-}
-
-.search-bar button {
-    width: 40px;
-    height: 40px;
+.page-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: #edfdf3;
+    color: #2f8f5b;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 22px;
+}
+
+.page-title-box h2 {
+    margin: 0;
+    color: #263238;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    text-transform: none;
+}
+
+.page-title-box p {
+    margin: 5px 0 0;
+    color: #697586;
+    font-size: 14px;
+}
+
+.btn-add-product {
+    box-shadow: 0 8px 18px rgba(67, 199, 121, 0.22);
+    border: none;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    background: #47cf80;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.18s ease;
+    white-space: nowrap;
+}
+
+.btn-add-product:hover {
+    background: #7fc99e;
+    transform: translateY(-1px);
+}
+
+/* FILTER */
+.filter-card {
+    background: #ffffff;
+    border: 1px solid #e6f2ea;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
+}
+
+.filter-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-box {
+    height: 44px;
+    flex: 1;
+    min-width: 260px;
+    max-width: 420px;
+    border: 1px solid #dfe7e3;
+    border-radius: 12px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 12px;
+    transition: 0.18s ease;
+}
+
+.search-box:focus-within {
+    border-color: #47cf80;
+    box-shadow: 0 0 0 3px rgba(155, 216, 180, 0.18);
+}
+
+.search-box i {
+    color: #8a9a91;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.search-box input {
+    flex: 1;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
     padding: 0;
+    color: #263238;
+    font-size: 16px;
+    background: transparent;
 }
 
-.search-bar .clear-btn {
-    border-radius: 6px;
-    margin-left: 10px;
-    background-color: rgb(255, 223, 223);
+.btn-clear-search {
+    border: none;
+    background: none;
+    color: #dc3545;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-.search-bar .p-button:last-child {
-    border-radius: 6px;
-    margin-left: 10px;
+.btn-search {
+    box-shadow: 0 8px 18px rgba(67, 199, 121, 0.22);
+    height: 44px;
+    border: none;
+    padding: 0 18px;
+    border-radius: 12px;
+    background: #47cf80;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.18s ease;
+}
+
+.btn-search:hover {
+    background: #7fc99e;
+}
+
+.price-filter {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f7fffa;
+    border: 1px solid #e6f2ea;
+    border-radius: 12px;
+    padding: 8px 10px;
+}
+
+.filter-label {
+    color: #364152;
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.filter-label i {
+    color: #2f8f5b;
+    margin-right: 4px;
+}
+
+.dash {
+    color: #697586;
+    font-weight: 700;
+}
+
+.btn-filter-price,
+.btn-reset-price {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.btn-filter-price {
+    background: #47cf80;
+    color: #ffffff;
+}
+
+.btn-filter-price:hover {
+    background: #7fc99e;
+}
+
+.btn-reset-price {
+    background: #e8e8e8;
+    color: #e35b69;
+}
+
+.btn-reset-price:hover {
+    background: #ffe2e2;
+}
+
+/* TABLE CARD */
+.table-card {
+    background: #ffffff;
+    border: 1px solid #e6f2ea;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.table-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.table-card-header h4 {
+    margin: 0;
+    color: #263238;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.table-card-header p {
+    margin: 4px 0 0;
+    color: #697586;
+    font-size: 14px;
+}
+
+/* TABLE PRIME */
+:host ::ng-deep .product-table {
+    border: none;
+}
+
+:host ::ng-deep .product-table .p-datatable-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .product-table .p-datatable-thead>tr>th {
+    background: #f7fbf8;
+    color: #364152;
+    font-weight: 900;
+    border-color: #edf2ef;
+    padding: 14px 16px;
+    font-size: 14px;
+}
+
+:host ::ng-deep .product-table .p-datatable-tbody>tr>td {
+    border-color: #edf2ef;
+    padding: 14px 16px;
+    color: #263238;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+:host ::ng-deep .product-table .p-datatable-tbody>tr {
+    transition: 0.15s ease;
+}
+
+:host ::ng-deep .product-table .p-datatable-tbody>tr:hover {
+    background: #f7fffa;
+}
+
+.product-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #edfdf3;
+    color: #2f8f5b;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.product-name {
+    color: #263238;
+    font-weight: 800;
+}
+
+.price-text {
+    color: #dc3545;
+    font-weight: 900;
+}
+
+.stock-badge {
+    display: inline-flex;
+    min-width: 42px;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+}
+
+.stock-good {
+    background: #edfdf3;
+    color: #2f8f5b;
+}
+
+.stock-low {
+    background: #fff0f0;
+    color: #dc3545;
+}
+
+.category-badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f4f6f8;
+    color: #4b5565;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.action-col {
+    width: 150px;
+}
+
+.action-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.15s ease;
+    margin: 0 3px;
+}
+
+.action-btn.edit {
+    color: #2f8f5b;
+    border-color: #bfe9ce;
+}
+
+.action-btn.edit:hover {
+    background: #edfdf3;
+}
+
+.action-btn.delete {
+    color: #dc3545;
+    border-color: #ffd0d0;
+}
+
+.action-btn.delete:hover {
+    background: #fff0f0;
+}
+
+.empty-message {
+    padding: 40px !important;
+    text-align: center;
+    color: #697586;
+}
+
+.empty-message i {
+    font-size: 34px;
+    color: #47cf80;
+    margin-bottom: 10px;
+}
+
+.empty-message p {
+    margin: 8px 0 0;
+    font-weight: 700;
+}
+
+/* DIALOG */
+:host ::ng-deep .product-dialog .p-dialog {
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .product-dialog .p-dialog-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #edf2ef;
+}
+
+:host ::ng-deep .product-dialog .p-dialog-title {
+    color: #263238;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+:host ::ng-deep .product-dialog .p-dialog-content {
+    padding: 22px 24px;
+}
+
+:host ::ng-deep .product-dialog .p-dialog-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #edf2ef;
+}
+
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    margin: 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #364152;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.required {
+    color: #dc3545;
+}
+
+.readonly-input {
+    background: #f7fbf8 !important;
+    color: #2f8f5b !important;
+    font-weight: 900;
+    border: 1px solid #d5f3df;
+}
+
+.form-row-custom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+/* PRIME INPUTS */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-inputnumber,
+:host ::ng-deep .p-inputnumber-input {
+    width: 100%;
+}
+
+:host ::ng-deep .p-dropdown {
+    border-radius: 10px;
+}
+
+:host ::ng-deep .p-inputtext:enabled:focus,
+:host ::ng-deep .p-dropdown:not(.p-disabled).p-focus {
+    border-color: #47cf80;
+    box-shadow: 0 0 0 3px rgba(155, 216, 180, 0.18);
+}
+
+/* Input number trong filter */
+:host ::ng-deep .price-input {
+    width: 105px !important;
+    height: 34px;
+    border-radius: 9px;
+    font-size: 15px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+
+    .product-header-card,
+    .filter-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-left,
+    .price-filter {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        max-width: none;
+    }
+
+    .btn-add-product {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-title-box {
+        align-items: flex-start;
+    }
+
+    .page-title-box h2 {
+        font-size: 22px;
+    }
+
+    .form-row-custom {
+        grid-template-columns: 1fr;
+    }
+
+    .price-filter {
+        align-items: stretch;
+    }
+}
+
+/* =========================
+   CONFIRM DIALOG - BERRY STYLE
+   ========================= */
+.berry-confirm-dialog .p-dialog {
+    border-radius: 22px !important;
+    overflow: hidden;
+    border: none !important;
+    box-shadow: 0 24px 60px rgba(31, 41, 55, 0.18) !important;
+    min-width: 520px;
+}
+
+.berry-confirm-dialog .p-dialog-header {
+    padding: 24px 28px 12px 28px !important;
+    background: #ffffff !important;
+    border-bottom: none !important;
+    color: #25324b !important;
+}
+
+.berry-confirm-dialog .p-dialog-title {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #25324b !important;
+}
+
+.berry-confirm-dialog .p-dialog-header-icon {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    color: #64748b !important;
+    transition: all 0.2s ease;
+}
+
+.berry-confirm-dialog .p-dialog-header-icon:hover {
+    background: #f1f5f9 !important;
+    color: #1f2937 !important;
+}
+
+.berry-confirm-dialog .p-dialog-content {
+    padding: 8px 28px 20px 28px !important;
+    background: #ffffff !important;
+    color: #475569 !important;
+    font-size: 16px !important;
+    line-height: 1.65;
+}
+
+.berry-confirm-dialog .p-confirm-dialog-icon {
+    font-size: 38px !important;
+    color: #f59e0b !important;
+    margin-right: 18px !important;
+}
+
+.berry-confirm-dialog .p-confirm-dialog-message {
+    font-size: 17px !important;
+    color: #475569 !important;
+    font-weight: 500;
+}
+
+.berry-confirm-dialog .p-confirm-dialog-message b {
+    color: #1f2937;
+    font-weight: 800;
+}
+
+.berry-confirm-dialog .p-dialog-footer {
+    padding: 0 28px 24px 28px !important;
+    border-top: none !important;
+    background: #ffffff !important;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Nút Hủy */
+.berry-confirm-dialog .btn-cancel-delete {
+    background: #ffffff !important;
+    color: #64748b !important;
+    border: 1.5px solid #dbe4ee !important;
+    border-radius: 14px !important;
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+}
+
+.berry-confirm-dialog .btn-cancel-delete:hover {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Nút Xác nhận */
+.berry-confirm-dialog .btn-confirm-delete {
+    background: linear-gradient(135deg, #ff6b6b, #f43f5e) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 10px 22px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 12px 22px rgba(244, 63, 94, 0.22) !important;
+}
+
+.berry-confirm-dialog .btn-confirm-delete:hover {
+    filter: brightness(0.97);
+    transform: translateY(-1px);
+}
+
+/* Lớp nền mờ phía sau */
+.p-confirm-dialog-mask,
+.p-dialog-mask {
+    backdrop-filter: blur(3px);
+    background: rgba(15, 23, 42, 0.22) !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .berry-confirm-dialog .p-dialog {
+        min-width: unset;
+        width: calc(100vw - 32px) !important;
+        margin: 16px;
+    }
+
+    .berry-confirm-dialog .p-dialog-title {
+        font-size: 22px !important;
+    }
+
+    .berry-confirm-dialog .p-confirm-dialog-message {
+        font-size: 15px !important;
+    }
 }

@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
     this.authService.dangNhap(this.tenDangNhap.trim(), this.matKhau.trim()).subscribe({
       next: () => {
         this.dangXuLy = false;
-        this.router.navigate(['/app/san-pham']);
+        this.router.navigate(['/app/bao-cao']);
       },
       error: (err) => {
         console.error('Lỗi đăng nhập:', err);

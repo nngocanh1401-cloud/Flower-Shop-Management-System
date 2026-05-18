@@ -46,6 +46,7 @@ export interface DonHang {
 
 export class DonHangComponent implements OnInit {
   danhSachDonHang: DonHang[] = [];
+  danhSachDonHangGoc: DonHang[] = [];
 
   boLocDonHang: any = {
     maDH: '',
@@ -117,6 +118,26 @@ export class DonHangComponent implements OnInit {
   danhSachGoiYKhachHangTaoDon: any[] = [];
   goiYKhachHangTaoDon: any[] = [];
 
+  hienThiDialogTaoVoucher: boolean = false;
+
+  voucherMoi: any = {
+    maVoucher: '',
+    tenVoucher: '',
+    ngayBd: '',
+    ngayKt: '',
+    giaTriGiam: 0,
+    loaiGiam: 'PhanTram',
+    dieuKienApDung: 0,
+    soLuong: 1
+  };
+
+  danhSachLoaiGiamVoucher: any[] = [
+    { label: 'Giảm theo phần trăm (%)', value: 'PhanTram' },
+    { label: 'Giảm theo số tiền (VNĐ)', value: 'TienMat' }
+  ];
+
+  readonly GIA_TRI_THEM_VOUCHER = '__THEM_VOUCHER_MOI__';
+
   constructor(
     private http: HttpClient,
     public cdr: ChangeDetectorRef,
@@ -157,8 +178,9 @@ export class DonHangComponent implements OnInit {
 
     this.http.get<DonHang[]>(apiUrl).subscribe({
       next: (data) => {
-        this.danhSachDonHang = data;
-        this.capNhatDanhSachGoiYTuDonHang(data);
+        this.danhSachDonHangGoc = data || [];
+        this.danhSachDonHang = [...this.danhSachDonHangGoc];
+        this.capNhatDanhSachGoiYTuDonHang(this.danhSachDonHangGoc);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -269,58 +291,48 @@ export class DonHangComponent implements OnInit {
 
     this.http.get<any[]>(apiUrl).subscribe({
       next: (data) => {
-        const voucherTuApi = (data || []).map(v => {
-          const maVoucher = v.maVoucher || '';
-          const tenVoucher = v.tenVoucher || '';
-          const giaTriGiam = v.giaTriGiam || 0;
-          const loaiGiam = v.loaiGiam || '';
-          const dieuKienApDung = v.dieuKienApDung || 0;
-          const soLuong = v.soLuong || 0;
+        const dsVoucher = data || [];
 
-          let moTaGiam = '';
-
-          if (loaiGiam.toLowerCase().includes('phan') || loaiGiam.includes('%')) {
-            moTaGiam = `Giảm ${giaTriGiam}%`;
-          } else {
-            moTaGiam = `Giảm ${giaTriGiam.toLocaleString('vi-VN')}đ`;
-          }
-
-          let label = `${maVoucher} - ${tenVoucher || moTaGiam}`;
-
-          if (dieuKienApDung > 0) {
-            label += ` - Đơn từ ${dieuKienApDung.toLocaleString('vi-VN')}đ`;
-          }
-
-          if (soLuong <= 0) {
-            label += ' - Hết lượt';
-          }
-
-          return {
-            label: label,
-            value: maVoucher,
-            maVoucher: maVoucher,
-            tenVoucher: tenVoucher,
-            giaTriGiam: giaTriGiam,
-            loaiGiam: loaiGiam,
-            dieuKienApDung: dieuKienApDung,
-            soLuong: soLuong,
-            ngayBd: v.ngayBd,
-            ngayKt: v.ngayKt
-          };
-        });
+        const voucherConHieuLuc = dsVoucher.filter(voucher =>
+          this.kiemTraVoucherConHieuLuc(voucher)
+        );
 
         this.danhSachVoucher = [
-          { label: '-- Không sử dụng --', value: null },
-          ...voucherTuApi
+          {
+            label: '-- Không sử dụng --',
+            value: null,
+            maVoucher: null,
+            tenVoucher: 'Không sử dụng',
+            laKhongSuDung: true
+          },
+          ...voucherConHieuLuc.map(voucher => ({
+            label: this.taoLabelVoucher(voucher),
+            value: this.layMaVoucher(voucher),
+            ...voucher
+          })),
+          {
+            label: 'Thêm voucher mới',
+            value: this.GIA_TRI_THEM_VOUCHER,
+            laThemMoi: true
+          }
         ];
-
-        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Lỗi tải voucher:', err);
 
         this.danhSachVoucher = [
-          { label: '-- Không sử dụng --', value: null }
+          {
+            label: '-- Không sử dụng --',
+            value: null,
+            maVoucher: null,
+            tenVoucher: 'Không sử dụng',
+            laKhongSuDung: true
+          },
+          {
+            label: 'Thêm voucher mới',
+            value: this.GIA_TRI_THEM_VOUCHER,
+            laThemMoi: true
+          }
         ];
 
         this.messageService.add({
@@ -328,8 +340,6 @@ export class DonHangComponent implements OnInit {
           summary: 'Voucher',
           detail: 'Không thể tải danh sách voucher'
         });
-
-        this.cdr.detectChanges();
       }
     });
   }
@@ -374,6 +384,295 @@ export class DonHangComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  laVoucherGiamPhanTram(voucher: any): boolean {
+    const loaiGiam = (voucher?.loaiGiam || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd');
+
+    return (
+      loaiGiam.includes('%') ||
+      loaiGiam.includes('phantram') ||
+      loaiGiam.includes('phan_tram') ||
+      loaiGiam.includes('phan tram') ||
+      loaiGiam.includes('percent') ||
+      loaiGiam.includes('percentage') ||
+      loaiGiam.includes('tyle') ||
+      loaiGiam.includes('ty le') ||
+      loaiGiam.includes('ti le')
+    );
+  }
+
+  xuLyChonVoucher(event: any) {
+    const giaTri = event?.value;
+
+    if (giaTri === this.GIA_TRI_THEM_VOUCHER) {
+      // reset ngay để dropdown không giữ dòng "+ Thêm voucher mới"
+      setTimeout(() => {
+        this.donHangMoi.maVoucher = null;
+        this.cdr.detectChanges();
+      }, 0);
+
+      this.moDialogTaoVoucher();
+    }
+  }
+
+  taoMaVoucherMoi(): string {
+    const danhSachMa = (this.danhSachVoucher || [])
+      .filter((v: any) => !v.laThemMoi && !v.laKhongSuDung)
+      .map((v: any) => this.layMaVoucher(v))
+      .filter((ma: string) => ma);
+
+    if (danhSachMa.length === 0) {
+      return 'VC001';
+    }
+
+    let soLonNhat = 0;
+    let doDaiSo = 3;
+    let tienTo = 'VC';
+
+    danhSachMa.forEach((ma: string) => {
+      const match = ma.match(/^([A-Za-z]+)(\d+)$/);
+
+      if (match) {
+        const prefix = match[1];
+        const numberPart = match[2];
+        const numberValue = Number(numberPart);
+
+        if (!isNaN(numberValue) && numberValue > soLonNhat) {
+          soLonNhat = numberValue;
+          doDaiSo = numberPart.length;
+          tienTo = prefix;
+        }
+      }
+    });
+
+    const soMoi = soLonNhat + 1;
+    const soMoiDangChuoi = soMoi.toString().padStart(doDaiSo, '0');
+
+    return `${tienTo}${soMoiDangChuoi}`;
+  }
+
+  dongDialogTaoVoucher() {
+    this.hienThiDialogTaoVoucher = false;
+
+    if (this.donHangMoi.maVoucher === this.GIA_TRI_THEM_VOUCHER) {
+      this.donHangMoi.maVoucher = null;
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  moDialogTaoVoucher() {
+    const homNay = new Date();
+    const yyyy = homNay.getFullYear();
+    const mm = String(homNay.getMonth() + 1).padStart(2, '0');
+    const dd = String(homNay.getDate()).padStart(2, '0');
+
+    const ngayHienTai = `${yyyy}-${mm}-${dd}`;
+
+    this.voucherMoi = {
+      maVoucher: this.taoMaVoucherMoi(),
+      tenVoucher: '',
+      ngayBd: ngayHienTai,
+      ngayKt: ngayHienTai,
+      giaTriGiam: 0,
+      loaiGiam: 'PhanTram',
+      dieuKienApDung: 0,
+      soLuong: 1
+    };
+
+    this.hienThiDialogTaoVoucher = true;
+  }
+
+  taoVoucherMoi() {
+    if (!this.voucherMoi.maVoucher?.trim()) {
+      this.voucherMoi.maVoucher = this.taoMaVoucherMoi();
+    }
+
+    if (!this.voucherMoi.tenVoucher?.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Thiếu tên voucher',
+        detail: 'Vui lòng nhập tên voucher'
+      });
+      return;
+    }
+
+    if (!this.voucherMoi.ngayBd || !this.voucherMoi.ngayKt) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Thiếu ngày',
+        detail: 'Vui lòng nhập ngày bắt đầu và ngày kết thúc'
+      });
+      return;
+    }
+
+    if (new Date(this.voucherMoi.ngayBd) > new Date(this.voucherMoi.ngayKt)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Ngày không hợp lệ',
+        detail: 'Ngày bắt đầu không được lớn hơn ngày kết thúc'
+      });
+      return;
+    }
+
+    if (Number(this.voucherMoi.giaTriGiam) <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Giá trị giảm không hợp lệ',
+        detail: 'Giá trị giảm phải lớn hơn 0'
+      });
+      return;
+    }
+
+    if (this.voucherMoi.loaiGiam === 'PhanTram' && Number(this.voucherMoi.giaTriGiam) > 100) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Phần trăm không hợp lệ',
+        detail: 'Voucher giảm theo phần trăm không được lớn hơn 100%'
+      });
+      return;
+    }
+
+    const apiUrl = environment.fshopApiUrl + '/api/Voucher';
+
+    const body = {
+      maVoucher: this.voucherMoi.maVoucher.trim(),
+      tenVoucher: this.voucherMoi.tenVoucher.trim(),
+      ngayBd: this.voucherMoi.ngayBd,
+      ngayKt: this.voucherMoi.ngayKt,
+      giaTriGiam: Number(this.voucherMoi.giaTriGiam || 0),
+      loaiGiam: this.voucherMoi.loaiGiam,
+      dieuKienApDung: Number(this.voucherMoi.dieuKienApDung || 0),
+      soLuong: Number(this.voucherMoi.soLuong || 0)
+    };
+
+    this.http.post(apiUrl, body).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Thành công',
+          detail: 'Đã thêm voucher mới'
+        });
+
+        this.hienThiDialogTaoVoucher = false;
+
+        // Chọn luôn voucher vừa tạo cho đơn hàng
+        this.donHangMoi.maVoucher = body.maVoucher;
+
+        // Load lại danh sách voucher
+        this.layDanhSachVoucher();
+      },
+      error: (err) => {
+        console.error('Lỗi thêm voucher:', err);
+
+        const loi =
+          typeof err.error === 'string'
+            ? err.error
+            : err.error?.message || err.error?.title || 'Không thể thêm voucher';
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thêm voucher thất bại',
+          detail: loi
+        });
+      }
+    });
+  }
+
+  kiemTraVoucherConHieuLuc(voucher: any): boolean {
+    const maVoucher = this.layMaVoucher(voucher);
+
+    if (!maVoucher) {
+      return false;
+    }
+
+    const soLuong = Number(voucher.soLuong ?? voucher.soluong ?? 0);
+
+    if (soLuong <= 0) {
+      return false;
+    }
+
+    const ngayHienTai = new Date();
+    ngayHienTai.setHours(0, 0, 0, 0);
+
+    const ngayBatDauRaw = voucher.ngayBd || voucher.ngayBD || voucher.ngayBatDau || voucher.ngay_bat_dau;
+    const ngayKetThucRaw = voucher.ngayKt || voucher.ngayKT || voucher.ngayKetThuc || voucher.ngay_ket_thuc;
+
+    if (ngayBatDauRaw) {
+      const ngayBatDau = new Date(ngayBatDauRaw);
+      ngayBatDau.setHours(0, 0, 0, 0);
+
+      if (!isNaN(ngayBatDau.getTime()) && ngayHienTai < ngayBatDau) {
+        return false;
+      }
+    }
+
+    if (ngayKetThucRaw) {
+      const ngayKetThuc = new Date(ngayKetThucRaw);
+      ngayKetThuc.setHours(23, 59, 59, 999);
+
+      if (!isNaN(ngayKetThuc.getTime()) && ngayHienTai > ngayKetThuc) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  layMaVoucher(voucher: any): string {
+    return voucher?.maVoucher || voucher?.maVOUCHER || voucher?.id || '';
+  }
+
+  layTenVoucher(voucher: any): string {
+    return voucher?.tenVoucher || voucher?.tenVOUCHER || voucher?.ten || '';
+  }
+
+  taoLabelVoucher(voucher: any): string {
+    const maVoucher = this.layMaVoucher(voucher);
+    const tenVoucher = this.layTenVoucher(voucher);
+
+    const giaTriGiam = Number(voucher.giaTriGiam ?? 0);
+    const dieuKienApDung = Number(voucher.dieuKienApDung ?? 0);
+
+    let hienThiGiam = '';
+
+    if (this.laVoucherGiamPhanTram(voucher)) {
+      hienThiGiam = `Giảm ${giaTriGiam}%`;
+    } else {
+      hienThiGiam = `Giảm ${this.dinhDangTien(giaTriGiam)} đ`;
+    }
+
+    let dieuKienText = '';
+
+    if (dieuKienApDung > 0) {
+      dieuKienText = `cho đơn từ ${this.rutGonTienVoucher(dieuKienApDung)}`;
+    }
+
+    return `${maVoucher} - ${tenVoucher} ${dieuKienText} (${hienThiGiam})`;
+  }
+
+  rutGonTienVoucher(value: number): string {
+    const so = Number(value || 0);
+
+    if (so >= 1000000) {
+      return `${so / 1000000}tr`;
+    }
+
+    if (so >= 1000) {
+      return `${so / 1000}k`;
+    }
+
+    return `${so}`;
+  }
+
+  dinhDangTien(value: number): string {
+    return Number(value || 0).toLocaleString('vi-VN');
   }
 
   capNhatGoiYKhachHangTaoDon() {
@@ -473,14 +772,17 @@ export class DonHangComponent implements OnInit {
     this.soLuongTam = 1;
   }
 
-  layVoucherDangChon(): any | null {
+  layVoucherDangChon(): any {
     const maVoucher = this.donHangMoi?.maVoucher;
 
-    if (!maVoucher) return null;
+    if (!maVoucher) {
+      return null;
+    }
 
-    return this.danhSachVoucher.find(
-      x => x.value === maVoucher || x.maVoucher === maVoucher
-    ) || null;
+    return this.danhSachVoucher.find((v: any) =>
+      v.maVoucher === maVoucher ||
+      v.value === maVoucher
+    );
   }
 
   coVoucherDuocChon(): boolean {
@@ -498,8 +800,8 @@ export class DonHangComponent implements OnInit {
   }
 
   tinhTongTienGoc(): number {
-    return (this.donHangMoi?.danhSachChiTiet || []).reduce((tong: number, sp: any) => {
-      return tong + (Number(sp.donGia || 0) * Number(sp.soLuong || 0));
+    return this.donHangMoi.danhSachChiTiet.reduce((sum: number, item: any) => {
+      return sum + Number(item.donGia || 0) * Number(item.soLuong || 0);
     }, 0);
   }
 
@@ -538,14 +840,8 @@ export class DonHangComponent implements OnInit {
     if (!voucher) return 'Không sử dụng';
 
     const giaTriGiam = Number(voucher.giaTriGiam || 0);
-    const loaiGiam = (voucher.loaiGiam || '').toLowerCase();
 
-    if (
-      loaiGiam.includes('%') ||
-      loaiGiam.includes('phan') ||
-      loaiGiam.includes('trăm') ||
-      loaiGiam.includes('tram')
-    ) {
+    if (this.laVoucherGiamPhanTram(voucher)) {
       return `-${giaTriGiam}%`;
     }
 
@@ -554,31 +850,24 @@ export class DonHangComponent implements OnInit {
 
   tinhTienGiamVoucher(): number {
     const voucher = this.layVoucherDangChon();
-    const tongTienGoc = this.tinhTongTienGoc();
 
-    if (!voucher || !this.voucherHopLe()) return 0;
+    if (!voucher) {
+      return 0;
+    }
 
+    const tongGoc = this.tinhTongTienGoc();
     const giaTriGiam = Number(voucher.giaTriGiam || 0);
-    const loaiGiam = (voucher.loaiGiam || '').toLowerCase();
+    const dieuKienApDung = Number(voucher.dieuKienApDung || 0);
 
-    let tienGiam = 0;
-
-    if (
-      loaiGiam.includes('%') ||
-      loaiGiam.includes('phan') ||
-      loaiGiam.includes('trăm') ||
-      loaiGiam.includes('tram')
-    ) {
-      tienGiam = tongTienGoc * giaTriGiam / 100;
-    } else {
-      tienGiam = giaTriGiam;
+    if (dieuKienApDung > 0 && tongGoc < dieuKienApDung) {
+      return 0;
     }
 
-    if (tienGiam > tongTienGoc) {
-      tienGiam = tongTienGoc;
+    if (this.laVoucherGiamPhanTram(voucher)) {
+      return Math.round(tongGoc * giaTriGiam / 100);
     }
 
-    return Math.round(tienGiam);
+    return giaTriGiam;
   }
 
   tinhTongTienThanhToan(): number {
@@ -664,34 +953,6 @@ export class DonHangComponent implements OnInit {
     }
   }
 
-  @HostListener('document:click', ['$event'])
-  xuLyClickRaNgoai(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-
-    const dangClickTrongKhungTimKiem = target.closest('.khung-tim-kiem');
-    const dangClickTrongPopupPrimeNG =
-      target.closest('.p-autocomplete-panel') ||
-      target.closest('.p-dropdown-panel');
-
-    if (!dangClickTrongKhungTimKiem && !dangClickTrongPopupPrimeNG) {
-      this.hienThiHopLoc = false;
-    }
-  }
-
-  batTatHopLoc() {
-    this.hienThiHopLoc = !this.hienThiHopLoc;
-  }
-
-  timKiemNhanh() {
-    const keyword = this.boLocDonHang.keyword?.trim();
-
-    if (!keyword) {
-      return;
-    }
-
-    this.locDonHang(false);
-  }
-
   locDonHang(hienThongBao: boolean = false) {
     const params: any = {};
 
@@ -739,8 +1000,10 @@ export class DonHangComponent implements OnInit {
 
     this.http.get<DonHang[]>(apiUrl, { params }).subscribe({
       next: (data) => {
-        this.danhSachDonHang = data;
-        this.capNhatDanhSachGoiYTuDonHang(data);
+        this.danhSachDonHangGoc = data || [];
+        this.danhSachDonHang = [...this.danhSachDonHangGoc];
+
+        this.capNhatDanhSachGoiYTuDonHang(this.danhSachDonHangGoc);
         this.cdr.detectChanges();
 
         if (hienThongBao) {
@@ -763,8 +1026,69 @@ export class DonHangComponent implements OnInit {
     });
   }
 
+  batTatHopLoc() {
+    this.hienThiHopLoc = !this.hienThiHopLoc;
+    this.cdr.detectChanges();
+  }
+
+  timKiemNhanhTuDong() {
+    const keyword = this.chuanHoaTuKhoa(this.boLocDonHang.keyword);
+
+    if (!keyword) {
+      this.danhSachDonHang = [...this.danhSachDonHangGoc];
+      return;
+    }
+
+    this.danhSachDonHang = this.danhSachDonHangGoc.filter((dh: any) => {
+      const noiDung = [
+        dh.maDH,
+        dh.maDh,
+        dh.maKH,
+        dh.tenKhachHang,
+        dh.ngayDat,
+        dh.tongTien,
+        dh.tenTrangThai,
+        dh.tenPTTT,
+        dh.maVoucher
+      ].join(' ');
+
+      return this.chuanHoaTuKhoa(noiDung).includes(keyword);
+    });
+  }
+
+  xuLyThayDoiTuKhoaTimKiem(value: any) {
+    const keyword = value?.toString().trim();
+
+    if (!keyword) {
+      this.lamMoiTimKiem();
+    }
+  }
+
+  chuanHoaTuKhoa(value: any): string {
+    return (value ?? '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .trim();
+  }
+
+  lamMoiTimKiem() {
+    this.boLocDonHang.keyword = '';
+    this.goiYTuKhoaTongHop = [];
+
+    if (this.danhSachDonHangGoc.length > 0) {
+      this.danhSachDonHang = [...this.danhSachDonHangGoc];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.layDanhSachDonHang();
+  }
+
   apDungBoLoc() {
-    this.locDonHang(false);
+    this.locDonHang(true);
   }
 
   lamMoiBoLoc() {
@@ -790,8 +1114,9 @@ export class DonHangComponent implements OnInit {
     );
 
     const maKHTrongDonHang = data.map(x => x.maKH).filter(x => x);
+
     const maKHTuDanhSachKhachHang = this.danhSachKhachHang
-      .map(x => x.value)
+      .map((x: any) => x.value || x.maKH)
       .filter(x => x);
 
     this.danhSachMaKHLoc = this.layDanhSachKhongTrung([
@@ -800,9 +1125,11 @@ export class DonHangComponent implements OnInit {
     ]);
 
     const voucherTrongDonHang = data.map(x => x.maVoucher).filter(x => x);
+
     const voucherMau = this.danhSachVoucher
-      .map(x => x.value)
-      .filter(x => x);
+      .filter((x: any) => !x.laThemMoi && !x.laKhongSuDung)
+      .map((x: any) => x.value || x.maVoucher)
+      .filter((x: any) => x && x !== this.GIA_TRI_THEM_VOUCHER);
 
     this.danhSachMaVoucherLoc = this.layDanhSachKhongTrung([
       ...voucherTrongDonHang,
@@ -810,13 +1137,22 @@ export class DonHangComponent implements OnInit {
     ]);
 
     const tenKhachHang = data.map(x => x.tenKhachHang).filter(x => x);
+    const tenTrangThai = data.map(x => x.tenTrangThai).filter(x => x);
+    const tenPTTT = data.map(x => x.tenPTTT).filter(x => x);
+
+    const trangThaiMau = this.danhSachTrangThai.map(x => x.label).filter(x => x);
+    const ptttMau = this.danhSachPTTT.map(x => x.label).filter(x => x);
 
     this.danhSachTuKhoaTongHop = this.layDanhSachKhongTrung([
       ...this.danhSachMaDH,
       ...this.danhSachMaKHLoc,
       ...this.danhSachMaVoucherLoc,
-      ...tenKhachHang
-    ]);
+      ...tenKhachHang,
+      ...tenTrangThai,
+      ...tenPTTT,
+      ...trangThaiMau,
+      ...ptttMau
+    ]).filter(x => x !== this.GIA_TRI_THEM_VOUCHER);
   }
 
   layDanhSachKhongTrung(ds: string[]): string[] {
@@ -824,11 +1160,11 @@ export class DonHangComponent implements OnInit {
   }
 
   locGoiYTuKhoaTongHop(event: any) {
-    const tuKhoa = event.query ? event.query.toLowerCase() : '';
+    const tuKhoa = this.chuanHoaTuKhoa(event.query);
 
-    this.goiYTuKhoaTongHop = this.danhSachTuKhoaTongHop.filter(x =>
-      x.toLowerCase().includes(tuKhoa)
-    );
+    this.goiYTuKhoaTongHop = this.danhSachTuKhoaTongHop
+      .filter(x => this.chuanHoaTuKhoa(x).includes(tuKhoa))
+      .slice(0, 12);
   }
 
   locGoiYMaDH(event: any) {
@@ -854,4 +1190,129 @@ export class DonHangComponent implements OnInit {
       x.toLowerCase().includes(tuKhoa)
     );
   }
+
+  layChiTietDonHang(donHang: any): any[] {
+    return (
+      donHang?.chiTiet ||
+      donHang?.chiTietDonHangs ||
+      donHang?.danhSachChiTiet ||
+      []
+    );
+  }
+
+  layMaVoucherDonHang(donHang: any): string {
+    return (
+      donHang?.maVoucher ||
+      donHang?.maVOUCHER ||
+      donHang?.voucher?.maVoucher ||
+      donHang?.voucherNavigation?.maVoucher ||
+      donHang?.maVoucherNavigation?.maVoucher ||
+      ''
+    );
+  }
+
+  layVoucherTheoMa(maVoucher: string): any {
+    if (!maVoucher) return null;
+
+    return this.danhSachVoucher?.find((v: any) =>
+      v.maVoucher === maVoucher ||
+      v.value === maVoucher
+    );
+  }
+
+  layTenVoucherDonHang(donHang: any): string {
+    const maVoucher = this.layMaVoucherDonHang(donHang);
+
+    if (!maVoucher) {
+      return 'Không sử dụng';
+    }
+
+    const voucher = this.layVoucherTheoMa(maVoucher);
+
+    if (!voucher) {
+      return maVoucher;
+    }
+
+    const tenVoucher =
+      voucher.tenVoucher ||
+      voucher.ten ||
+      voucher.label ||
+      '';
+
+    if (tenVoucher && tenVoucher.includes(maVoucher)) {
+      return tenVoucher;
+    }
+
+    return tenVoucher ? `${maVoucher} - ${tenVoucher}` : maVoucher;
+  }
+
+  tinhTongTienGocChiTiet(donHang: any): number {
+    const chiTiet = this.layChiTietDonHang(donHang);
+
+    return chiTiet.reduce((sum: number, item: any) => {
+      const soLuong = Number(item.soLuong || 0);
+      const donGia = Number(item.donGia || 0);
+
+      return sum + soLuong * donGia;
+    }, 0);
+  }
+
+  tinhTienGiamChiTiet(donHang: any): number {
+    const maVoucher = this.layMaVoucherDonHang(donHang);
+
+    if (!maVoucher) {
+      return 0;
+    }
+
+    const tongGoc = this.tinhTongTienGocChiTiet(donHang);
+    const tongSauGiam = Number(donHang?.tongTien || 0);
+
+    // Cách chắc nhất: lấy giá gốc - tổng tiền đã lưu trong đơn
+    if (tongGoc > 0 && tongSauGiam > 0 && tongGoc >= tongSauGiam) {
+      return tongGoc - tongSauGiam;
+    }
+
+    // Nếu API chi tiết không lưu tổng sau giảm thì mới tự tính theo voucher
+    const voucher = this.layVoucherTheoMa(maVoucher);
+
+    if (!voucher) {
+      return 0;
+    }
+
+    const giaTriGiam = Number(voucher.giaTriGiam || 0);
+    const dieuKienApDung = Number(voucher.dieuKienApDung || 0);
+    const loaiGiam = (voucher.loaiGiam || '').toString().toLowerCase();
+
+    if (dieuKienApDung > 0 && tongGoc < dieuKienApDung) {
+      return 0;
+    }
+
+    if (
+      loaiGiam.includes('%') ||
+      loaiGiam.includes('phantram') ||
+      loaiGiam.includes('phan_tram') ||
+      loaiGiam.includes('percent') ||
+      loaiGiam.includes('percentage') ||
+      loaiGiam.includes('tyle') ||
+      loaiGiam.includes('tỷ lệ')
+    ) {
+      return Math.round(tongGoc * giaTriGiam / 100);
+    }
+
+    return giaTriGiam;
+  }
+
+  tinhTongSauGiamChiTiet(donHang: any): number {
+    const tongTienDaLuu = Number(donHang?.tongTien || 0);
+
+    if (tongTienDaLuu > 0) {
+      return tongTienDaLuu;
+    }
+
+    const tongGoc = this.tinhTongTienGocChiTiet(donHang);
+    const tienGiam = this.tinhTienGiamChiTiet(donHang);
+
+    return Math.max(tongGoc - tienGiam, 0);
+  }
+
 }
