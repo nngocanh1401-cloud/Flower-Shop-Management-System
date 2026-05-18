@@ -92,5 +92,3 @@ GROUP BY
     sp.SoLuongTon,
     sp.DonGia
 GO
-
-select * from  vw_ChiTietDonHang

@@ -35,7 +35,6 @@ BEGIN
 END;
 GO
 
-
 -- Function 2: Tính tổng tiền 1 đơn hàng (không tính voucher)
 CREATE FUNCTION fn_TinhTongTienDon(@MaDH NVARCHAR(10))
 RETURNS DECIMAL(18,2)
@@ -65,11 +64,3 @@ RETURN (
     WHERE dh.MaKH = @MaKH
     GROUP BY dh.MaDH, dh.NgayDat, dh.TongTien, tt.TenTrangThai
 );
-
-USE FShop
-GO
-SELECT DB_NAME()
-
-SELECT * 
-FROM sys.objects
-WHERE name = 'fn_TinhGiamGia'

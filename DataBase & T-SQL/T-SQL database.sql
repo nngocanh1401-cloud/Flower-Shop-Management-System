@@ -128,14 +128,6 @@ CREATE TABLE NguoiDung (
     NgayTao      DATETIME      DEFAULT GETDATE(),
     IsActive     BIT           DEFAULT 1
 );
-select * from DonHang
-Select * from SanPham
-select * from KhachHang
-select * from NguoiDung
-select * from PhuongThucThanhToan
-select * from Voucher
-select * from ChiTietDonHang
-select * from PhieuNhapHang
 
 
 

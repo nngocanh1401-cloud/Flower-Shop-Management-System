@@ -14,8 +14,6 @@ INSERT INTO TrangThai VALUES
 -- KIỂM TRA
 SELECT * FROM TrangThai ORDER BY MaTrangThai;
 
-
-
 -- NhaCungCap
 INSERT INTO NhaCungCap VALUES
 ('NCC001', N'Vườn hoa Đà Lạt',   N'12 Trần Phú, Đà Lạt',    '0901111111', 'dalat@flower.vn',  '0101234567'),
@@ -104,8 +102,3 @@ INSERT INTO NguoiDung VALUES
 ('ND001','admin','$2a$11$liC2LddldTd048Q/k9D0tuK9EvPQBuYfPM3Z5CZQQAqyyr0pFVOuq',1,NULL,GETDATE(),1);
 
 INSERT INTO VaiTro VALUES (1, N'Admin'), (2, N'KhachHang');
-
-DELETE FROM NguoiDung
-WHERE TenDangNhap = 'admin'
-
-Select * from ChiTietNhapHang

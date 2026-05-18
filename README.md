@@ -2,7 +2,7 @@
 
 ## Giới thiệu dự án
 
-Flower Shop Management System là hệ thống quản lý cửa hàng hoa được xây dựng nhằm hỗ trợ quản lý và vận hành hoạt động bán hoa. Hệ thống giúp quản lý sản phẩm, khách hàng, đơn hàng, nhà cung cấp và phiếu nhập hàng một cách hiệu quả.
+Flower Shop Management System là hệ thống quản lý cửa hàng hoa được xây dựng nhằm hỗ trợ quản lý và vận hành hoạt động bán hoa. Hệ thống giúp quản lý sản phẩm, khách hàng, đơn hàng, nhà cung cấp, phiếu nhập hàng và voucher một cách hiệu quả.
 
 Hệ thống hỗ trợ:
 
@@ -49,7 +49,7 @@ Flower-Shop-Management-System
 │ ├── FSHOP.WEB                # ASP.NET Core Web API
 │ ├── FSHOP.BLL 		  # Business Logic Layer
 │ ├── FSHOP.DAL 		  # Data Access Layer
-│ ├── FSHOP.Common	  # DTO
+│ ├── FSHOP.Common	  # DTO & Common Models
 │ └── FSHOP.Angular 	  # Angular Frontend
 │
 ├── README.md
@@ -186,5 +186,6 @@ https://localhost:7066/swagger
 # 10. License
 
 This project is for educational purposes only.
+
 
 
