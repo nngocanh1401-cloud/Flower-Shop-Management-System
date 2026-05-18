@@ -38,17 +38,18 @@ namespace FSHOP.DAL.Repositories
         }
         //Su dung Stored Procedure
         public void ThemPhieuNhap(string maPhieuNhap, string maNCC,
-                           int maTrangThai, string maSP, int soLuong)
+                           int maTrangThai, string maSP, int soLuong, DateOnly? hanSuDung)
         {
             try
             {
                 _context.Database.ExecuteSqlRaw(
-                    "EXEC ThemPhieuNhap @MaPhieuNhap, @MaNCC, @MaTrangThai, @MaSP, @SoLuong",
+                    "EXEC ThemPhieuNhap @MaPhieuNhap, @MaNCC, @MaTrangThai, @MaSP, @SoLuong, @HanSuDung",
                     new SqlParameter("@MaPhieuNhap", maPhieuNhap),
                     new SqlParameter("@MaNCC", maNCC),
                     new SqlParameter("@MaTrangThai", maTrangThai),
                     new SqlParameter("@MaSP", maSP),
-                    new SqlParameter("@SoLuong", soLuong)
+                    new SqlParameter("@SoLuong", soLuong),
+                    new SqlParameter("@HanSuDung", hanSuDung ?? (object)DBNull.Value)
                 );
             }
             catch (Exception ex)

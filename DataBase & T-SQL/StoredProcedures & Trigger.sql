@@ -48,13 +48,8 @@ END
 
 -- TEST THÊM ĐƠN HÀNG 
 EXEC ThemDonHang 'DH010', 'KH003', 1, NULL, 3, 'SP008', 5
---check
-SELECT * FROM DonHang
-SELECT * FROM ChiTietDonHang
-SELECT * FROM SanPham
 
 --  CapNhatTrangThai 
-GO
 CREATE PROCEDURE CapNhatTrangThai
     @MaDH NVARCHAR(10),
     @MaTrangThai INT
@@ -64,14 +59,13 @@ BEGIN
     SET MaTrangThai = @MaTrangThai
     WHERE MaDH = @MaDH
 END
+GO
 -- TEST CẬP NHẬT TRẠNG THÁI --
 
 --CapNhatTrangThai
 EXEC CapNhatTrangThai 'DH001',3
-SELECT * FROM TrangThai
 
 --  HuyDonHang 
-GO
 CREATE OR ALTER PROCEDURE HuyDonHang
     @MaDH NVARCHAR(10)
 AS
@@ -110,14 +104,9 @@ BEGIN
        THROW;
     END CATCH
 END
-
+GO
 -- TEST HỦY ĐƠN HÀNG --
 EXEC HuyDonHang 'DH006'
---check
-SELECT * FROM DonHang
-SELECT * FROM ChiTietDonHang
-SELECT * FROM SanPham
-
 
 -- ThemPhieuNhap 
 CREATE OR ALTER PROCEDURE ThemPhieuNhap
@@ -125,7 +114,8 @@ CREATE OR ALTER PROCEDURE ThemPhieuNhap
 @MaNCC NVARCHAR(10),
 @MaTrangThai INT,
 @MaSP NVARCHAR(10),
-@SoLuong INT
+@SoLuong INT,
+@HanSuDung DATE
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -175,7 +165,7 @@ BEGIN
         ELSE
         BEGIN
             INSERT INTO ChiTietNhapHang(MaPhieuNhap, MaSP, SoLuong, DonGia, HanSuDung)
-            VALUES (@MaPhieuNhap, @MaSP, @SoLuong, @DonGia, NULL);
+            VALUES (@MaPhieuNhap, @MaSP, @SoLuong, @DonGia, @HanSuDung);
         END
 
         UPDATE PhieuNhapHang
@@ -194,13 +184,13 @@ END
 GO
 
 -- TEST THÊM PHIẾU NHẬP 
-EXEC ThemPhieuNhap'PN009','NCC002', 6,'SP001', 10
--- check
-SELECT * FROM PhieuNhapHang
-SELECT * FROM ChiTietNhapHang
-SELECT * FROM SanPham
-SELECT * FROM NhaCungCap
-
+EXEC ThemPhieuNhap
+    'PN026',
+    'NCC002',
+    6,
+    'SP001',
+    10,
+    '2026-05-18'
 
 -- CapNhatTonKhoNhap
 GO
