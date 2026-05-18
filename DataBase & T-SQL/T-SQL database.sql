@@ -112,6 +112,7 @@ CREATE TABLE ChiTietNhapHang (
     HanSuDung DATE,
     PRIMARY KEY (MaPhieuNhap, MaSP)
 );
+-- them seek data
 
 CREATE TABLE VaiTro (
     MaVaiTro  INT          PRIMARY KEY,
@@ -135,4 +136,6 @@ select * from PhuongThucThanhToan
 select * from Voucher
 select * from ChiTietDonHang
 select * from PhieuNhapHang
+
+
 

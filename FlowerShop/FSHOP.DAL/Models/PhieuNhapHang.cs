@@ -20,4 +20,5 @@ public partial class PhieuNhapHang
     public virtual NhaCungCap MaNccNavigation { get; set; } = null!;
 
     public virtual TrangThai MaTrangThaiNavigation { get; set; } = null!;
+
 }
