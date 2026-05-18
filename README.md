@@ -101,7 +101,7 @@ Cập nhật chuỗi kết nối:
 
 ```json
 "ConnectionStrings": {
-  "FShopDB": "Data Source=CHUOI_CA_NHAN;Initial Catalog= FShopABP;Integrated Security=True;TrustServerCertificate=True"
+  "FShopDB": "Data Source=CHUOI_CA_NHAN;Initial Catalog= FShop;Integrated Security=True;TrustServerCertificate=True"
 }
 ```
 
