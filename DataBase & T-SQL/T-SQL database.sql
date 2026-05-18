@@ -113,28 +113,5 @@ CREATE TABLE ChiTietNhapHang (
     HanSuDung DATE,
     PRIMARY KEY (MaPhieuNhap, MaSP)
 );
---table PhieuTraHang
-CREATE TABLE PhieuTraHang (
-    MaPhieuTra NVARCHAR(10) PRIMARY KEY,
-    MaPhieuNhap NVARCHAR(10) NOT NULL
-        FOREIGN KEY REFERENCES PhieuNhapHang(MaPhieuNhap),
-    MaTrangThai INT NOT NULL
-        FOREIGN KEY REFERENCES TrangThai(MaTrangThai),
-    NgayTra DATE,
-    LyDo NVARCHAR(200),
-    TongTienTra DECIMAL(18,2)
-);
-
--- table ChiTietTraHang
-CREATE TABLE ChiTietTraHang (
-    MaPhieuTra NVARCHAR(10) NOT NULL
-        FOREIGN KEY REFERENCES PhieuTraHang(MaPhieuTra),
-    MaSP NVARCHAR(10) NOT NULL
-        FOREIGN KEY REFERENCES SanPham(MaSP),
-    SoLuong INT NOT NULL,
-    DonGia DECIMAL(18,2) NOT NULL,
-    PRIMARY KEY (MaPhieuTra, MaSP)
-);
-
 
 -- them seek data
