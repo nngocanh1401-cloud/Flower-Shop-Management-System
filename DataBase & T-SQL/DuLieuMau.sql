@@ -7,12 +7,7 @@ INSERT INTO TrangThai VALUES
 (3, N'Hoàn thành', N'Giao thành công', 'DonHang'),
 (4, N'Đã hủy',   N'Đơn bị hủy',     'DonHang'),
 (5, N'Chờ duyệt', N'Phiếu nhập chờ duyệt',  'PhieuNhapHang'),
-(6, N'Đã nhập', N'Đã nhập hàng',    'PhieuNhapHang'),
-(7, N'Chờ xử lý',  N'Phiếu trả chờ xử lý',  'PhieuTraHang'),
-(8, N'Đã trả',  N'Đã trả hàng cho NCC',     'PhieuTraHang');
-
--- KIỂM TRA
-SELECT * FROM TrangThai ORDER BY MaTrangThai;
+(6, N'Đã nhập', N'Đã nhập hàng',    'PhieuNhapHang');
 
 -- NhaCungCap
 INSERT INTO NhaCungCap VALUES
