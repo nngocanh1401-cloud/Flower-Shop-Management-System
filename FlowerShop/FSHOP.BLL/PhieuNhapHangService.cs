@@ -66,7 +66,8 @@ namespace FSHOP.BLL
                     TenSP = ct.MaSpNavigation?.TenSp,
                     SoLuong = ct.SoLuong,
                     DonGia = ct.DonGia,
-                    ThanhTien = ct.SoLuong * ct.DonGia
+                    ThanhTien = ct.SoLuong * ct.DonGia,
+                    HanSuDung = ct.HanSuDung
                 }).ToList()
             };
         }

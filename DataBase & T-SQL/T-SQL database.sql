@@ -8,7 +8,7 @@ TenTrangThai nvarchar (100) not null,
 MoTa nvarchar (255),
 LoaiTrangThai varchar(20) not null,
 constraint CHK_LoaiTrangThai
-check (LoaiTrangThai in ('DonHang','PhieuNhapHang','PhieuTraHang'))
+check (LoaiTrangThai in ('DonHang','PhieuNhapHang'))
 );
 
 
@@ -127,5 +127,12 @@ CREATE TABLE NguoiDung (
     NgayTao      DATETIME      DEFAULT GETDATE(),
     IsActive     BIT           DEFAULT 1
 );
-
+select * from DonHang
+Select * from SanPham
+select * from KhachHang
+select * from NguoiDung
+select * from PhuongThucThanhToan
+select * from Voucher
+select * from ChiTietDonHang
+select * from PhieuNhapHang
 
