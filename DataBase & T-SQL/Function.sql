@@ -66,18 +66,6 @@ RETURN (
     GROUP BY dh.MaDH, dh.NgayDat, dh.TongTien, tt.TenTrangThai
 );
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 07c72bd111462e763e409506664b2cf24f3ec40c
-SELECT 
-    MaDH,
-    NgayDat,
-    dbo.fn_TinhTongTienDon(MaDH) AS TienHang,
-    dbo.fn_TinhGiamGia(MaVoucher, dbo.fn_TinhTongTienDon(MaDH)) AS TienGiam,
-    dbo.fn_TinhTongTienDon(MaDH) - dbo.fn_TinhGiamGia(MaVoucher, dbo.fn_TinhTongTienDon(MaDH)) AS ThucTra
-FROM DonHang;
-
 USE FShop
 GO
 SELECT DB_NAME()
