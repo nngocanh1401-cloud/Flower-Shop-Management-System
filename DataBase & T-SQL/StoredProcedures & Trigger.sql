@@ -118,6 +118,7 @@ SELECT * FROM DonHang
 SELECT * FROM ChiTietDonHang
 SELECT * FROM SanPham
 
+
 -- ThemPhieuNhap 
 CREATE OR ALTER PROCEDURE ThemPhieuNhap
 @MaPhieuNhap NVARCHAR(10),
@@ -200,7 +201,8 @@ SELECT * FROM ChiTietNhapHang
 SELECT * FROM SanPham
 SELECT * FROM NhaCungCap
 
--- = CapNhatTonKhoNha
+
+-- CapNhatTonKhoNhap
 GO
 ALTER TRIGGER CapNhatTonKhoNhap
 ON ChiTietNhapHang

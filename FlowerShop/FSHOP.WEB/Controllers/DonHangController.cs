@@ -210,6 +210,13 @@ namespace FSHOP.API.Controllers
             return BadRequest(new { message = result });
         }
 
+        [HttpGet("lich-su/{maKH}")]
+        public IActionResult LichSuMuaHang(string maKH)
+        {
+            var result = _service.GetLichSuMuaHang(maKH);
+
+            return Ok(result);
+        }
         [HttpGet("filter")]
         [Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền lọc đơn hàng của hệ thống
         public IActionResult Filter([FromQuery] LocDonHangDTO filter)

@@ -11,8 +11,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =========== 1. CHUẨN BỊ DỊCH VỤ (Tất cả builder.Services đặt ở đây) ===========
-
 var connStr = builder.Configuration.GetConnectionString("FShopDB")
     ?? throw new Exception("Không tìm thấy connection string FShopDB");
 
@@ -66,8 +64,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-
-// Add services to the container.
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -105,20 +101,16 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
-// =========== 2. CHỐT BUILD ===========
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // Địa chỉ Angular của bạn
-              .AllowAnyHeader()
+        policy.WithOrigins("http://localhost:4200") 
               .AllowAnyMethod();
     });
 });
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -127,11 +119,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// --- Middleware thứ tự quan trọng ---
-
-app.UseCors("AllowAngular"); // Nếu dùng CORS
-app.UseAuthentication(); // 1. Xác thực (Ai đang vào?)
-app.UseAuthorization();  // 2. Phân quyền (Họ được làm gì?)
+app.UseCors("AllowAngular");
+app.UseAuthentication();
+app.UseAuthorization();  
 app.MapControllers();
 
 app.Run();

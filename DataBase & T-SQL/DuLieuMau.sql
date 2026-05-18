@@ -99,17 +99,7 @@ INSERT INTO ChiTietNhapHang VALUES
 ('PN003','SP005', 80,80000,'2025-09-30'),
 ('PN003','SP006', 50,95000,'2025-09-30');
 
-/*-- PhieuTraHang
-INSERT INTO PhieuTraHang VALUES
-('PT001','PN001',8,'2025-01-20',N'Hàng bị dập nát trong vận chuyển',500000),
-('PT002','PN002',8,'2025-02-25',N'Hoa không đúng chủng loại đặt',800000);
-
--- ChiTietTraHang
-INSERT INTO ChiTietTraHang VALUES
-('PT001','SP001',10,30000),
-('PT002','SP003',10,50000);*/
-
--- Tài khoản admin mặc định (password: Admin@123 đã hash bằng BCrypt)
+-- Tài khoản admin mặc định (password: Admin@123)
 INSERT INTO NguoiDung VALUES
 ('ND001','admin','$2a$11$liC2LddldTd048Q/k9D0tuK9EvPQBuYfPM3Z5CZQQAqyyr0pFVOuq',1,NULL,GETDATE(),1);
 
@@ -118,4 +108,4 @@ INSERT INTO VaiTro VALUES (1, N'Admin'), (2, N'KhachHang');
 DELETE FROM NguoiDung
 WHERE TenDangNhap = 'admin'
 
-Select * from NhaCungcap
+Select * from ChiTietNhapHang

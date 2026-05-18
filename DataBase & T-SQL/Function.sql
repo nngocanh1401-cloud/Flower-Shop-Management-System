@@ -36,8 +36,6 @@ END;
 GO
 
 
-
-
 -- Function 2: Tính tổng tiền 1 đơn hàng (không tính voucher)
 CREATE FUNCTION fn_TinhTongTienDon(@MaDH NVARCHAR(10))
 RETURNS DECIMAL(18,2)
@@ -67,23 +65,6 @@ RETURN (
     WHERE dh.MaKH = @MaKH
     GROUP BY dh.MaDH, dh.NgayDat, dh.TongTien, tt.TenTrangThai
 );
-GO
-
----- data test voucher, neu khong co DH06 thi chay va nguoc lai
-
---INSERT INTO Voucher (MaVoucher, TenVoucher, NgayBD, NgayKT, GiaTriGiam, LoaiGiam, DieuKienApDung, SoLuong, SoLuongDaDung)
---VALUES('VCNOW', N'Giảm 20% đơn từ 200k', '2024-01-01', '2027-12-31', 20, 'PERCENT', 200000, 100, 0);
---INSERT INTO DonHang (MaDH, MaKH, MaPTTT, MaVoucher, MaTrangThai, NgayDat, TongTien) VALUES
---('DH006', 'KH001', 1, 'VCNOW', 3, GETDATE(), 0); -- Đơn hợp lệ
---INSERT INTO ChiTietDonHang (MaDH, MaSP, SoLuong, DonGia) VALUES
---('DH006', 'SP005', 2, 120000); -- Tổng 240k (Thỏa mãn > 200k của VCNOW)
-SELECT 
-    MaDH,
-    NgayDat,
-    dbo.fn_TinhTongTienDon(MaDH) AS TienHang,
-    dbo.fn_TinhGiamGia(MaVoucher, dbo.fn_TinhTongTienDon(MaDH)) AS TienGiam,
-    dbo.fn_TinhTongTienDon(MaDH) - dbo.fn_TinhGiamGia(MaVoucher, dbo.fn_TinhTongTienDon(MaDH)) AS ThucTra
-FROM DonHang;
 
 USE FShop
 GO

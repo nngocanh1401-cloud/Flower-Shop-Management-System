@@ -267,7 +267,7 @@
     transform: translateX(-50%);
     border: none;
     border-radius: 999px;
-    background: rgba(23, 186, 8, 0.9);
+    background: rgba(58, 209, 44, 0.9);
     color: white;
     padding: 9px 18px;
     font-size: 14px;
@@ -288,7 +288,7 @@
 }
 
 .price {
-    color: #19b804;
+    color: #19b705;
     font-size: 20px;
     font-weight: 800;
     margin: 0 0 14px;

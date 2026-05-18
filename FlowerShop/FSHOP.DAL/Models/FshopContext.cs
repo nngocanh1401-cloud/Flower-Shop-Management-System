@@ -46,17 +46,6 @@ public partial class FshopContext : DbContext
 
     public virtual DbSet<VwTopSanPhamBanChay> VwTopSanPhamBanChays { get; set; }
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-50HKF50\\SQLEXPRESS01;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
-    //}
-
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-GQUJ66B\\SQLEXPRESS;Initial Catalog=FShop;Integrated Security=True;Trust Server Certificate=True");
-    //}
-
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ChiTietDonHang>(entity =>
@@ -231,7 +220,6 @@ public partial class FshopContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PhieuNhap__MaTra__7B5B524B");
         });
-
 
         modelBuilder.Entity<PhuongThucThanhToan>(entity =>
         {
