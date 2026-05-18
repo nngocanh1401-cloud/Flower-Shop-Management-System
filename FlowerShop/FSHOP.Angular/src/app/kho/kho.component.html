@@ -281,8 +281,22 @@
                     </p-inputNumber>
                 </div>
 
-                <div>
-                    <button class="btn btn-warning" (click)="themSanPhamVaoPhieu()">
+                <div style="flex: 1;">
+                    <label class="small font-weight-bold mb-1">Đơn giá nhập</label>
+
+                    <p-inputNumber [(ngModel)]="donGiaNhapTam" [min]="0" mode="decimal" [showButtons]="true"
+                        suffix=" đ">
+                    </p-inputNumber>
+                </div>
+
+                <div style="flex: 1;">
+                    <label class="small font-weight-bold mb-1">Hạn sử dụng</label>
+
+                    <input type="date" class="form-control" [(ngModel)]="hanSuDungTam" />
+                </div>
+
+                <div class="them-san-pham-action">
+                    <button type="button" class="btn btn-warning btn-them-sp-nhap" (click)="themSanPhamVaoPhieu()">
                         <i class="fas fa-cart-plus"></i>
                         Thêm
                     </button>
@@ -294,9 +308,10 @@
                 <ng-template pTemplate="header">
                     <tr>
                         <th>Sản phẩm nhập</th>
-                        <th class="text-right">Đơn giá</th>
+                        <th class="text-right">Đơn giá nhập</th>
                         <th class="text-center">Số lượng</th>
                         <th class="text-right">Thành tiền</th>
+                        <th class="text-center">Hạn sử dụng</th>
                         <th class="text-center" style="width: 80px;">Xóa</th>
                     </tr>
                 </ng-template>
@@ -308,11 +323,15 @@
                         </td>
 
                         <td class="text-right">
-                            {{ dinhDangTien(sp.donGia) }} đ
+                            {{ dinhDangTien(sp.donGia || 0) }} đ
                         </td>
 
                         <td class="text-center">
                             {{ sp.soLuong }}
+                        </td>
+
+                        <td class="text-center">
+                            {{ sp.hanSuDung ? (sp.hanSuDung | date:'dd/MM/yyyy') : '-' }}
                         </td>
 
                         <td class="text-right text-danger font-weight-bold">
@@ -320,8 +339,9 @@
                         </td>
 
                         <td class="text-center">
-                            <button class="btn btn-outline-danger btn-sm" (click)="xoaSanPhamKhoiPhieu(i)">
-                                <i class="fas fa-trash"></i>
+                            <button pButton pRipple icon="pi pi-trash"
+                                class="p-button-rounded p-button-danger p-button-text p-button-sm"
+                                (click)="xoaSanPhamKhoiPhieu(i)">
                             </button>
                         </td>
                     </tr>
@@ -374,7 +394,8 @@
 
                     <div>
                         <strong>Ngày nhập:</strong>
-                        {{ layNgayNhapPhieu(phieuChiTiet) ? (layNgayNhapPhieu(phieuChiTiet) | date:'dd/MM/yyyy') : 'Chưa có' }}
+                        {{ layNgayNhapPhieu(phieuChiTiet) ? (layNgayNhapPhieu(phieuChiTiet) | date:'dd/MM/yyyy') : 'Chưa
+                        có' }}
                     </div>
 
                     <div>
@@ -404,6 +425,7 @@
                             <th>Tên sản phẩm</th>
                             <th class="text-center">Số lượng</th>
                             <th class="text-right">Đơn giá</th>
+                            <th class="text-center">Hạn sử dụng</th>
                             <th class="text-right">Thành tiền</th>
                         </tr>
                     </ng-template>
@@ -424,6 +446,10 @@
 
                             <td class="text-right">
                                 {{ dinhDangTien(layDonGiaChiTiet(ct)) }} đ
+                            </td>
+
+                            <td class="text-center">
+                                {{ layHanSuDungChiTiet(ct) ? (layHanSuDungChiTiet(ct) | date:'dd/MM/yyyy') : '-' }}
                             </td>
 
                             <td class="text-right text-danger font-weight-bold">
@@ -522,11 +548,7 @@
             <div class="form-row-custom">
                 <div class="form-group">
                     <label>Số điện thoại</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        [(ngModel)]="nccMoi.sdt"
-                        maxlength="10"
+                    <input type="text" class="form-control" [(ngModel)]="nccMoi.sdt" maxlength="10"
                         inputmode="numeric" />
                 </div>
 
@@ -580,11 +602,7 @@
             <div class="form-row-custom">
                 <div class="form-group">
                     <label>Số điện thoại</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        [(ngModel)]="nccCapNhat.sdt"
-                        maxlength="10"
+                    <input type="text" class="form-control" [(ngModel)]="nccCapNhat.sdt" maxlength="10"
                         inputmode="numeric" />
                 </div>
 

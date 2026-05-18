@@ -60,7 +60,9 @@ export class KhoComponent implements OnInit {
     maTrangThai: 5,
     ngayNhap: ''
   };
+  hanSuDungTam: string = '';
 
+  donGiaNhapTam: number = 0;
   maSPTam: string = '';
   soLuongTam: number = 1;
 
@@ -537,16 +539,24 @@ export class KhoComponent implements OnInit {
 
     this.maSPTam = '';
     this.soLuongTam = 1;
+    this.hanSuDungTam = '';
 
     this.hienThiDialogTaoPhieu = true;
   }
 
   themSanPhamVaoPhieu() {
+    console.log('ĐÃ BẤM THÊM', {
+      maSPTam: this.maSPTam,
+      soLuongTam: this.soLuongTam,
+      donGiaNhapTam: this.donGiaNhapTam,
+      hanSuDungTam: this.hanSuDungTam
+    });
+
     if (!this.maSPTam) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Thiếu sản phẩm',
-        detail: 'Vui lòng chọn sản phẩm nhập'
+        detail: 'Vui lòng chọn sản phẩm nhập kho'
       });
       return;
     }
@@ -554,33 +564,60 @@ export class KhoComponent implements OnInit {
     if (!this.soLuongTam || this.soLuongTam <= 0) {
       this.messageService.add({
         severity: 'warn',
-        summary: 'Số lượng không hợp lệ',
-        detail: 'Số lượng phải lớn hơn 0'
+        summary: 'Thiếu số lượng',
+        detail: 'Vui lòng nhập số lượng lớn hơn 0'
       });
       return;
     }
 
-    const spDaCo = this.phieuMoi.danhSachChiTiet.find((x: any) => x.maSP === this.maSPTam);
+    if (!this.donGiaNhapTam || this.donGiaNhapTam <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Thiếu đơn giá',
+        detail: 'Vui lòng nhập đơn giá nhập lớn hơn 0'
+      });
+      return;
+    }
+
+    const sp = this.danhSachSanPham.find((x: any) =>
+      x.maSP === this.maSPTam ||
+      x.maSp === this.maSPTam ||
+      x.value === this.maSPTam
+    );
+
+    const spDaCo = this.phieuMoi.danhSachChiTiet.find((x: any) =>
+      x.maSP === this.maSPTam
+    );
 
     if (spDaCo) {
-      spDaCo.soLuong += this.soLuongTam;
+      spDaCo.soLuong = Number(spDaCo.soLuong || 0) + Number(this.soLuongTam || 0);
+      spDaCo.donGia = Number(this.donGiaNhapTam || 0);
+      spDaCo.thanhTien = Number(spDaCo.soLuong || 0) * Number(spDaCo.donGia || 0);
+      spDaCo.hanSuDung = this.hanSuDungTam || spDaCo.hanSuDung || null;
     } else {
-      const sp = this.danhSachSanPham.find(x => x.value === this.maSPTam);
-
       this.phieuMoi.danhSachChiTiet.push({
         maSP: this.maSPTam,
-        tenSP: sp ? sp.tenSP : '',
-        donGia: sp ? Number(sp.donGia || 0) : 0,
-        soLuong: this.soLuongTam
+        tenSP: sp ? (sp.tenSP || sp.tenSp || sp.tenSanPham || sp.label || '') : '',
+        soLuong: Number(this.soLuongTam || 0),
+        donGia: Number(this.donGiaNhapTam || 0),
+        thanhTien: Number(this.soLuongTam || 0) * Number(this.donGiaNhapTam || 0),
+        hanSuDung: this.hanSuDungTam || null
       });
     }
 
     this.maSPTam = '';
     this.soLuongTam = 1;
+    this.donGiaNhapTam = 0;
+    this.hanSuDungTam = '';
+
+    this.cdr.detectChanges();
   }
 
   tinhThanhTienNhap(ct: any): number {
-    return Number(ct.donGia || 0) * Number(ct.soLuong || 0);
+    const soLuong = Number(ct?.soLuong || 0);
+    const donGia = Number(ct?.donGia || 0);
+
+    return soLuong * donGia;
   }
 
   tinhTongTienPhieuMoi(): number {
@@ -656,10 +693,11 @@ export class KhoComponent implements OnInit {
       maNCC: this.phieuMoi.maNCC,
       danhSachChiTiet: this.phieuMoi.danhSachChiTiet.map((ct: any) => ({
         maSP: ct.maSP,
-        tenSP: ct.tenSP || this.layTenSPTheoMa(ct.maSP),
+        tenSP: ct.tenSP,
         soLuong: Number(ct.soLuong || 0),
         donGia: Number(ct.donGia || 0),
-        thanhTien: this.tinhThanhTienNhap(ct)
+        thanhTien: this.tinhThanhTienNhap(ct),
+        hanSuDung: ct.hanSuDung || null
       }))
     };
 
@@ -719,6 +757,8 @@ export class KhoComponent implements OnInit {
         this.phieuChiTiet = data;
         this.hienThiDialogChiTietPhieu = true;
         this.cdr.detectChanges();
+        console.log('CHI TIẾT PHIẾU NHẬP:', data);
+        console.log('DANH SÁCH CHI TIẾT:', this.layChiTietNhapHang(data));
       },
       error: (err) => {
         console.error('Lỗi xem chi tiết phiếu:', err);
@@ -905,7 +945,11 @@ export class KhoComponent implements OnInit {
   }
 
   layHanSuDungChiTiet(ct: any): any {
-    return ct?.hanSuDung || ct?.hsd || null;
+    return ct?.hanSuDung ||
+      ct?.hanSD ||
+      ct?.hsd ||
+      ct?.ngayHetHan ||
+      null;
   }
 
   // =====================================================
@@ -994,9 +1038,6 @@ export class KhoComponent implements OnInit {
     return `${tienTo}${soMoiDangChuoi}`;
   }
 
-  // =====================================================
-  // FORMAT & LỖI
-  // =====================================================
   dinhDangTien(value: number): string {
     return Number(value || 0).toLocaleString('vi-VN');
   }

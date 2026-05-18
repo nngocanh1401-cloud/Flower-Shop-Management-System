@@ -842,3 +842,111 @@ label.font-weight-bold {
         justify-content: center;
     }
 }
+
+.khung-them-san-pham {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr 1.2fr auto;
+    align-items: end;
+    gap: 14px;
+}
+
+/* =========================
+   FIX KHUNG THÊM SẢN PHẨM NHẬP KHO
+========================= */
+
+.khung-them-san-pham {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr 1.2fr;
+    gap: 14px !important;
+    align-items: end !important;
+    padding: 16px !important;
+    border: 1px dashed #cfe0d4 !important;
+    border-radius: 16px !important;
+    background: #f9fcfa !important;
+    overflow: visible !important;
+}
+
+.khung-them-san-pham>div {
+    min-width: 0 !important;
+    width: 100% !important;
+}
+
+.khung-them-san-pham>div:nth-child(4) {
+    grid-column: 1 / 2;
+}
+
+.khung-them-san-pham .them-san-pham-action {
+    grid-column: 2 / 3;
+    display: flex;
+    align-items: end;
+}
+
+.khung-them-san-pham .btn-them-sp-nhap {
+    height: 44px !important;
+    border-radius: 12px !important;
+    padding: 0 22px !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.khung-them-san-pham label {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #344054 !important;
+    margin-bottom: 7px !important;
+}
+
+/* Input thường */
+.khung-them-san-pham .form-control {
+    height: 44px !important;
+    border-radius: 12px !important;
+    border: 1px solid #d7e3dc !important;
+    box-shadow: none !important;
+}
+
+/* PrimeNG dropdown/inputNumber full width */
+:host ::ng-deep .khung-them-san-pham .p-dropdown,
+:host ::ng-deep .khung-them-san-pham .p-inputnumber,
+:host ::ng-deep .khung-them-san-pham .p-inputnumber-input {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+:host ::ng-deep .khung-them-san-pham .p-dropdown,
+:host ::ng-deep .khung-them-san-pham .p-inputnumber-input {
+    height: 44px !important;
+    border-radius: 12px !important;
+    border-color: #d7e3dc !important;
+    box-shadow: none !important;
+}
+
+:host ::ng-deep .khung-them-san-pham .p-inputnumber-button {
+    width: 34px !important;
+}
+
+
+
+:host ::ng-deep .dialog-tao-phieu .p-datatable-wrapper,
+:host ::ng-deep .p-dialog .p-datatable-wrapper {
+    overflow-x: auto !important;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .khung-them-san-pham {
+        grid-template-columns: 1fr !important;
+    }
+
+    .khung-them-san-pham .them-san-pham-action {
+        grid-column: auto !important;
+    }
+
+    .khung-them-san-pham .btn-them-sp-nhap {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}

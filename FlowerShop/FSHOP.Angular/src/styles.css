@@ -16,7 +16,6 @@ body {
     background: #f4f6f9;
 }
 
-/* Ép PrimeNG dùng cùng font */
 .p-component,
 .p-inputtext,
 .p-dropdown,
@@ -28,7 +27,6 @@ body {
     font-family: quicksand, "Segoe UI", Tahoma, Arial, sans-serif !important;
 }
 
-/* Sửa font trong input */
 input,
 button,
 select,

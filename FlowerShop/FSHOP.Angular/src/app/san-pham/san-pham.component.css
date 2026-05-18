@@ -624,7 +624,6 @@
     transform: translateY(-1px);
 }
 
-/* Lớp nền mờ phía sau */
 .p-confirm-dialog-mask,
 .p-dialog-mask {
     backdrop-filter: blur(3px);
