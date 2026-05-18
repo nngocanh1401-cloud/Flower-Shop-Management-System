@@ -1,5 +1,5 @@
+<p-toast></p-toast>
 <div class="kho-page">
-    <p-toast></p-toast>
 
     <!-- HEADER -->
     <div class="kho-header">
@@ -50,9 +50,8 @@
         </div>
 
         <div class="search-box">
-            <input type="text" class="form-control"
-                placeholder="Tìm mã phiếu, mã NCC, tên NCC, ngày nhập, trạng thái..." [(ngModel)]="tuKhoaPhieuNhap"
-                (ngModelChange)="timKiemPhieuNhap()" />
+            <input type="text" class="form-control" placeholder="Tìm mã phiếu, mã NCC, tên NCC, ngày nhập..."
+                [(ngModel)]="tuKhoaPhieuNhap" (ngModelChange)="timKiemPhieuNhap()" />
 
             <button class="btn btn-primary" (click)="timKiemPhieuNhap()">
                 <i class="fas fa-search"></i>
@@ -119,10 +118,6 @@
                             (click)="moDialogCapNhatPhieu(pn)">
                             <i class="fas fa-edit"></i>
                         </button>
-
-                        <button class="btn btn-outline-danger btn-sm" title="Xóa" (click)="xoaPhieuNhap(pn)">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </td>
                 </tr>
             </ng-template>
@@ -147,7 +142,7 @@
                     <i class="fas fa-truck"></i>
                     Danh sách nhà cung cấp
                 </h4>
-                <p>Quản lý thông tin nhà cung cấp. Phần này không dùng để xem chi tiết nhập hàng.</p>
+                <p>Quản lý thông tin nhà cung cấp.</p>
             </div>
 
             <button class="btn btn-success" (click)="moDialogTaoNCC()">
@@ -211,10 +206,6 @@
                             (click)="moDialogCapNhatNCC(ncc)">
                             <i class="fas fa-edit"></i>
                         </button>
-
-                        <button class="btn btn-outline-danger btn-sm" title="Xóa" (click)="xoaNhaCungCap(ncc)">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </td>
                 </tr>
             </ng-template>
@@ -259,7 +250,27 @@
 
                     <p-dropdown [options]="danhSachSanPham" [(ngModel)]="maSPTam" optionLabel="label"
                         optionValue="value" [filter]="true" filterBy="label"
-                        placeholder="-- Nhập tên hoặc mã sản phẩm --" appendTo="body" styleClass="w-100">
+                        placeholder="-- Nhập tên hoặc mã sản phẩm --" appendTo="body" styleClass="w-100"
+                        (onChange)="xuLyChonSanPhamNhap($event)">
+
+                        <ng-template pTemplate="item" let-sp>
+                            <div class="san-pham-option" [ngClass]="{ 'san-pham-them-moi': sp.laThemMoi }">
+
+                                <i *ngIf="sp.laThemMoi" class="fas fa-plus-circle"></i>
+
+                                <span>{{ sp.label }}</span>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="selectedItem" let-sp>
+                            <span *ngIf="sp && !sp.laThemMoi">
+                                {{ sp.label }}
+                            </span>
+
+                            <span *ngIf="!sp || sp.laThemMoi">
+                                -- Nhập tên hoặc mã sản phẩm --
+                            </span>
+                        </ng-template>
                     </p-dropdown>
                 </div>
 
@@ -338,7 +349,6 @@
             </button>
 
             <button class="btn btn-success" (click)="taoPhieuNhap()">
-                <i class="fas fa-check"></i>
                 Xác nhận
             </button>
         </ng-template>
@@ -364,8 +374,7 @@
 
                     <div>
                         <strong>Ngày nhập:</strong>
-                        {{ layNgayNhapPhieu(phieuChiTiet) ? (layNgayNhapPhieu(phieuChiTiet) | date:'dd/MM/yyyy') : 'Chưa
-                        có' }}
+                        {{ layNgayNhapPhieu(phieuChiTiet) ? (layNgayNhapPhieu(phieuChiTiet) | date:'dd/MM/yyyy') : 'Chưa có' }}
                     </div>
 
                     <div>
@@ -396,7 +405,6 @@
                             <th class="text-center">Số lượng</th>
                             <th class="text-right">Đơn giá</th>
                             <th class="text-right">Thành tiền</th>
-                            <th>Hạn sử dụng</th>
                         </tr>
                     </ng-template>
 
@@ -420,10 +428,6 @@
 
                             <td class="text-right text-danger font-weight-bold">
                                 {{ dinhDangTien(layThanhTienChiTiet(ct)) }} đ
-                            </td>
-
-                            <td>
-                                {{ layHanSuDungChiTiet(ct) ? (layHanSuDungChiTiet(ct) | date:'dd/MM/yyyy') : '-' }}
                             </td>
                         </tr>
                     </ng-template>
@@ -500,7 +504,8 @@
             <div class="form-row-custom">
                 <div class="form-group">
                     <label>Mã NCC <span class="text-danger">*</span></label>
-                    <input class="form-control" [(ngModel)]="nccMoi.maNcc" placeholder="VD: NCC001" />
+                    <input class="form-control bg-light font-weight-bold text-primary" [(ngModel)]="nccMoi.maNcc"
+                        readonly />
                 </div>
 
                 <div class="form-group">
@@ -517,7 +522,12 @@
             <div class="form-row-custom">
                 <div class="form-group">
                     <label>Số điện thoại</label>
-                    <input class="form-control" [(ngModel)]="nccMoi.sdt" placeholder="Nhập SĐT..." />
+                    <input
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="nccMoi.sdt"
+                        maxlength="10"
+                        inputmode="numeric" />
                 </div>
 
                 <div class="form-group">
@@ -570,7 +580,12 @@
             <div class="form-row-custom">
                 <div class="form-group">
                     <label>Số điện thoại</label>
-                    <input class="form-control" [(ngModel)]="nccCapNhat.sdt" />
+                    <input
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="nccCapNhat.sdt"
+                        maxlength="10"
+                        inputmode="numeric" />
                 </div>
 
                 <div class="form-group">
@@ -634,10 +649,6 @@
                 </div>
             </div>
 
-            <div class="note-box mt-3">
-                <i class="fas fa-info-circle"></i>
-                Mục này chỉ xem thông tin nhà cung cấp. Chi tiết nhập hàng xem ở tab Phiếu nhập hàng.
-            </div>
         </ng-template>
 
         <ng-template pTemplate="footer">

@@ -22,12 +22,14 @@ export class AdminLayoutComponent implements OnInit {
   sidebarOpen = true;
 
   menuItems: MenuItem[] = [
+    { label: 'Báo cáo', route: '/app/bao-cao', icon: 'fas fa-chart-line' },
     { label: 'Sản Phẩm', route: '/app/san-pham', icon: 'fas fa-seedling' },
     { label: 'Đơn Hàng', route: '/app/don-hang', icon: 'fas fa-shopping-cart' },
     { label: 'Khách Hàng', route: '/app/khach-hang', icon: 'fas fa-users' },
-    { label: 'Kho Hàng', route: '/app/kho', icon: 'fas fa-warehouse' },
-    { label: 'Báo cáo', route: '/app/bao-cao', icon: 'fas fa-chart-line' }
+    { label: 'Kho Hàng', route: '/app/kho', icon: 'fas fa-warehouse' }
   ];
+
+  hienMenuAdmin = false;
 
   constructor(
     private router: Router,
@@ -54,6 +56,20 @@ export class AdminLayoutComponent implements OnInit {
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  batTatMenuAdmin() {
+    this.hienMenuAdmin = !this.hienMenuAdmin;
+  }
+
+  doiMatKhau() {
+    this.hienMenuAdmin = false;
+
+    this.router.navigate(['/login'], {
+      queryParams: {
+        mode: 'change-password'
+      }
+    });
   }
 
   dangXuat() {

@@ -11,6 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MessageService } from 'primeng/api';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 
@@ -35,15 +36,9 @@ import { environment } from '../../environments/environment';
 export class KhoComponent implements OnInit {
   tabDangChon: 'phieuNhap' | 'nhaCungCap' = 'phieuNhap';
 
-  // =============================
-  // DATA CHUNG
-  // =============================
   danhSachSanPham: any[] = [];
   danhSachNhaCungCap: any[] = [];
 
-  // =============================
-  // PHIẾU NHẬP
-  // =============================
   danhSachPhieuNhap: any[] = [];
   danhSachPhieuNhapHienThi: any[] = [];
   tuKhoaPhieuNhap: string = '';
@@ -74,9 +69,7 @@ export class KhoComponent implements OnInit {
     { label: 'Đã nhập', value: 6 }
   ];
 
-  // =============================
   // NHÀ CUNG CẤP
-  // =============================
   danhSachNhaCungCapHienThi: any[] = [];
   tuKhoaNCC: string = '';
 
@@ -104,14 +97,26 @@ export class KhoComponent implements OnInit {
     maSoThue: ''
   };
 
+  readonly GIA_TRI_THEM_SAN_PHAM_MOI = '__THEM_SAN_PHAM_MOI__';
+
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.taiDuLieuKho();
+
+    this.route.queryParams.subscribe(params => {
+      if (params['moTaoPhieu'] === 'true') {
+        setTimeout(() => {
+          this.khoiPhucDialogTaoPhieuSauKhiThemSanPham();
+        }, 500);
+      }
+    });
   }
 
   taiDuLieuKho() {
@@ -132,7 +137,7 @@ export class KhoComponent implements OnInit {
 
     this.http.get<any[]>(apiUrl).subscribe({
       next: (data) => {
-        this.danhSachSanPham = (data || []).map(sp => {
+        const dsSanPham = (data || []).map(sp => {
           const maSP = sp.maSP || sp.maSp || sp.ma_sp || '';
           const tenSP = sp.tenSP || sp.tenSp || sp.ten_sp || '';
           const donGia = Number(sp.donGia || sp.giaBan || 0);
@@ -142,9 +147,22 @@ export class KhoComponent implements OnInit {
             value: maSP,
             maSP,
             tenSP,
-            donGia
+            donGia,
+            laThemMoi: false
           };
         });
+
+        this.danhSachSanPham = [
+          ...dsSanPham,
+          {
+            label: '+ Nhập sản phẩm mới',
+            value: this.GIA_TRI_THEM_SAN_PHAM_MOI,
+            maSP: '',
+            tenSP: '',
+            donGia: 0,
+            laThemMoi: true
+          }
+        ];
 
         this.cdr.detectChanges();
       },
@@ -211,7 +229,7 @@ export class KhoComponent implements OnInit {
 
   moDialogTaoNCC() {
     this.nccMoi = {
-      maNcc: '',
+      maNcc: this.taoMaNCCMoi(),
       tenNcc: '',
       diaChi: '',
       sdt: '',
@@ -223,7 +241,7 @@ export class KhoComponent implements OnInit {
   }
 
   taoNhaCungCap() {
-    if (!this.nccMoi.maNcc.trim() || !this.nccMoi.tenNcc.trim()) {
+    if (!this.nccMoi.maNcc?.trim() || !this.nccMoi.tenNcc?.trim()) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Thiếu thông tin',
@@ -232,11 +250,15 @@ export class KhoComponent implements OnInit {
       return;
     }
 
+    if (!this.kiemTraSdtNCC(this.nccMoi.sdt)) {
+      return;
+    }
+
     const apiUrl = environment.fshopApiUrl + '/api/NhaCungCap';
 
     const body = {
-      maNcc: this.nccMoi.maNcc.trim(),
-      tenNcc: this.nccMoi.tenNcc.trim(),
+      maNCC: this.nccMoi.maNcc.trim(),
+      tenNCC: this.nccMoi.tenNcc.trim(),
       diaChi: this.nccMoi.diaChi?.trim() || '',
       sdt: this.nccMoi.sdt?.trim() || '',
       email: this.nccMoi.email?.trim() || '',
@@ -310,7 +332,7 @@ export class KhoComponent implements OnInit {
   }
 
   capNhatNhaCungCap() {
-    if (!this.nccCapNhat.maNcc || !this.nccCapNhat.tenNcc.trim()) {
+    if (!this.nccCapNhat.maNcc || !this.nccCapNhat.tenNcc?.trim()) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Thiếu thông tin',
@@ -319,12 +341,15 @@ export class KhoComponent implements OnInit {
       return;
     }
 
+    if (!this.kiemTraSdtNCC(this.nccCapNhat.sdt)) {
+      return;
+    }
+
     const maNCC = this.nccCapNhat.maNcc;
     const apiUrl = environment.fshopApiUrl + `/api/NhaCungCap/${maNCC}`;
 
     const body = {
-      maNcc: this.nccCapNhat.maNcc,
-      tenNcc: this.nccCapNhat.tenNcc.trim(),
+      tenNCC: this.nccCapNhat.tenNcc.trim(),
       diaChi: this.nccCapNhat.diaChi?.trim() || '',
       sdt: this.nccCapNhat.sdt?.trim() || '',
       email: this.nccCapNhat.email?.trim() || '',
@@ -354,45 +379,6 @@ export class KhoComponent implements OnInit {
     });
   }
 
-  xoaNhaCungCap(ncc: any) {
-    const maNCC = this.layMaNCC(ncc);
-
-    if (!maNCC) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Thiếu mã NCC',
-        detail: 'Không xác định được mã nhà cung cấp'
-      });
-      return;
-    }
-
-    const dongY = confirm(`Bạn có chắc muốn xóa nhà cung cấp ${maNCC} không?`);
-
-    if (!dongY) return;
-
-    const apiUrl = environment.fshopApiUrl + `/api/NhaCungCap/${maNCC}`;
-
-    this.http.delete(apiUrl).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Đã xóa nhà cung cấp'
-        });
-
-        this.layDanhSachNhaCungCap();
-      },
-      error: (err) => {
-        console.error('Lỗi xóa NCC:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Xóa thất bại',
-          detail: this.layThongBaoLoi(err, 'Không thể xóa nhà cung cấp')
-        });
-      }
-    });
-  }
-
   // =====================================================
   // API PHIẾU NHẬP
   // =====================================================
@@ -414,6 +400,92 @@ export class KhoComponent implements OnInit {
         });
       }
     });
+  }
+
+  xuLyChonSanPhamNhap(event: any) {
+    const giaTri = event?.value;
+
+    if (giaTri === this.GIA_TRI_THEM_SAN_PHAM_MOI) {
+      setTimeout(() => {
+        this.maSPTam = '';
+        this.cdr.detectChanges();
+      }, 0);
+
+      this.chuyenSangThemSanPhamMoi();
+    }
+  }
+
+  chuyenSangThemSanPhamMoi() {
+    const duLieuDangTaoPhieu = {
+      phieuMoi: this.phieuMoi,
+      soLuongTam: this.soLuongTam
+    };
+
+    localStorage.setItem('draft_phieu_nhap_dang_tao', JSON.stringify(duLieuDangTaoPhieu));
+
+    this.hienThiDialogTaoPhieu = false;
+
+    this.router.navigate(['/app/san-pham'], {
+      queryParams: {
+        moThemSP: true,
+        returnTo: 'kho-tao-phieu'
+      }
+    });
+  }
+
+  khoiPhucDialogTaoPhieuSauKhiThemSanPham() {
+    const draftRaw = localStorage.getItem('draft_phieu_nhap_dang_tao');
+
+    if (draftRaw) {
+      try {
+        const draft = JSON.parse(draftRaw);
+
+        if (draft?.phieuMoi) {
+          this.phieuMoi = draft.phieuMoi;
+        }
+
+        if (draft?.soLuongTam) {
+          this.soLuongTam = draft.soLuongTam;
+        }
+      } catch {
+        console.warn('Không đọc được draft phiếu nhập');
+      }
+    }
+
+    const spMoiRaw = localStorage.getItem('san_pham_vua_them_cho_phieu_nhap');
+
+    if (spMoiRaw) {
+      try {
+        const spMoi = JSON.parse(spMoiRaw);
+        const maSP = spMoi.maSP || spMoi.maSp || '';
+        const tenSP = spMoi.tenSP || spMoi.tenSp || '';
+        const donGia = Number(spMoi.donGia || spMoi.giaBan || 0);
+
+        if (maSP) {
+          const daTonTaiTrongDropdown = this.danhSachSanPham.some(x => x.value === maSP);
+
+          if (!daTonTaiTrongDropdown) {
+            this.danhSachSanPham.unshift({
+              label: `${maSP} - ${tenSP}`,
+              value: maSP,
+              maSP,
+              tenSP,
+              donGia,
+              laThemMoi: false
+            });
+          }
+
+          this.maSPTam = maSP;
+        }
+
+        localStorage.removeItem('san_pham_vua_them_cho_phieu_nhap');
+      } catch {
+        console.warn('Không đọc được sản phẩm vừa thêm');
+      }
+    }
+
+    this.hienThiDialogTaoPhieu = true;
+    this.cdr.detectChanges();
   }
 
   timKiemPhieuNhap() {
@@ -584,7 +656,10 @@ export class KhoComponent implements OnInit {
       maNCC: this.phieuMoi.maNCC,
       danhSachChiTiet: this.phieuMoi.danhSachChiTiet.map((ct: any) => ({
         maSP: ct.maSP,
-        soLuong: ct.soLuong
+        tenSP: ct.tenSP || this.layTenSPTheoMa(ct.maSP),
+        soLuong: Number(ct.soLuong || 0),
+        donGia: Number(ct.donGia || 0),
+        thanhTien: this.tinhThanhTienNhap(ct)
       }))
     };
 
@@ -600,6 +675,7 @@ export class KhoComponent implements OnInit {
 
         this.hienThiDialogTaoPhieu = false;
         this.layDanhSachPhieuNhap();
+        this.layDanhSachSanPham();
       },
       error: (err) => {
         console.error('Lỗi tạo phiếu nhập:', err);
@@ -610,6 +686,18 @@ export class KhoComponent implements OnInit {
         });
       }
     });
+  }
+
+  layTenSPTheoMa(maSP: string): string {
+    if (!maSP) return '';
+
+    const maCanTim = this.chuanHoaTimKiem(maSP);
+
+    const sp = this.danhSachSanPham.find((x: any) =>
+      this.chuanHoaTimKiem(x.maSP || x.value) === maCanTim
+    );
+
+    return sp ? sp.tenSP : '';
   }
 
   xemChiTietPhieuNhap(pn: any) {
@@ -712,44 +800,6 @@ export class KhoComponent implements OnInit {
     });
   }
 
-  xoaPhieuNhap(pn: any) {
-    const maPhieu = this.layMaPhieuNhap(pn);
-
-    if (!maPhieu) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Thiếu mã phiếu',
-        detail: 'Không xác định được mã phiếu nhập'
-      });
-      return;
-    }
-
-    const dongY = confirm(`Bạn có chắc muốn xóa phiếu nhập ${maPhieu} không?`);
-
-    if (!dongY) return;
-
-    const apiUrl = environment.fshopApiUrl + `/api/PhieuNhapHang/${maPhieu}`;
-
-    this.http.delete(apiUrl).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Đã xóa phiếu nhập'
-        });
-
-        this.layDanhSachPhieuNhap();
-      },
-      error: (err) => {
-        console.error('Lỗi xóa phiếu:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Xóa thất bại',
-          detail: this.layThongBaoLoi(err, 'Không thể xóa phiếu nhập')
-        });
-      }
-    });
-  }
 
   // =====================================================
   // HELPER PHIẾU NHẬP
@@ -767,7 +817,22 @@ export class KhoComponent implements OnInit {
   }
 
   layTongTienPhieu(pn: any): number {
-    return Number(pn?.tongTien || 0);
+    const tongCoSan = Number(
+      pn?.tongTien ||
+      pn?.tongTienNhap ||
+      pn?.tongThanhTien ||
+      0
+    );
+
+    if (tongCoSan > 0) {
+      return tongCoSan;
+    }
+
+    const chiTiet = this.layChiTietNhapHang(pn);
+
+    return chiTiet.reduce((sum: number, ct: any) => {
+      return sum + this.layThanhTienChiTiet(ct);
+    }, 0);
   }
 
   layMaTrangThaiPhieu(pn: any): number {
@@ -792,14 +857,23 @@ export class KhoComponent implements OnInit {
       pn?.chiTietNhapHang ||
       pn?.danhSachChiTiet ||
       pn?.chiTiet ||
+      pn?.details ||
       [];
   }
 
   layMaSPChiTiet(ct: any): string {
-    return ct?.maSP || ct?.maSp || ct?.ma_sp || '';
+    return ct?.maSP ||
+      ct?.maSp ||
+      ct?.ma_sp ||
+      ct?.maSpNavigation?.maSp ||
+      ct?.maSPNavigation?.maSP ||
+      '';
   }
 
   layTenSPChiTiet(ct: any): string {
+    if (ct?.tenSP) return ct.tenSP;
+    if (ct?.tenSp) return ct.tenSp;
+
     if (ct?.maSpNavigation?.tenSp) {
       return ct.maSpNavigation.tenSp;
     }
@@ -809,25 +883,29 @@ export class KhoComponent implements OnInit {
     }
 
     const maSP = this.layMaSPChiTiet(ct);
-    const sp = this.danhSachSanPham.find(x => x.maSP === maSP || x.value === maSP);
-
-    return sp ? sp.tenSP : '';
+    return this.layTenSPTheoMa(maSP);
   }
 
   laySoLuongChiTiet(ct: any): number {
-    return Number(ct?.soLuong || 0);
+    return Number(ct?.soLuong || ct?.sl || 0);
   }
 
   layDonGiaChiTiet(ct: any): number {
-    return Number(ct?.donGia || ct?.giaNhap || 0);
+    return Number(ct?.donGia || ct?.giaNhap || ct?.gia || 0);
   }
 
   layThanhTienChiTiet(ct: any): number {
+    const thanhTienCoSan = Number(ct?.thanhTien || ct?.tongTien || 0);
+
+    if (thanhTienCoSan > 0) {
+      return thanhTienCoSan;
+    }
+
     return this.laySoLuongChiTiet(ct) * this.layDonGiaChiTiet(ct);
   }
 
   layHanSuDungChiTiet(ct: any): any {
-    return ct?.hanSuDung || null;
+    return ct?.hanSuDung || ct?.hsd || null;
   }
 
   // =====================================================
@@ -881,6 +959,41 @@ export class KhoComponent implements OnInit {
     });
   }
 
+  taoMaNCCMoi(): string {
+    const danhSachMa = this.danhSachNhaCungCap
+      .map((ncc: any) => this.layMaNCC(ncc))
+      .filter((ma: string) => ma);
+
+    if (danhSachMa.length === 0) {
+      return 'NCC001';
+    }
+
+    let soLonNhat = 0;
+    let doDaiSo = 3;
+    let tienTo = 'NCC';
+
+    danhSachMa.forEach((ma: string) => {
+      const match = ma.match(/^([A-Za-z]+)(\d+)$/);
+
+      if (match) {
+        const prefix = match[1];
+        const numberPart = match[2];
+        const numberValue = Number(numberPart);
+
+        if (!isNaN(numberValue) && numberValue > soLonNhat) {
+          soLonNhat = numberValue;
+          doDaiSo = numberPart.length;
+          tienTo = prefix;
+        }
+      }
+    });
+
+    const soMoi = soLonNhat + 1;
+    const soMoiDangChuoi = soMoi.toString().padStart(doDaiSo, '0');
+
+    return `${tienTo}${soMoiDangChuoi}`;
+  }
+
   // =====================================================
   // FORMAT & LỖI
   // =====================================================
@@ -927,5 +1040,27 @@ export class KhoComponent implements OnInit {
       .replace(/đ/g, 'd')
       .replace(/Đ/g, 'd')
       .trim();
+  }
+
+  kiemTraSdtNCC(sdt: string): boolean {
+    const value = (sdt || '').trim();
+
+    if (!value) {
+      return true;
+    }
+
+    const hopLe = /^0\d{9}$/.test(value);
+
+    if (!hopLe) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Số điện thoại không hợp lệ',
+        detail: 'Số điện thoại nhà cung cấp phải gồm đúng 10 số và bắt đầu bằng số 0.'
+      });
+
+      return false;
+    }
+
+    return true;
   }
 }

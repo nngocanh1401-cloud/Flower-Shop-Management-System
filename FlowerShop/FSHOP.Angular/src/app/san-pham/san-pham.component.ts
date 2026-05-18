@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,7 +12,8 @@ import { RippleModule } from 'primeng/ripple';
 import { DropdownModule } from 'primeng/dropdown';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { MessageService, ConfirmationService } from 'primeng/api'; 
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 import { environment } from '../../environments/environment';
@@ -29,16 +30,17 @@ export interface SanPham {
   selector: 'app-san-pham',
   standalone: true,
   imports: [
-    CommonModule, TableModule, FormsModule, InputTextModule, 
+    CommonModule, TableModule, FormsModule, InputTextModule,
     ButtonModule, ToastModule, ConfirmDialogModule, RippleModule,
     DialogModule, InputNumberModule, DropdownModule
   ],
-  providers: [MessageService, ConfirmationService], 
+  providers: [MessageService, ConfirmationService],
   templateUrl: './san-pham.component.html',
   styleUrl: './san-pham.component.css'
 })
 export class SanPhamComponent implements OnInit {
   danhSachSanPham: SanPham[] = [];
+  danhSachSanPhamGoc: SanPham[] = [];
   cols: any[] = [];
   tuKhoaTimKiem: string = '';
   danhSachDanhMuc: any[] = [];
@@ -50,10 +52,12 @@ export class SanPhamComponent implements OnInit {
   sanPhamThaoTac: SanPham = this.khoiTaoSanPhamMoi();
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -65,8 +69,6 @@ export class SanPhamComponent implements OnInit {
       { field: 'maDm', header: 'Danh Mục' }
     ];
     this.layDanhSachSanPham();
-    // this.layDanhSachDanhMuc();
-    // Thêm vào trong hàm ngOnInit()
     this.danhSachDanhMuc = [
       { tenHienThi: 'DM001 - Hoa Tươi', giaTri: 'DM001' },
       { tenHienThi: 'DM002 - Hoa Hồng', giaTri: 'DM002' },
@@ -74,9 +76,19 @@ export class SanPhamComponent implements OnInit {
       { tenHienThi: 'DM004 - Hoa Ngoại Nhập', giaTri: 'DM004' },
       { tenHienThi: 'DM005 - Phụ Kiện', giaTri: 'DM005' }
     ];
+    this.route.queryParams.subscribe(params => {
+      if (params['moThemSP'] === 'true') {
+        setTimeout(() => {
+          this.moDialogThemSanPhamTuKho();
+        }, 500);
+      }
+    });
   }
 
-  // Khởi tạo một sản phẩm trống
+  moDialogThemSanPhamTuKho() {
+    this.moDialogThem();
+  }
+
   khoiTaoSanPhamMoi(): SanPham {
     return { maSp: '', tenSp: '', donGia: 0, soLuongTon: 0, maDm: '' };
   }
@@ -86,13 +98,48 @@ export class SanPhamComponent implements OnInit {
     const apiUrl = environment.fshopApiUrl + '/api/SanPham';
     this.http.get<SanPham[]>(apiUrl).subscribe({
       next: (data) => {
-        this.danhSachSanPham = data;
+        this.danhSachSanPhamGoc = data || [];
+        this.danhSachSanPham = [...this.danhSachSanPhamGoc];
         this.cdr.detectChanges();
       }
     });
   }
 
-  //TÌM KIẾM SẢN PHẨM THEO TÊN
+  timKiemTuDongSanPham() {
+    const keyword = this.chuanHoaTimKiem(this.tuKhoaTimKiem);
+
+    if (!keyword) {
+      this.danhSachSanPham = [...this.danhSachSanPhamGoc];
+      return;
+    }
+
+    this.danhSachSanPham = this.danhSachSanPhamGoc.filter((sp: any) => {
+      const noiDung = [
+        sp.maSp,
+        sp.maSP,
+        sp.tenSp,
+        sp.tenSP,
+        sp.donGia,
+        sp.soLuongTon,
+        sp.maDm,
+        sp.maDM
+      ].join(' ');
+
+      return this.chuanHoaTimKiem(noiDung).includes(keyword);
+    });
+  }
+
+  chuanHoaTimKiem(value: any): string {
+    return (value || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'd')
+      .trim();
+  }
+
   timKiem() {
     if (!this.tuKhoaTimKiem.trim()) {
       this.layDanhSachSanPham();
@@ -114,9 +161,9 @@ export class SanPhamComponent implements OnInit {
       this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng nhập đủ khoảng giá cần lọc!' });
       return;
     }
-    
+
     const apiUrl = environment.fshopApiUrl + `/api/SanPham/loc-gia?min=${this.giaMin}&max=${this.giaMax}`;
-    
+
     this.http.get<SanPham[]>(apiUrl).subscribe({
       next: (data) => {
         this.danhSachSanPham = data;
@@ -139,27 +186,42 @@ export class SanPhamComponent implements OnInit {
   }
   //XÓA SẢN PHẨM
   xoaLoc() {
-    this.tuKhoaTimKiem = ''; 
-    this.layDanhSachSanPham(); 
+    this.tuKhoaTimKiem = '';
+    this.danhSachSanPham = [...this.danhSachSanPhamGoc];
   }
 
   xoa(maSp: string) {
+    const sp = this.danhSachSanPham.find(x => x.maSp === maSp);
+
     this.confirmationService.confirm({
-      message: `Bạn có chắc chắn muốn xóa sản phẩm <b>${maSp} ${this.danhSachSanPham.find(sp => sp.maSp === maSp)?.tenSp}</b> không?`,
       header: 'Xác nhận xóa',
+      message: `Bạn có chắc chắn muốn xóa sản phẩm <b>${maSp} ${sp?.tenSp || ''}</b> không?`,
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Xác nhận',
       rejectLabel: 'Hủy',
-      acceptButtonStyleClass: 'p-button-danger',
-      rejectButtonStyleClass: 'p-button-secondary p-button-text',
+      acceptButtonStyleClass: 'btn-confirm-delete',
+      rejectButtonStyleClass: 'btn-cancel-delete',
+      closeOnEscape: true,
+      dismissableMask: true,
+
       accept: () => {
         const apiUrl = environment.fshopApiUrl + `/api/SanPham/${maSp}`;
         this.http.delete(apiUrl).subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa sản phẩm' });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Thành công',
+              detail: 'Đã xóa sản phẩm'
+            });
             this.layDanhSachSanPham();
           },
-          error: () => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể xóa sản phẩm này' })
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Lỗi',
+              detail: 'Không thể xóa sản phẩm này'
+            });
+          }
         });
       }
     });
@@ -168,29 +230,29 @@ export class SanPhamComponent implements OnInit {
   // THÊM SẢN PHẨM MỚI
   moDialogThem() {
     this.sanPhamThaoTac = this.khoiTaoSanPhamMoi();
-    this.sanPhamThaoTac.maSp = this.phatSinhMaSPMoi(); 
-    
+    this.sanPhamThaoTac.maSp = this.phatSinhMaSPMoi();
+
     this.isEditMode = false;
     this.hienThiDialog = true;
   }
 
   // 1. Hàm tính mã tự động
-    phatSinhMaSPMoi(): string {
-        if (!this.danhSachSanPham || this.danhSachSanPham.length === 0) {
-            return 'SP001';
-        }
-
-        const danhSachSo = this.danhSachSanPham.map(p => {
-            const so = parseInt(p.maSp.replace('SP', ''));
-            return isNaN(so) ? 0 : so;
-        });
-        const soLonNhat = Math.max(...danhSachSo);
-        const soTiepTheo = soLonNhat + 1;
-      
-        return 'SP' + ('000' + soTiepTheo).slice(-3);
+  phatSinhMaSPMoi(): string {
+    if (!this.danhSachSanPham || this.danhSachSanPham.length === 0) {
+      return 'SP001';
     }
 
-    
+    const danhSachSo = this.danhSachSanPham.map(p => {
+      const so = parseInt(p.maSp.replace('SP', ''));
+      return isNaN(so) ? 0 : so;
+    });
+    const soLonNhat = Math.max(...danhSachSo);
+    const soTiepTheo = soLonNhat + 1;
+
+    return 'SP' + ('000' + soTiepTheo).slice(-3);
+  }
+
+
   // //Hiển thị dropdown danh mục theo API
   // layDanhSachDanhMuc() {
   //   // Thay url này bằng đường dẫn API Danh mục thật của bạn (ví dụ /api/DanhMuc)
@@ -223,7 +285,6 @@ export class SanPhamComponent implements OnInit {
 
   // Bấm nút "Lưu" trong hộp thoại
   luuSanPham() {
-    //Kiểm tra xem người dùng đã nhập đủ mã và tên chưa
     if (!this.sanPhamThaoTac.maSp || !this.sanPhamThaoTac.tenSp) {
       this.messageService.add({ severity: 'warn', summary: 'Thiếu thông tin', detail: 'Vui lòng nhập Mã và Tên hoa!' });
       return;
@@ -243,18 +304,56 @@ export class SanPhamComponent implements OnInit {
     } else {
       // Gọi API Thêm mới (POST)
       const apiUrl = environment.fshopApiUrl + '/api/SanPham';
-      // Log ra console để bạn kiểm tra xem dữ liệu có bay đi không
       console.log('Dữ liệu gửi đi:', this.sanPhamThaoTac);
 
       this.http.post(apiUrl, this.sanPhamThaoTac).subscribe({
         next: () => {
-          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm hoa mới vào kho' });
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: 'Đã thêm hoa mới vào kho'
+          });
+
+          const returnTo = this.route.snapshot.queryParamMap.get('returnTo');
+
+          if (returnTo === 'kho-tao-phieu') {
+            const sanPhamVuaThem = {
+              maSP: this.sanPhamThaoTac.maSp,
+              maSp: this.sanPhamThaoTac.maSp,
+              tenSP: this.sanPhamThaoTac.tenSp,
+              tenSp: this.sanPhamThaoTac.tenSp,
+              donGia: this.sanPhamThaoTac.donGia,
+              soLuongTon: this.sanPhamThaoTac.soLuongTon,
+              maDM: this.sanPhamThaoTac.maDm,
+              maDm: this.sanPhamThaoTac.maDm
+            };
+
+            localStorage.setItem(
+              'san_pham_vua_them_cho_phieu_nhap',
+              JSON.stringify(sanPhamVuaThem)
+            );
+
+            this.hienThiDialog = false;
+
+            this.router.navigate(['/app/kho'], {
+              queryParams: {
+                moTaoPhieu: true
+              }
+            });
+
+            return;
+          }
+
           this.hienThiDialog = false;
           this.layDanhSachSanPham();
         },
         error: (err) => {
           console.error('Lỗi API:', err);
-          this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể lưu. Kiểm tra lại API C#' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Lỗi',
+            detail: 'Không thể lưu. Kiểm tra lại API C#'
+          });
         }
       });
     }
