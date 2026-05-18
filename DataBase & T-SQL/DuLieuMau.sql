@@ -8,8 +8,6 @@ INSERT INTO TrangThai VALUES
 (4, N'Đã hủy',   N'Đơn bị hủy',     'DonHang'),
 (5, N'Chờ duyệt', N'Phiếu nhập chờ duyệt',  'PhieuNhapHang'),
 (6, N'Đã nhập', N'Đã nhập hàng',    'PhieuNhapHang');
--- KIỂM TRA
-SELECT * FROM TrangThai ORDER BY MaTrangThai;
 
 -- NhaCungCap
 INSERT INTO NhaCungCap VALUES
@@ -31,7 +29,6 @@ INSERT INTO PhuongThucThanhToan VALUES
 (3, N'Ví MoMo'),
 (4, N'ZaloPay');
 
-
 -- DanhMuc (có danh mục cha-con)
 INSERT INTO DanhMuc VALUES
 ('DM001', N'Hoa tươi',      N'Các loại hoa tươi', NULL),
@@ -43,11 +40,9 @@ INSERT INTO DanhMuc VALUES
 -- Voucher
 INSERT INTO Voucher VALUES
 ('VC001', N'Giảm 10% đơn từ 500k', '2025-01-01','2025-12-31', 10,    'PERCENT', 500000,  100, 0), -- giam phan tram/so tien
-('VC002', N'Giảm 50k đơn từ 300k', '2025-01-01','2025-12-31', 50000, 'FIXED',   300000,  50,  0); -- giam tien/so tien
-
-Select * from Voucher
-Select * from SanPham
-Select * from PhieuNhapHang
+('VC002', N'Giảm 50k đơn từ 300k', '2025-01-01','2025-12-31', 50000, 'FIXED',   300000,  50,  0), -- giam tien/so tien
+('VC003', N'Giảm 10% đơn từ 500k', '2024-01-01', '2030-12-31',10,  'PERCENT',500000, 100,    0),-- giam phan tram/so tien
+('VC004', N'Giảm 50k đơn từ 300k',  '2024-01-01', '2030-12-31', 50000,'FIXED',300000,50,  0);-- giam tien/so tien
 
 -- SanPham
 INSERT INTO SanPham VALUES
@@ -97,6 +92,7 @@ INSERT INTO ChiTietNhapHang VALUES
 ('PN003','SP006', 50,95000,'2025-09-30');
 
 -- Tài khoản admin mặc định (password: Admin@123)
+
 INSERT INTO NguoiDung VALUES
 ('ND001','admin','$2a$11$liC2LddldTd048Q/k9D0tuK9EvPQBuYfPM3Z5CZQQAqyyr0pFVOuq',1,NULL,GETDATE(),1);
 
