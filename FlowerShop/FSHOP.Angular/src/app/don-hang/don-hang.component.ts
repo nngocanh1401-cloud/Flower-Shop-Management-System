@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -37,7 +39,8 @@ export interface DonHang {
     DropdownModule,
     FormsModule,
     InputNumberModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+
   ],
   providers: [MessageService],
   templateUrl: './don-hang.component.html',
@@ -218,32 +221,144 @@ export class DonHangComponent implements OnInit {
   capNhatTrangThai() {
     if (!this.donHangChiTiet) return;
 
+    const maTrangThaiMoi = this.donHangChiTiet.maTrangThai;
+    const laHuyDon = maTrangThaiMoi === 4;
+    const donHangDangXuLy = { ...this.donHangChiTiet };
+
     const apiUrl =
       environment.fshopApiUrl +
-      `/api/DonHang/${this.donHangChiTiet.maDH}/trangthai?matrangThai=${this.donHangChiTiet.maTrangThai}`;
+      `/api/DonHang/${this.donHangChiTiet.maDH}/trangthai?matrangThai=${maTrangThaiMoi}`;
 
     this.http.put(apiUrl, {}).subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Đã cập nhật trạng thái đơn hàng'
-        });
+        const sauKhiXuLy = () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: laHuyDon ? 'Đã hủy đơn hàng' : 'Đã cập nhật trạng thái đơn hàng'
+          });
 
-        this.hienThiDialogChiTiet = false;
-        this.layDanhSachDonHang();
+          this.hienThiDialogChiTiet = false;
+          this.donHangChiTiet = null;
+          this.layDanhSachDonHang();
+        }
       },
+
       error: (err) => {
         console.error('Lỗi API cập nhật:', err);
+
+        const thongBaoLoi =
+          err?.error?.message ||
+          err?.error?.title ||
+          err?.error ||
+          '';
+        if (
+          laHuyDon &&
+          typeof thongBaoLoi === 'string' &&
+          thongBaoLoi.toLowerCase().includes('hủy đơn hàng thành công')
+        ) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Thành công',
+              detail: 'Đã hủy đơn hàng'
+            });
+
+            this.hienThiDialogChiTiet = false;
+            this.donHangChiTiet = null;
+            this.layDanhSachDonHang();
+
+          return;
+        }
+
+        if (this.donHangChiTiet) {
+          this.donHangChiTiet.maTrangThai = this.trangThaiBanDau;
+        }
 
         this.messageService.add({
           severity: 'error',
           summary: 'Lỗi',
-          detail: 'Không thể cập nhật trạng thái'
+          detail: thongBaoLoi || 'Không thể cập nhật trạng thái'
         });
+
+        this.cdr.detectChanges();
       }
     });
   }
+
+ congTonKhoBuSauKhiTaoDon(danhSachChiTiet: any[], callback?: () => void) {
+  if (!danhSachChiTiet || danhSachChiTiet.length === 0) {
+    if (callback) callback();
+    return;
+  }
+
+  const danhSachRequest = danhSachChiTiet.map((ct: any) => {
+    const maSP = ct.maSp || ct.maSP;
+    const soLuong = Number(ct.soLuong || 0);
+
+    if (!maSP || soLuong <= 0) {
+      return of(null);
+    }
+
+    const apiGet = environment.fshopApiUrl + `/api/SanPham/${maSP}`;
+
+    return this.http.get<any>(apiGet).pipe(
+      catchError((err) => {
+        console.error('Không lấy được sản phẩm:', maSP, err);
+        return of(null);
+      })
+    );
+  });
+
+  forkJoin(danhSachRequest).subscribe({
+    next: (dsSanPham) => {
+      const danhSachSanPham = dsSanPham as any[];
+
+      const danhSachPut = danhSachSanPham
+        .map((sp: any, index: number) => {
+          if (!sp) return null;
+
+          const ct = danhSachChiTiet[index];
+          const soLuong = Number(ct.soLuong || 0);
+          const maSP = sp.maSp || sp.maSP || ct.maSp || ct.maSP;
+
+          const body = {
+            tenSP: sp.tenSp || sp.tenSP || '',
+            donGia: Number(sp.donGia || 0),
+            soLuongTon: Number(sp.soLuongTon || 0) + soLuong,
+            maDM: sp.maDm || sp.maDM || ''
+          };
+
+          const apiPut = environment.fshopApiUrl + `/api/SanPham/${maSP}`;
+
+          return this.http.put(apiPut, body).pipe(
+            catchError((err) => {
+              console.error('Không cộng bù tồn kho sau khi tạo đơn:', maSP, err);
+              return of(null);
+            })
+          );
+        })
+        .filter((x: any) => x !== null);
+
+      if (danhSachPut.length === 0) {
+        if (callback) callback();
+        return;
+      }
+
+      forkJoin(danhSachPut).subscribe({
+        next: () => {
+          console.log('Đã cộng bù tồn kho sau khi tạo đơn');
+          if (callback) callback();
+        },
+        error: () => {
+          if (callback) callback();
+        }
+      });
+    },
+    error: () => {
+      if (callback) callback();
+    }
+  });
+}
 
   // TẠO ĐƠN HÀNG
   moDialogTaoDon(maKHMacDinh: string = '') {
@@ -411,7 +526,6 @@ export class DonHangComponent implements OnInit {
     const giaTri = event?.value;
 
     if (giaTri === this.GIA_TRI_THEM_VOUCHER) {
-      // reset ngay để dropdown không giữ dòng "+ Thêm voucher mới"
       setTimeout(() => {
         this.donHangMoi.maVoucher = null;
         this.cdr.detectChanges();
@@ -562,10 +676,7 @@ export class DonHangComponent implements OnInit {
 
         this.hienThiDialogTaoVoucher = false;
 
-        // Chọn luôn voucher vừa tạo cho đơn hàng
         this.donHangMoi.maVoucher = body.maVoucher;
-
-        // Load lại danh sách voucher
         this.layDanhSachVoucher();
       },
       error: (err) => {
@@ -740,7 +851,6 @@ export class DonHangComponent implements OnInit {
     window.location.href = url;
   }
 
-  // 2. Nút bấm "Thêm vào giỏ"
   themVaoGioHang() {
     if (!this.maSpTam || !this.maSpTam.trim()) {
       this.messageService.add({
@@ -874,10 +984,8 @@ export class DonHangComponent implements OnInit {
     return Math.max(this.tinhTongTienGoc() - this.tinhTienGiamVoucher(), 0);
   }
 
-  // THÊM HÀM NÀY NGAY BÊN DƯỚI ĐỂ TÍNH TỔNG TIỀN ĐƠN MỚI
   tinhTongTienDonMoi(): number {
     if (!this.donHangMoi || !this.donHangMoi.danhSachChiTiet) return 0;
-    // Cộng dồn tất cả cột thanhTien trong giỏ hàng lại
     return this.donHangMoi.danhSachChiTiet.reduce((tong: number, sp: any) => tong + (sp.thanhTien || 0), 0);
   }
 
@@ -918,15 +1026,19 @@ export class DonHangComponent implements OnInit {
 
     this.http.post(apiUrl, body).subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Thành công',
-          detail: 'Đã tạo đơn hàng mới!'
-        });
+  const chiTietDaTao = [...this.donHangMoi.danhSachChiTiet];
 
-        this.hienThiDialogTaoDon = false;
-        this.layDanhSachDonHang();
-      },
+  this.congTonKhoBuSauKhiTaoDon(chiTietDaTao, () => {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Thành công',
+      detail: 'Đã tạo đơn hàng'
+    });
+
+    this.hienThiDialogTaoDon = false;
+    this.layDanhSachDonHang();
+  });
+},
       error: (err) => {
         console.error('Lỗi tạo đơn hàng:', err);
 
@@ -1106,8 +1218,6 @@ export class DonHangComponent implements OnInit {
     this.layDanhSachDonHang();
   }
 
-  // GỢI Ý KHI NHẬP
-
   capNhatDanhSachGoiYTuDonHang(data: any[]) {
     this.danhSachMaDH = this.layDanhSachKhongTrung(
       data.map(x => x.maDH).filter(x => x)
@@ -1267,12 +1377,10 @@ export class DonHangComponent implements OnInit {
     const tongGoc = this.tinhTongTienGocChiTiet(donHang);
     const tongSauGiam = Number(donHang?.tongTien || 0);
 
-    // Cách chắc nhất: lấy giá gốc - tổng tiền đã lưu trong đơn
     if (tongGoc > 0 && tongSauGiam > 0 && tongGoc >= tongSauGiam) {
       return tongGoc - tongSauGiam;
     }
 
-    // Nếu API chi tiết không lưu tổng sau giảm thì mới tự tính theo voucher
     const voucher = this.layVoucherTheoMa(maVoucher);
 
     if (!voucher) {

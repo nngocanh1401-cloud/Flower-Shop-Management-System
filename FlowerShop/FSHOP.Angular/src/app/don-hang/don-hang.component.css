@@ -118,7 +118,6 @@
 }
 
 
-/* PrimeNG AutoComplete trong ô tìm kiếm */
 :host ::ng-deep .order-autocomplete {
     flex: 1;
     width: 100% !important;

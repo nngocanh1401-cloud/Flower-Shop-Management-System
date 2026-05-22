@@ -1,10 +1,7 @@
 import { Routes } from '@angular/router';
-
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
-
 import { LoginComponent } from './login/login.component';
 import { authGuard } from './guards/auth.guard';
-
 import { SanPhamComponent } from './san-pham/san-pham.component';
 import { DonHangComponent } from './don-hang/don-hang.component';
 import { KhachHangComponent } from './khach-hang/khach-hang.component';
@@ -13,26 +10,10 @@ import { BaoCaoComponent } from './bao-cao/bao-cao.component';
 import { ShopComponent } from './shop/shop.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  },
-
-  {
-    path: 'shop',
-    component: ShopComponent
-  },
-  
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-
-  {
-    path: 'app',
-    component: AdminLayoutComponent,
-    canActivate: [authGuard],
+  {path: '', redirectTo: 'login', pathMatch: 'full'},
+  {path: 'shop', component: ShopComponent }, 
+  {path: 'login', component: LoginComponent},
+  {path: 'app', component: AdminLayoutComponent, canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -59,11 +40,10 @@ export const routes: Routes = [
         path: 'bao-cao',
         component: BaoCaoComponent
       }
-    ]
-  },
-
-  {
-    path: '**',
-    redirectTo: 'shop'
-  }
+    ]},
+  {path: '**', redirectTo: 'shop'}
 ];
+
+
+
+

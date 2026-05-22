@@ -411,7 +411,6 @@ td.text-primary,
     font-weight: 900 !important;
 }
 
-/* NCC phụ dưới mã */
 :host ::ng-deep .p-datatable small.text-muted {
     color: #8a9a91 !important;
     font-size: 12px;
@@ -900,7 +899,6 @@ label.font-weight-bold {
     margin-bottom: 7px !important;
 }
 
-/* Input thường */
 .khung-them-san-pham .form-control {
     height: 44px !important;
     border-radius: 12px !important;

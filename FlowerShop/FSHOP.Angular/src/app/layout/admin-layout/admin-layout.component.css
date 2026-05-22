@@ -44,7 +44,6 @@
     font-weight: 700;
 }
 
-/* Nút 3 gạch */
 .main-header .btn-link {
     width: 38px;
     height: 38px;
@@ -63,7 +62,6 @@
     color: var(--green-text) !important;
 }
 
-/* Bên phải topbar */
 .topbar-right {
     display: flex;
     align-items: center;

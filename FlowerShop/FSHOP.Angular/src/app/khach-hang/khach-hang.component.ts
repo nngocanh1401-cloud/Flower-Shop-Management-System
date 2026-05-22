@@ -403,7 +403,6 @@ export class KhachHangComponent implements OnInit {
     this.layDanhSachKhachHang();
   }
 
-  // HÀM PHỤ ĐỂ TRÁNH LỆCH TÊN FIELD
   layMaKhachHang(kh: any): string {
     return kh?.maKH || kh?.maKh || kh?.maKhachHang || kh?.maKHachHang || '';
   }

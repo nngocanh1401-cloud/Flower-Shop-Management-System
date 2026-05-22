@@ -34,7 +34,6 @@ textarea {
     font-family: quicksand, "Segoe UI", Tahoma, Arial, sans-serif !important;
 }
 
-/* Sửa chữ trong table */
 th,
 td {
     font-family: quicksand, "Segoe UI", Tahoma, Arial, sans-serif !important;
@@ -79,7 +78,6 @@ body {
     font-weight: 1000;
 }
 
-/* PrimeNG dùng font chung */
 .p-component,
 .p-inputtext,
 .p-dropdown,
@@ -105,7 +103,6 @@ body {
     border-color: var(--app-primary-hover) !important;
 }
 
-/* Bootstrap outline primary */
 .btn-outline-primary {
     color: var(--app-primary-text) !important;
     border-color: var(--app-primary) !important;
@@ -123,7 +120,6 @@ body {
     font-weight: 700;
 }
 
-/* Chỉ đổi nút primary mặc định, không đụng success/danger/warning */
 .p-button.p-button-primary,
 .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info) {
     background: var(--app-primary) !important;

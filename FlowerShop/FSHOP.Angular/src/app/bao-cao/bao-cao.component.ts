@@ -373,10 +373,6 @@ export class BaoCaoComponent implements OnInit {
     });
   }
 
-  // =========================
-  // HÀM MAP DỮ LIỆU LINH HOẠT
-  // =========================
-
   layMangDuLieu(res: any): any[] {
     if (!res) return [];
 

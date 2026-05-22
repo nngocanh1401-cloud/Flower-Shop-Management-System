@@ -156,7 +156,6 @@ export class SanPhamComponent implements OnInit {
 
   //LỌC SẢN PHẨM THEO GIÁ
   locTheoGia() {
-    // Ràng buộc phải nhập đủ 2 ô mới cho lọc
     if (this.giaMin === null || this.giaMax === null) {
       this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng nhập đủ khoảng giá cần lọc!' });
       return;
@@ -173,7 +172,6 @@ export class SanPhamComponent implements OnInit {
     });
   }
 
-  // Hủy lọc theo giá
   xoaLocGia() {
     this.giaMin = null;
     this.giaMax = null;
@@ -236,7 +234,6 @@ export class SanPhamComponent implements OnInit {
     this.hienThiDialog = true;
   }
 
-  // 1. Hàm tính mã tự động
   phatSinhMaSPMoi(): string {
     if (!this.danhSachSanPham || this.danhSachSanPham.length === 0) {
       return 'SP001';
@@ -252,28 +249,8 @@ export class SanPhamComponent implements OnInit {
     return 'SP' + ('000' + soTiepTheo).slice(-3);
   }
 
-
-  // //Hiển thị dropdown danh mục theo API
-  // layDanhSachDanhMuc() {
-  //   // Thay url này bằng đường dẫn API Danh mục thật của bạn (ví dụ /api/DanhMuc)
-  //   const apiUrl = environment.fshopApiUrl + '/api/DanhMuc';
-
-  //   this.http.get<any[]>(apiUrl).subscribe({
-  //     next: (data) => {
-  //       this.danhSachDanhMuc = data.map(dm => ({
-  //         tenHienThi: `${dm.maDm} - ${dm.tenDm}`,
-  //         giaTri: dm.maDm
-  //       }));
-  //       this.cdr.detectChanges();
-  //     },
-  //     error: (err) => {
-  //       console.error('Chưa có API Danh mục hoặc lỗi:', err);
-  //     }
-  //   });
-  // }
-  // SỬA SẢN PHẨM
   moDialogSua(sp: SanPham) {
-    this.sanPhamThaoTac = { ...sp }; // Clone dữ liệu ra để lúc gõ không bị ảnh hưởng trực tiếp lên bảng
+    this.sanPhamThaoTac = { ...sp };
     this.isEditMode = true;
     this.hienThiDialog = true;
   }
@@ -283,7 +260,6 @@ export class SanPhamComponent implements OnInit {
     this.hienThiDialog = false;
   }
 
-  // Bấm nút "Lưu" trong hộp thoại
   luuSanPham() {
     if (!this.sanPhamThaoTac.maSp || !this.sanPhamThaoTac.tenSp) {
       this.messageService.add({ severity: 'warn', summary: 'Thiếu thông tin', detail: 'Vui lòng nhập Mã và Tên hoa!' });
